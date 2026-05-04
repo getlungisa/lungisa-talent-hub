@@ -39,20 +39,41 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
         <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
       </button>
 
-      <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <header className="space-y-4">
         <div className="flex items-center gap-4">
           <Avatar name={candidate.firstName} size={64} />
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-display text-4xl text-primary">{candidate.firstName}</h1>
               {candidate.verified && <VerifiedBadge />}
             </div>
-            <p className="mt-1 text-muted-foreground">{candidate.role}</p>
-            <div className="mt-3">
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <p className="text-muted-foreground">{candidate.role}</p>
               <RatingDots value={candidate.rating} />
             </div>
           </div>
         </div>
+        <button
+          onClick={() => !isRequested && requestInterview(candidate.id)}
+          disabled={isRequested || credits <= 0}
+          className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
+            isRequested
+              ? "bg-success-soft text-success"
+              : credits <= 0
+                ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
+                : "bg-accent text-accent-foreground hover:brightness-95"
+          }`}
+        >
+          {isRequested ? (
+            <>
+              <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
+            </>
+          ) : credits <= 0 ? (
+            "No credits remaining"
+          ) : (
+            "Request interview — 1 credit"
+          )}
+        </button>
       </header>
 
       <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
