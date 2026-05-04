@@ -123,30 +123,6 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
             <p className="mt-2 text-sm text-primary/80">
               We will arrange a time that works for you both — usually within 24 hours.
             </p>
-            <button
-              onClick={() => !isRequested && requestInterview(candidate.id)}
-              disabled={isRequested || credits <= 0}
-              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-                isRequested
-                  ? "bg-success-soft text-success"
-                  : credits <= 0
-                    ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
-                    : "bg-accent text-accent-foreground hover:brightness-95"
-              }`}
-            >
-              {isRequested ? (
-                <>
-                  <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
-                </>
-              ) : credits <= 0 ? (
-                "No credits remaining"
-              ) : (
-                "Request interview — 1 credit"
-              )}
-            </button>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Lungisa will arrange the interview and be in touch within 24 hours.
-            </p>
           </div>
         </aside>
       </section>
