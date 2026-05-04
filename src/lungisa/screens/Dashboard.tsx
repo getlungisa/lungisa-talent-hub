@@ -3,6 +3,7 @@ import { candidates } from "../data";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { VerifiedBadge } from "../components/VerifiedBadge";
+import { RecommendedRow } from "../components/RecommendedRow";
 import { ArrowRight, Heart, Sparkles, Check } from "lucide-react";
 
 function greeting() {
@@ -59,6 +60,9 @@ export function Dashboard({
           </span>
         </div>
       </section>
+
+      {/* Recommended for you */}
+      <RecommendedRow onOpenCandidate={onOpenCandidate} onSeeAll={onBrowse} />
 
       {/* Active placements */}
       <section>
