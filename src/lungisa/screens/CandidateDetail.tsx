@@ -3,7 +3,18 @@ import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { useLungisa } from "../store";
-import { ArrowLeft, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  MapPin,
+  Bus,
+  Clock,
+  CalendarDays,
+  MessageCircle,
+  ShieldCheck,
+  Briefcase,
+  Coffee,
+} from "lucide-react";
 
 export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const candidate = candidates.find((c) => c.id === id);
@@ -46,6 +57,45 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 
       <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="space-y-8">
+          <div>
+            <h2 className="font-display text-xl text-primary">At a glance</h2>
+            <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+              {[
+                { icon: MapPin, label: "Location", value: candidate.glance.location },
+                { icon: Bus, label: "Transport", value: candidate.glance.transport },
+                { icon: Clock, label: "Earliest start", value: candidate.glance.earliestStart },
+                {
+                  icon: CalendarDays,
+                  label: "Weekend availability",
+                  value: candidate.glance.weekends,
+                  positive: true,
+                },
+                { icon: MessageCircle, label: "Languages", value: candidate.glance.languages },
+                { icon: ShieldCheck, label: "Work status", value: candidate.glance.workStatus },
+                { icon: Briefcase, label: "Availability", value: candidate.glance.availability },
+                { icon: Coffee, label: "Experience", value: candidate.glance.experience },
+              ].map(({ icon: Icon, label, value, positive }) => (
+                <div key={label} className="flex items-start gap-3">
+                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />
+                  <div className="min-w-0">
+                    <dt className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                      {label}
+                    </dt>
+                    <dd
+                      className={`mt-1 text-[15px] ${
+                        positive ? "text-success font-medium" : "text-primary"
+                      }`}
+                    >
+                      {value}
+                    </dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="border-t border-border" />
+
           <div>
             <h2 className="font-display text-xl text-primary">How we assessed {candidate.firstName}</h2>
             <p className="mt-3 text-[15px] leading-relaxed text-primary/80">{candidate.assessment}</p>

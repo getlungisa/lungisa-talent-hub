@@ -1,5 +1,16 @@
 export type Role = "Barista" | "Front of house" | "Kitchen" | "Delivery";
 
+export type Glance = {
+  location: string;
+  transport: string;
+  earliestStart: string;
+  weekends: string;
+  languages: string;
+  workStatus: string;
+  availability: string;
+  experience: string;
+};
+
 export type Candidate = {
   id: string;
   firstName: string;
@@ -9,6 +20,7 @@ export type Candidate = {
   assessment: string;
   background: string;
   verified: boolean;
+  glance: Glance;
 };
 
 export const candidates: Candidate[] = [
@@ -27,6 +39,16 @@ export const candidates: Candidate[] = [
     background:
       "Sipho grew up in Khayelitsha and has been pulling shots at a community café in Site B for the last eighteen months. He is studying part-time and wants to work somewhere he can keep learning the craft properly.",
     verified: true,
+    glance: {
+      location: "Khayelitsha, Cape Town",
+      transport: "Public transport · MyCiti route",
+      earliestStart: "6:00am",
+      weekends: "Available",
+      languages: "English · isiXhosa",
+      workStatus: "SA ID holder",
+      availability: "Full time or part time",
+      experience: "18 months barista experience",
+    },
   },
   {
     id: "ayanda",
@@ -43,6 +65,16 @@ export const candidates: Candidate[] = [
     background:
       "Ayanda is from Langa and has worked weekends in a family-run restaurant since she was sixteen. She wants a role where front of house is taken seriously as a craft, not treated as a stopgap.",
     verified: true,
+    glance: {
+      location: "Langa, Cape Town",
+      transport: "Public transport · Train + taxi",
+      earliestStart: "6:30am",
+      weekends: "Available",
+      languages: "English · isiXhosa",
+      workStatus: "SA ID holder",
+      availability: "Full time",
+      experience: "3 years front of house",
+    },
   },
   {
     id: "thandi",
@@ -59,6 +91,16 @@ export const candidates: Candidate[] = [
     background:
       "Thandi cooks at home for a household of seven and has helped cater weddings in Gugulethu most weekends for the last two years. She wants a kitchen that will teach her properly.",
     verified: true,
+    glance: {
+      location: "Gugulethu, Cape Town",
+      transport: "Public transport · Taxi route",
+      earliestStart: "5:30am",
+      weekends: "Available",
+      languages: "English · isiXhosa",
+      workStatus: "SA ID holder",
+      availability: "Full time",
+      experience: "2 years catering kitchens",
+    },
   },
   {
     id: "nomvula",
@@ -75,6 +117,16 @@ export const candidates: Candidate[] = [
     background:
       "Nomvula lives in Philippi and travels in for work every day. She is looking for a smaller, owner-led venue where she can build a long-term home.",
     verified: true,
+    glance: {
+      location: "Philippi, Cape Town",
+      transport: "Public transport · MyCiti route",
+      earliestStart: "6:00am",
+      weekends: "Available",
+      languages: "English · isiXhosa · Afrikaans",
+      workStatus: "SA ID holder",
+      availability: "Full time",
+      experience: "1 year front of house lead",
+    },
   },
   {
     id: "thabo",
@@ -91,6 +143,16 @@ export const candidates: Candidate[] = [
     background:
       "Kagiso is from Mfuleni and started in coffee at a community training programme nine months ago. He is looking for a shop that will invest in him as he grows.",
     verified: true,
+    glance: {
+      location: "Mfuleni, Cape Town",
+      transport: "Public transport · Train + taxi",
+      earliestStart: "6:00am",
+      weekends: "Available",
+      languages: "English · isiXhosa",
+      workStatus: "SA ID holder",
+      availability: "Full time or part time",
+      experience: "9 months barista training",
+    },
   },
 ];
 
