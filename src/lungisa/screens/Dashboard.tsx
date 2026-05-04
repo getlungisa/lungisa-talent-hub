@@ -1,10 +1,9 @@
 import { useLungisa } from "../store";
 import { candidates } from "../data";
-import { CandidateCard } from "../components/CandidateCard";
 import { PlacementRow } from "../components/PlacementRow";
-import { ArrowRight, Plus } from "lucide-react";
-import { useState } from "react";
-import { TopUpModal } from "../components/TopUpModal";
+import { Avatar } from "../components/Avatar";
+import { VerifiedBadge } from "../components/VerifiedBadge";
+import { ArrowRight, Heart, Sparkles, Check } from "lucide-react";
 
 function greeting() {
   const h = new Date().getHours();
@@ -13,49 +12,60 @@ function greeting() {
   return "Good evening";
 }
 
-export function Dashboard({ onOpenCandidate, onBrowse }: { onOpenCandidate: (id: string) => void; onBrowse: () => void }) {
-  const { credits, employerName, stats, placements } = useLungisa();
-  const [topUpOpen, setTopUpOpen] = useState(false);
-  const suggested = candidates.slice(1, 3);
+export function Dashboard({
+  onOpenCandidate,
+  onBrowse,
+}: {
+  onOpenCandidate: (id: string) => void;
+  onBrowse: () => void;
+}) {
+  const {
+    employerName,
+    placements,
+    shortlist,
+    toggleShortlist,
+    requested,
+    requestInterview,
+    credits,
+    newThisWeek,
+  } = useLungisa();
+
+  const shortlisted = candidates.filter((c) => shortlist.has(c.id));
 
   return (
-    <div className="space-y-10">
-      <section>
+    <div className="space-y-12">
+      {/* Hero — greeting + primary CTA */}
+      <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
         <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
           {greeting()}
         </p>
         <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
           {employerName}
         </h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">
-          A small, considered roster of verified candidates ready to meet you. We do the vetting; you choose who to interview.
-        </p>
-      </section>
 
-      <section className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-accent/30 bg-accent-soft p-5 sm:col-span-1">
-          <div className="text-xs uppercase tracking-[0.14em] text-accent">Credits</div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-4xl text-primary">{credits}</span>
-            <span className="text-sm text-muted-foreground">interview credits remaining</span>
-          </div>
-          <button
-            onClick={() => setTopUpOpen(true)}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-1.5 text-sm font-medium text-accent-foreground transition hover:brightness-95"
-          >
-            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> Top up credits
-          </button>
+        <button
+          onClick={onBrowse}
+          className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-base font-medium text-accent-foreground shadow-[0_10px_30px_-12px_hsl(19_63%_44%/0.5)] transition hover:brightness-95 sm:text-lg"
+        >
+          Browse candidates
+          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+        </button>
+
+        <div className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
+          <span>
+            <span className="font-medium text-primary">{newThisWeek} new candidates</span>{" "}
+            verified this week
+          </span>
         </div>
-
-        <Stat label="Candidates browsed" value={stats.browsed} note="this month" />
-        <Stat label="Interviews requested" value={stats.interviews} note="this month" />
       </section>
 
+      {/* Active placements */}
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Active placement</h2>
+          <h2 className="font-display text-2xl text-primary">Active placements</h2>
           <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {stats.placements} active
+            {placements.length} active
           </span>
         </div>
         <div className="space-y-3">
@@ -72,40 +82,85 @@ export function Dashboard({ onOpenCandidate, onBrowse }: { onOpenCandidate: (id:
         </div>
       </section>
 
+      {/* Shortlist */}
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Suggested for you</h2>
-          <button
-            onClick={onBrowse}
-            className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
-          >
-            Browse all candidates <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          <h2 className="font-display text-2xl text-primary">Your shortlist</h2>
+          {shortlisted.length > 0 && (
+            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              {shortlisted.length} saved
+            </span>
+          )}
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {suggested.map((c) => (
-            <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
-          ))}
-        </div>
+
+        {shortlisted.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+            <Heart className="mx-auto h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
+            <p className="mt-3 text-sm text-muted-foreground text-balance">
+              Favourite candidates while browsing to save them here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {shortlisted.map((c) => {
+              const isRequested = requested.has(c.id);
+              return (
+                <article
+                  key={c.id}
+                  className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 transition hover:border-accent/40 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <button
+                    onClick={() => onOpenCandidate(c.id)}
+                    className="flex flex-1 items-center gap-3 text-left"
+                  >
+                    <Avatar name={c.firstName} />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-lg text-primary">{c.firstName}</h3>
+                        {c.verified && <VerifiedBadge />}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{c.role}</p>
+                    </div>
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleShortlist(c.id)}
+                      aria-label="Remove from shortlist"
+                      className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:border-accent hover:text-accent"
+                    >
+                      Remove
+                    </button>
+                    <button
+                      onClick={() => !isRequested && requestInterview(c.id)}
+                      disabled={isRequested || credits <= 0}
+                      className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
+                        isRequested
+                          ? "bg-success-soft text-success"
+                          : credits <= 0
+                            ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
+                            : "bg-accent text-accent-foreground hover:brightness-95"
+                      }`}
+                    >
+                      {isRequested ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" strokeWidth={3} /> Requested
+                        </>
+                      ) : (
+                        "Request interview"
+                      )}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <p className="border-t border-border pt-6 text-sm text-muted-foreground text-balance">
         Lungisa stays in touch with all placed candidates. You will hear from us if anything needs attention.
       </p>
-
-      <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
-    </div>
-  );
-}
-
-function Stat({ label, value, note }: { label: string; value: number; note: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="font-display text-4xl text-primary">{value}</span>
-        <span className="text-sm text-muted-foreground">{note}</span>
-      </div>
     </div>
   );
 }

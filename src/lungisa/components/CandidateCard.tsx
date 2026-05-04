@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { useLungisa } from "../store";
-import { Check } from "lucide-react";
+import { Check, Heart } from "lucide-react";
 
 export function CandidateCard({
   candidate,
@@ -12,8 +12,9 @@ export function CandidateCard({
   candidate: Candidate;
   onOpen: (id: string) => void;
 }) {
-  const { requested, requestInterview, credits } = useLungisa();
+  const { requested, requestInterview, credits, shortlist, toggleShortlist } = useLungisa();
   const isRequested = requested.has(candidate.id);
+  const isSaved = shortlist.has(candidate.id);
 
   return (
     <article
@@ -28,7 +29,27 @@ export function CandidateCard({
             <p className="text-sm text-muted-foreground">{candidate.role}</p>
           </div>
         </div>
-        {candidate.verified && <VerifiedBadge />}
+        <div className="flex items-center gap-2">
+          {candidate.verified && <VerifiedBadge />}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleShortlist(candidate.id);
+            }}
+            aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition ${
+              isSaved
+                ? "text-accent"
+                : "text-muted-foreground hover:text-accent"
+            }`}
+          >
+            <Heart
+              className="h-4 w-4"
+              strokeWidth={2}
+              fill={isSaved ? "currentColor" : "none"}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-1.5">
