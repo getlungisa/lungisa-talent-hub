@@ -1,5 +1,16 @@
 export type Role = "Barista" | "Front of house" | "Kitchen" | "Delivery";
 
+export type Glance = {
+  location: string;
+  transport: string;
+  earliestStart: string;
+  weekends: string;
+  languages: string;
+  workStatus: string;
+  availability: string;
+  experience: string;
+};
+
 export type Candidate = {
   id: string;
   firstName: string;
@@ -9,6 +20,7 @@ export type Candidate = {
   assessment: string;
   background: string;
   verified: boolean;
+  glance: Glance;
 };
 
 export const candidates: Candidate[] = [
