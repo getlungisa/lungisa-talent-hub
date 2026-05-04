@@ -5,8 +5,9 @@ import { Dashboard } from "@/lungisa/screens/Dashboard";
 import { Browse } from "@/lungisa/screens/Browse";
 import { Placements } from "@/lungisa/screens/Placements";
 import { CandidateDetail } from "@/lungisa/screens/CandidateDetail";
+import { Activity } from "@/lungisa/screens/Activity";
 
-type Tab = "dashboard" | "browse" | "placements";
+type Tab = "dashboard" | "browse" | "activity" | "placements";
 
 const Index = () => {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -37,6 +38,8 @@ const Index = () => {
           <Dashboard onOpenCandidate={goToCandidate} onBrowse={goToBrowse} />
         ) : tab === "browse" ? (
           <Browse onOpenCandidate={goToCandidate} />
+        ) : tab === "activity" ? (
+          <Activity />
         ) : (
           <Placements />
         )}
