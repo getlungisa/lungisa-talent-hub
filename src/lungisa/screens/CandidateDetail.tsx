@@ -3,7 +3,6 @@ import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { useLungisa } from "../store";
-import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
@@ -132,11 +131,6 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 export function CandidateInterviewBar({ id }: { id: string }) {
   const candidate = candidates.find((c) => c.id === id);
   const { requested, requestInterview, credits } = useLungisa();
-
-  useEffect(() => {
-    // Lock body so the fixed bar can never be detached from a transformed ancestor.
-    return () => {};
-  }, []);
 
   if (!candidate) return null;
 
