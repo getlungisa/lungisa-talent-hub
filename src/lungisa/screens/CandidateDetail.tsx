@@ -127,8 +127,11 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
         </aside>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.1)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto max-w-5xl">
+      <div
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
+        style={{ paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="mx-auto max-w-5xl px-4 pt-3.5">
           <button
             onClick={() => !isRequested && requestInterview(candidate.id)}
             disabled={isRequested || credits <= 0}
