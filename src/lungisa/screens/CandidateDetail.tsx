@@ -39,24 +39,43 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
         <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
       </button>
 
-      <header className="space-y-4">
-        <div className="flex items-center gap-4">
-          <Avatar name={candidate.firstName} size={64} />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-4xl text-primary">{candidate.firstName}</h1>
-              {candidate.verified && <VerifiedBadge />}
-            </div>
-            <div className="mt-2 flex items-center justify-between gap-3">
-              <p className="text-muted-foreground">{candidate.role}</p>
-              <RatingDots value={candidate.rating} />
-            </div>
+      <header className="space-y-2">
+        <div className="flex items-center gap-3">
+          <Avatar name={candidate.firstName} size={48} />
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            <h1 className="font-display text-3xl text-primary">{candidate.firstName}</h1>
+            {candidate.verified && <VerifiedBadge />}
           </div>
+          <button
+            onClick={() => !isRequested && requestInterview(candidate.id)}
+            disabled={isRequested || credits <= 0}
+            className={`hidden sm:inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition ${
+              isRequested
+                ? "bg-success-soft text-success"
+                : credits <= 0
+                  ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
+                  : "bg-accent text-accent-foreground hover:brightness-95"
+            }`}
+          >
+            {isRequested ? (
+              <>
+                <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
+              </>
+            ) : credits <= 0 ? (
+              "No credits remaining"
+            ) : (
+              "Request interview · 1 credit"
+            )}
+          </button>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-muted-foreground">{candidate.role}</p>
+          <RatingDots value={candidate.rating} />
         </div>
         <button
           onClick={() => !isRequested && requestInterview(candidate.id)}
           disabled={isRequested || credits <= 0}
-          className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
+          className={`inline-flex w-full sm:hidden items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
             isRequested
               ? "bg-success-soft text-success"
               : credits <= 0
@@ -71,7 +90,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
           ) : credits <= 0 ? (
             "No credits remaining"
           ) : (
-            "Request interview — 1 credit"
+            "Request interview · 1 credit"
           )}
         </button>
       </header>
