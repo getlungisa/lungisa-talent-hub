@@ -34,10 +34,23 @@ export function RecommendedRow({
             return (
               <article
                 key={c.id}
-                className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
+                className="group relative flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
                 onClick={() => onOpenCandidate(c.id)}
               >
-                <div className="flex items-start justify-between gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleShortlist(c.id);
+                  }}
+                  aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
+                  className={`absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70 ${
+                    isSaved ? "text-accent" : "text-muted-foreground"
+                  }`}
+                >
+                  <Heart className="h-5 w-5" strokeWidth={2} fill={isSaved ? "currentColor" : "none"} />
+                </button>
+
+                <div className="flex items-start gap-2 pr-10">
                   <div className="flex items-center gap-2.5">
                     <Avatar name={c.firstName} />
                     <div className="min-w-0">
@@ -50,18 +63,6 @@ export function RecommendedRow({
                       <p className="truncate text-xs text-muted-foreground">{c.role}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleShortlist(c.id);
-                    }}
-                    aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
-                    className={`-mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition ${
-                      isSaved ? "text-accent" : "text-muted-foreground hover:text-accent"
-                    }`}
-                  >
-                    <Heart className="h-3.5 w-3.5" strokeWidth={2} fill={isSaved ? "currentColor" : "none"} />
-                  </button>
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-1">
