@@ -68,7 +68,7 @@ export function CandidateCard({
         ) : credits <= 0 ? (
           "No credits remaining"
         ) : (
-          "Request interview — 1 credit"
+          "Request interview – 1 credit"
         )}
       </button>
 

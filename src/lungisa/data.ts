@@ -56,12 +56,12 @@ export const candidates: Candidate[] = [
     role: "Front of house",
     rating: 5,
     attributes: [
-      { label: "Warm", detail: "Naturally puts people at ease — guests and colleagues both noticed it." },
+      { label: "Warm", detail: "Naturally puts people at ease – guests and colleagues both noticed it." },
       { label: "Bilingual", detail: "Fluent in isiXhosa and English, comfortable switching between them all day." },
       { label: "Self-starter", detail: "Reorganised her training notes unprompted and shared them with peers." },
     ],
     assessment:
-      "Ayanda ran a mock service shift and read the room beautifully — she remembered names, anticipated reorders, and recovered a small mistake without making it anyone else's problem.",
+      "Ayanda ran a mock service shift and read the room beautifully – she remembered names, anticipated reorders, and recovered a small mistake without making it anyone else's problem.",
     background:
       "Ayanda is from Langa and has worked weekends in a family-run restaurant since she was sixteen. She wants a role where front of house is taken seriously as a craft, not treated as a stopgap.",
     verified: true,

@@ -121,7 +121,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Next step</div>
             <p className="mt-2 text-sm text-primary/80">
-              We will arrange a time that works for you both — usually within 24 hours.
+              We will arrange a time that works for you both – usually within 24 hours.
             </p>
           </div>
         </aside>

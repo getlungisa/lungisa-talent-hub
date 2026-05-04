@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Lungisa design system — warm, considered, human. All colors HSL. */
+/* Lungisa design system – warm, considered, human. All colors HSL. */
 
 @layer base {
   :root {
-    /* Core palette — warm off-white #f9f8f6, deep brown #2C1A0E, burnt orange #B85C2A, warm border #e5e2db */
+    /* Core palette – warm off-white #f9f8f6, deep brown #2C1A0E, burnt orange #B85C2A, warm border #e5e2db */
     --background: 42 27% 97%;
     --foreground: 22 47% 11%;
 
