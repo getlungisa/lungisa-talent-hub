@@ -35,7 +35,7 @@ export function Dashboard({
 
   return (
     <div className="space-y-12">
-      {/* Hero — greeting + primary CTA */}
+      {/* Hero - greeting + primary CTA */}
       <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
         <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
           {greeting()}

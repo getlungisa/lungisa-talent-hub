@@ -38,7 +38,7 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
-          No candidates in this role yet — we are vetting more this week.
+          No candidates in this role yet - we are vetting more this week.
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

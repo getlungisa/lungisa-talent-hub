@@ -31,7 +31,7 @@ export function Placements() {
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-        <span className="font-medium text-primary">A note on fees.</span> Your placement fee becomes due on day 30. We will send a single, plain invoice — no surprises.
+        <span className="font-medium text-primary">A note on fees.</span> Your placement fee becomes due on day 30. We will send a single, plain invoice - no surprises.
       </div>
     </div>
   );
