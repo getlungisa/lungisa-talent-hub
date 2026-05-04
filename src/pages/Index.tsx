@@ -1,16 +1,48 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { LungisaProvider } from "@/lungisa/store";
+import { Shell } from "@/lungisa/components/Shell";
+import { Dashboard } from "@/lungisa/screens/Dashboard";
+import { Browse } from "@/lungisa/screens/Browse";
+import { Placements } from "@/lungisa/screens/Placements";
+import { CandidateDetail } from "@/lungisa/screens/CandidateDetail";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+type Tab = "dashboard" | "browse" | "placements";
+
+const Index = () => {
+  const [tab, setTab] = useState<Tab>("dashboard");
+  const [openCandidate, setOpenCandidate] = useState<string | null>(null);
+
+  const goToCandidate = (id: string) => {
+    setOpenCandidate(id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const goToBrowse = () => {
+    setOpenCandidate(null);
+    setTab("browse");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <LungisaProvider>
+      <Shell
+        active={tab}
+        onNavigate={(t) => {
+          setOpenCandidate(null);
+          setTab(t);
+        }}
+      >
+        {openCandidate ? (
+          <CandidateDetail id={openCandidate} onBack={() => setOpenCandidate(null)} />
+        ) : tab === "dashboard" ? (
+          <Dashboard onOpenCandidate={goToCandidate} onBrowse={goToBrowse} />
+        ) : tab === "browse" ? (
+          <Browse onOpenCandidate={goToCandidate} />
+        ) : (
+          <Placements />
+        )}
+      </Shell>
+    </LungisaProvider>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
