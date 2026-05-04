@@ -57,9 +57,9 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 
       <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="space-y-8">
-          <div>
+          <div className="border-y border-border py-6">
             <h2 className="font-display text-xl text-primary">At a glance</h2>
-            <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+            <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-5">
               {[
                 { icon: MapPin, label: "Location", value: candidate.glance.location },
                 { icon: Bus, label: "Transport", value: candidate.glance.transport },
@@ -93,8 +93,6 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
               ))}
             </dl>
           </div>
-
-          <div className="border-t border-border" />
 
           <div>
             <h2 className="font-display text-xl text-primary">How we assessed {candidate.firstName}</h2>
