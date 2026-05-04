@@ -145,6 +145,9 @@ export function CandidateInterviewBar({ id }: { id: string }) {
         right: 0,
         bottom: 0,
         paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))",
+        transform: "translateZ(0)",
+        WebkitTransform: "translateZ(0)",
+        willChange: "transform",
       }}
     >
       <div className="mx-auto max-w-6xl px-5 pt-3.5">
