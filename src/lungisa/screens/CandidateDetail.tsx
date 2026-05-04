@@ -3,6 +3,7 @@ import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { useLungisa } from "../store";
+import { createPortal } from "react-dom";
 import {
   ArrowLeft,
   Check,
@@ -135,10 +136,20 @@ export function CandidateInterviewBar({ id }: { id: string }) {
 
   const isRequested = requested.has(candidate.id);
 
-  return (
+  const bar = (
     <div
       className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
-      style={{ position: "fixed", left: 0, right: 0, bottom: 0, paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))" }}
+      style={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))",
+        // Promote to its own layer so iOS Safari doesn't lose it when the URL bar collapses.
+        transform: "translateZ(0)",
+        WebkitTransform: "translateZ(0)",
+        willChange: "transform",
+      }}
     >
       <div className="mx-auto max-w-6xl px-5 pt-3.5">
         <button
@@ -165,4 +176,7 @@ export function CandidateInterviewBar({ id }: { id: string }) {
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return bar;
+  return createPortal(bar, document.body);
 }
