@@ -4,7 +4,7 @@ import { Shell } from "@/lungisa/components/Shell";
 import { Dashboard } from "@/lungisa/screens/Dashboard";
 import { Browse } from "@/lungisa/screens/Browse";
 import { Placements } from "@/lungisa/screens/Placements";
-import { CandidateDetail } from "@/lungisa/screens/CandidateDetail";
+import { CandidateDetail, CandidateInterviewBar } from "@/lungisa/screens/CandidateDetail";
 import { Activity } from "@/lungisa/screens/Activity";
 
 type Tab = "dashboard" | "browse" | "activity" | "placements";
@@ -44,6 +44,7 @@ const Index = () => {
           <Placements />
         )}
       </Shell>
+      {openCandidate && <CandidateInterviewBar id={openCandidate} />}
     </LungisaProvider>
   );
 };
