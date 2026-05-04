@@ -1,5 +1,4 @@
 import { candidates } from "../data";
-import { createPortal } from "react-dom";
 import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { VerifiedBadge } from "../components/VerifiedBadge";
@@ -19,7 +18,6 @@ import {
 
 export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const candidate = candidates.find((c) => c.id === id);
-  const { requested, requestInterview, credits } = useLungisa();
 
   if (!candidate) {
     return (
@@ -28,8 +26,6 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
       </button>
     );
   }
-
-  const isRequested = requested.has(candidate.id);
 
   return (
     <div className="space-y-6 pb-28">
@@ -127,38 +123,46 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
           </div>
         </aside>
       </section>
+    </div>
+  );
+}
 
-      {createPortal(
-        <div
-          className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
-          style={{ paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))", left: 0, right: 0, bottom: 0 }}
+export function CandidateInterviewBar({ id }: { id: string }) {
+  const candidate = candidates.find((c) => c.id === id);
+  const { requested, requestInterview, credits } = useLungisa();
+
+  if (!candidate) return null;
+
+  const isRequested = requested.has(candidate.id);
+
+  return (
+    <div
+      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
+      style={{ position: "fixed", left: 0, right: 0, bottom: 0, paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="mx-auto max-w-6xl px-5 pt-3.5">
+        <button
+          onClick={() => !isRequested && requestInterview(candidate.id)}
+          disabled={isRequested || credits <= 0}
+          className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
+            isRequested
+              ? "bg-success-soft text-success"
+              : credits <= 0
+                ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
+                : "bg-accent text-accent-foreground hover:brightness-95"
+          }`}
         >
-          <div className="mx-auto max-w-5xl px-4 pt-3.5">
-            <button
-              onClick={() => !isRequested && requestInterview(candidate.id)}
-              disabled={isRequested || credits <= 0}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-                isRequested
-                  ? "bg-success-soft text-success"
-                  : credits <= 0
-                    ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
-                    : "bg-accent text-accent-foreground hover:brightness-95"
-              }`}
-            >
-              {isRequested ? (
-                <>
-                  <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
-                </>
-              ) : credits <= 0 ? (
-                "No credits remaining"
-              ) : (
-                "Request interview · 1 credit"
-              )}
-            </button>
-          </div>
-        </div>,
-        document.body,
-      )}
+          {isRequested ? (
+            <>
+              <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
+            </>
+          ) : credits <= 0 ? (
+            "No credits remaining"
+          ) : (
+            "Request interview · 1 credit"
+          )}
+        </button>
+      </div>
     </div>
   );
 }
