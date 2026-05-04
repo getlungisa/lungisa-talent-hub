@@ -132,11 +132,11 @@ export function CandidateInterviewBar({ id }: { id: string }) {
   const candidate = candidates.find((c) => c.id === id);
   const { requested, requestInterview, credits } = useLungisa();
 
-  if (!candidate) return null;
+  if (!candidate || typeof document === "undefined") return null;
 
   const isRequested = requested.has(candidate.id);
 
-  const bar = (
+  return createPortal(
     <div
       className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
       style={{
@@ -145,10 +145,6 @@ export function CandidateInterviewBar({ id }: { id: string }) {
         right: 0,
         bottom: 0,
         paddingBottom: "max(0.875rem, env(safe-area-inset-bottom))",
-        // Promote to its own layer so iOS Safari doesn't lose it when the URL bar collapses.
-        transform: "translateZ(0)",
-        WebkitTransform: "translateZ(0)",
-        willChange: "transform",
       }}
     >
       <div className="mx-auto max-w-6xl px-5 pt-3.5">
@@ -174,9 +170,7 @@ export function CandidateInterviewBar({ id }: { id: string }) {
           )}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
-
-  if (typeof document === "undefined") return bar;
-  return createPortal(bar, document.body);
 }
