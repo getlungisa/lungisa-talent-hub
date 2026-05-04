@@ -19,8 +19,25 @@ export function CandidateCard({
   return (
     <article
       onClick={() => onOpen(candidate.id)}
-      className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
+      className="group relative cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
     >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleShortlist(candidate.id);
+        }}
+        aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
+        className={`absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-70 ${
+          isSaved ? "text-accent" : "text-muted-foreground"
+        }`}
+      >
+        <Heart
+          className="h-5 w-5"
+          strokeWidth={2}
+          fill={isSaved ? "currentColor" : "none"}
+        />
+      </button>
+
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <Avatar name={candidate.firstName} />
@@ -29,27 +46,7 @@ export function CandidateCard({
             <p className="text-sm text-muted-foreground">{candidate.role}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {candidate.verified && <VerifiedBadge />}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleShortlist(candidate.id);
-            }}
-            aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
-            className={`flex h-8 w-8 items-center justify-center rounded-full transition ${
-              isSaved
-                ? "text-accent"
-                : "text-muted-foreground hover:text-accent"
-            }`}
-          >
-            <Heart
-              className="h-4 w-4"
-              strokeWidth={2}
-              fill={isSaved ? "currentColor" : "none"}
-            />
-          </button>
-        </div>
+        {candidate.verified && <div className="mr-12">{<VerifiedBadge />}</div>}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-1.5">
