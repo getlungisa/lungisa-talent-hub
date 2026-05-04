@@ -15,6 +15,9 @@ type Store = {
   spendCredit: () => boolean;
   requested: Set<string>;
   requestInterview: (id: string) => boolean;
+  shortlist: Set<string>;
+  toggleShortlist: (id: string) => void;
+  newThisWeek: number;
   stats: { browsed: number; interviews: number; placements: number };
   placements: Placement[];
 };
@@ -25,6 +28,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
   const [credits, setCredits] = useState(3);
   const [requested, setRequested] = useState<Set<string>>(new Set());
   const [interviews, setInterviews] = useState(2);
+  const [shortlist, setShortlist] = useState<Set<string>>(new Set(["ayanda"]));
 
   const value = useMemo<Store>(
     () => ({
@@ -44,6 +48,15 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         setRequested((r) => new Set(r).add(id));
         return true;
       },
+      shortlist,
+      toggleShortlist: (id) =>
+        setShortlist((s) => {
+          const next = new Set(s);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+        }),
+      newThisWeek: 12,
       stats: { browsed: 14, interviews, placements: 1 },
       placements: [
         {
@@ -55,7 +68,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         },
       ],
     }),
-    [credits, requested, interviews]
+    [credits, requested, interviews, shortlist]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
