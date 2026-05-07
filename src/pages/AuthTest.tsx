@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 
 export default function AuthTest() {
   const [session, setSession] = useState<Session | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -15,8 +16,12 @@ export default function AuthTest() {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      setCheckingSession(false);
     });
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setCheckingSession(false);
+    });
     return () => sub.subscription.unsubscribe();
   }, []);
 
@@ -41,7 +46,9 @@ export default function AuthTest() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md bg-card border border-border rounded-lg p-8 shadow-sm">
-        {session ? (
+        {checkingSession ? (
+          <p className="text-muted-foreground text-sm">Loading...</p>
+        ) : session ? (
           <div className="space-y-6">
             <h1 className="font-display text-3xl text-foreground">You're signed in</h1>
             <p className="text-muted-foreground">{session.user.email}</p>
