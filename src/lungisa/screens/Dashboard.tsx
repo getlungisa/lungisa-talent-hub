@@ -4,7 +4,7 @@ import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { ArrowRight, Heart, Sparkles, Check, Inbox } from "lucide-react";
+import { ArrowRight, Heart, Sparkles, Check } from "lucide-react";
 
 function greeting() {
   const h = new Date().getHours();
@@ -47,20 +47,22 @@ export function Dashboard({
           Tell us who you need. We'll bring them to you.
         </p>
 
-        <button
-          onClick={() => console.log("I need someone clicked")}
-          className="group mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:text-xl"
-        >
-          I need someone
-          <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
-        </button>
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={() => console.log("I need someone clicked")}
+            className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:text-xl"
+          >
+            I need someone
+            <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
+          </button>
 
-        <button
-          onClick={onBrowse}
-          className="mt-4 text-sm text-muted-foreground underline-offset-4 transition hover:text-primary hover:underline"
-        >
-          or browse candidates
-        </button>
+          <button
+            onClick={onBrowse}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent sm:text-xl"
+          >
+            Browse candidates
+          </button>
+        </div>
 
         <div className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
@@ -68,18 +70,6 @@ export function Dashboard({
             <span className="font-medium text-primary">{newThisWeek} new candidates</span>{" "}
             verified this week
           </span>
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Open needs</h2>
-        </div>
-        <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-          <Inbox className="mx-auto h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
-          <p className="mt-3 text-sm text-muted-foreground text-balance">
-            You don't have any open needs yet. Tap "I need someone" to get started.
-          </p>
         </div>
       </section>
 
