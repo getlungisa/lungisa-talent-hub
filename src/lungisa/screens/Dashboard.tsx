@@ -4,7 +4,7 @@ import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { ArrowRight, Heart, Sparkles, Check } from "lucide-react";
+import { ArrowRight, Heart, Sparkles, Check, Inbox } from "lucide-react";
 
 function greeting() {
   const h = new Date().getHours();
@@ -35,7 +35,6 @@ export function Dashboard({
 
   return (
     <div className="space-y-12">
-      {/* Hero - greeting + primary CTA */}
       <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
         <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
           {greeting()}
@@ -44,12 +43,23 @@ export function Dashboard({
           {employerName}
         </h1>
 
+        <p className="mt-6 max-w-md font-display text-xl text-primary text-balance sm:text-2xl">
+          Tell us who you need. We'll bring them to you.
+        </p>
+
+        <button
+          onClick={() => console.log("I need someone clicked")}
+          className="group mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:text-xl"
+        >
+          I need someone
+          <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
+        </button>
+
         <button
           onClick={onBrowse}
-          className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-base font-medium text-accent-foreground shadow-[0_10px_30px_-12px_hsl(19_63%_44%/0.5)] transition hover:brightness-95 sm:text-lg"
+          className="mt-4 text-sm text-muted-foreground underline-offset-4 transition hover:text-primary hover:underline"
         >
-          Browse candidates
-          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+          or browse candidates
         </button>
 
         <div className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -61,7 +71,18 @@ export function Dashboard({
         </div>
       </section>
 
-      {/* Recommended for you */}
+      <section>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="font-display text-2xl text-primary">Open needs</h2>
+        </div>
+        <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+          <Inbox className="mx-auto h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
+          <p className="mt-3 text-sm text-muted-foreground text-balance">
+            You don't have any open needs yet. Tap "I need someone" to get started.
+          </p>
+        </div>
+      </section>
+
       <RecommendedRow onOpenCandidate={onOpenCandidate} onSeeAll={onBrowse} />
 
       {/* Active placements */}
