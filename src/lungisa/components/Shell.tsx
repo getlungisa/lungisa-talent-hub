@@ -1,7 +1,9 @@
 import { ReactNode } from "react";
 import { useLungisa } from "../store";
 import { CreditsChip } from "./CreditsChip";
-import { Coffee, LayoutDashboard, Users, Activity, ClipboardList } from "lucide-react";
+import { Coffee, LayoutDashboard, Users, Activity, ClipboardList, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export type Tab = "dashboard" | "browse" | "activity" | "placements";
 
@@ -15,6 +17,13 @@ export function Shell({
   children: ReactNode;
 }) {
   const { employerName } = useLungisa();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/sign-in", { replace: true });
+  };
 
   const navItems: { id: Tab; label: string; icon: typeof Coffee }[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -39,7 +48,17 @@ export function Shell({
             </div>
           </div>
 
-          <CreditsChip />
+          <div className="flex items-center gap-2">
+            <CreditsChip />
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              title="Sign out"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-accent hover:text-accent"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
 
         <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
