@@ -1,10 +1,14 @@
+import { useEffect, useState, useCallback } from "react";
 import { useLungisa } from "../store";
 import { candidates } from "../data";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { VerifiedBadge } from "../components/VerifiedBadge";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { ArrowRight, Heart, Sparkles, Check } from "lucide-react";
+import { ArrowRight, Heart, Sparkles, Check, Clock } from "lucide-react";
+import { NeedSheet } from "../components/NeedSheet";
+import { useAuth } from "@/contexts/AuthContext";
+import { fetchOpenNeeds, relativeTime, formatStatus, type Need } from "../lib/needs";
 
 function greeting() {
   const h = new Date().getHours();
@@ -33,6 +37,23 @@ export function Dashboard({
 
   const shortlisted = candidates.filter((c) => shortlist.has(c.id));
 
+  const { user } = useAuth();
+  const [needSheetOpen, setNeedSheetOpen] = useState(false);
+  const [needs, setNeeds] = useState<Need[]>([]);
+
+  const loadNeeds = useCallback(async () => {
+    if (!user) {
+      setNeeds([]);
+      return;
+    }
+    const data = await fetchOpenNeeds(user);
+    setNeeds(data);
+  }, [user]);
+
+  useEffect(() => {
+    loadNeeds();
+  }, [loadNeeds]);
+
   return (
     <div className="space-y-12">
       <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
@@ -49,7 +70,7 @@ export function Dashboard({
 
         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <button
-            onClick={() => console.log("I need someone clicked")}
+            onClick={() => setNeedSheetOpen(true)}
             className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:text-xl"
           >
             I need someone
@@ -72,6 +93,41 @@ export function Dashboard({
           </span>
         </div>
       </section>
+
+      {needs.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="font-display text-2xl text-primary">Open needs</h2>
+            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              {needs.length} open
+            </span>
+          </div>
+          <div className="space-y-3">
+            {needs.map((n) => (
+              <article
+                key={n.id}
+                className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-lg text-primary">{n.role}</h3>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">
+                      {formatStatus(n.status)}
+                    </span>
+                  </div>
+                  <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    {n.timing}
+                  </p>
+                </div>
+                <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {relativeTime(n.created_at)}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <RecommendedRow onOpenCandidate={onOpenCandidate} onSeeAll={onBrowse} />
 
@@ -176,6 +232,12 @@ export function Dashboard({
       <p className="border-t border-border pt-6 text-sm text-muted-foreground text-balance">
         Lungisa stays in touch with all placed candidates. You will hear from us if anything needs attention.
       </p>
+
+      <NeedSheet
+        open={needSheetOpen}
+        onOpenChange={setNeedSheetOpen}
+        onSubmitted={loadNeeds}
+      />
     </div>
   );
 }
