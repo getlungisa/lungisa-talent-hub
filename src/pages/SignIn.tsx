@@ -20,7 +20,7 @@ export default function SignIn() {
     setSent(false);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      options: { emailRedirectTo: "https://lungisa.netlify.app" },
     });
     setLoading(false);
     if (error) setError(error.message);
