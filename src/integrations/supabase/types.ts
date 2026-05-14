@@ -14,7 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      businesses: {
+        Row: {
+          contact_email: string
+          created_at: string
+          id: string
+          location: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_email: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_email?: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      needs: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          must_haves: string | null
+          role: string
+          status: string
+          timing: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          must_haves?: string | null
+          role: string
+          status?: string
+          timing: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          must_haves?: string | null
+          role?: string
+          status?: string
+          timing?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "needs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
