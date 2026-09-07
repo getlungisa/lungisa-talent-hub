@@ -21,15 +21,17 @@ export function CandidateCard({
       onClick={() => onOpen(candidate.id)}
       className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Avatar name={candidate.firstName} />
-          <div>
-            <h3 className="font-display text-xl text-primary">{candidate.firstName}</h3>
-            <p className="text-sm text-muted-foreground">{candidate.role}</p>
-          </div>
+      <div className="flex items-start gap-3">
+        <Avatar name={candidate.firstName} />
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-display text-xl text-primary">{candidate.firstName}</h3>
+          <p className="text-sm text-muted-foreground">{candidate.role}</p>
+          {candidate.verified && (
+            <div className="mt-1.5">
+              <VerifiedBadge />
+            </div>
+          )}
         </div>
-        {candidate.verified && <VerifiedBadge />}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-1.5">
