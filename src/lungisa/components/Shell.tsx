@@ -59,7 +59,7 @@ export function Shell({
           </div>
         </div>
 
-        <nav className="mx-auto flex max-w-6xl justify-between gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
+        <nav className="mx-auto flex max-w-6xl justify-evenly gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = active === item.id;
