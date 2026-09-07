@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { useLungisa } from "../store";
-import { CreditsChip } from "./CreditsChip";
 import { Coffee, LayoutDashboard, Users, Activity, ClipboardList, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +48,6 @@ export function Shell({
           </div>
 
           <div className="flex items-center gap-2">
-            <CreditsChip />
             <button
               onClick={handleSignOut}
               aria-label="Sign out"
