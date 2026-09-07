@@ -34,7 +34,7 @@ export function Shell({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        <div className="mx-auto flex max-w-6xl items-center px-5 py-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Coffee className="h-4 w-4" />
@@ -52,14 +52,14 @@ export function Shell({
               onClick={handleSignOut}
               aria-label="Sign out"
               title="Sign out"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-accent hover:text-accent"
+              className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-accent hover:text-accent"
             >
               <LogOut className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
 
-        <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
+        <nav className="mx-auto flex max-w-6xl justify-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = active === item.id;
