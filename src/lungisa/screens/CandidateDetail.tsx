@@ -130,7 +130,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 
 export function CandidateInterviewBar({ id }: { id: string }) {
   const candidate = candidates.find((c) => c.id === id);
-  const { requested, requestInterview, credits } = useLungisa();
+  const { requested, requestInterview } = useLungisa();
 
   if (!candidate || typeof document === "undefined") return null;
 
@@ -153,23 +153,17 @@ export function CandidateInterviewBar({ id }: { id: string }) {
       <div className="mx-auto max-w-6xl px-5 pt-3.5">
         <button
           onClick={() => !isRequested && requestInterview(candidate.id)}
-          disabled={isRequested || credits <= 0}
+          disabled={isRequested}
           className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-            isRequested
-              ? "bg-success-soft text-success"
-              : credits <= 0
-                ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
-                : "bg-accent text-accent-foreground hover:brightness-95"
+            isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
           }`}
         >
           {isRequested ? (
             <>
               <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
             </>
-          ) : credits <= 0 ? (
-            "No credits remaining"
           ) : (
-            "Request interview · 1 credit"
+            "Request interview"
           )}
         </button>
       </div>

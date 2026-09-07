@@ -10,9 +10,6 @@ type Placement = {
 
 type Store = {
   employerName: string;
-  credits: number;
-  topUp: (n: number) => void;
-  spendCredit: () => boolean;
   requested: Set<string>;
   requestInterview: (id: string) => boolean;
   shortlist: Set<string>;
@@ -25,7 +22,6 @@ type Store = {
 const Ctx = createContext<Store | null>(null);
 
 export function LungisaProvider({ children }: { children: ReactNode }) {
-  const [credits, setCredits] = useState(3);
   const [requested, setRequested] = useState<Set<string>>(new Set());
   const [interviews, setInterviews] = useState(2);
   const [shortlist, setShortlist] = useState<Set<string>>(new Set(["ayanda"]));
@@ -33,17 +29,9 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(
     () => ({
       employerName: "Rosetta Roastery",
-      credits,
-      topUp: (n) => setCredits((c) => c + n),
-      spendCredit: () => {
-        if (credits <= 0) return false;
-        setCredits((c) => c - 1);
-        return true;
-      },
       requested,
       requestInterview: (id) => {
-        if (requested.has(id) || credits <= 0) return false;
-        setCredits((c) => c - 1);
+        if (requested.has(id)) return false;
         setInterviews((i) => i + 1);
         setRequested((r) => new Set(r).add(id));
         return true;
@@ -68,7 +56,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         },
       ],
     }),
-    [credits, requested, interviews, shortlist]
+    [requested, interviews, shortlist]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
