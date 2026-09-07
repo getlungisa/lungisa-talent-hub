@@ -12,7 +12,7 @@ export function CandidateCard({
   candidate: Candidate;
   onOpen: (id: string) => void;
 }) {
-  const { requested, requestInterview, credits, shortlist, toggleShortlist } = useLungisa();
+  const { requested, requestInterview, shortlist, toggleShortlist } = useLungisa();
   const isRequested = requested.has(candidate.id);
   const isSaved = shortlist.has(candidate.id);
 
@@ -52,23 +52,17 @@ export function CandidateCard({
           e.stopPropagation();
           if (!isRequested) requestInterview(candidate.id);
         }}
-        disabled={isRequested || credits <= 0}
+        disabled={isRequested}
         className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition ${
-          isRequested
-            ? "bg-success-soft text-success"
-            : credits <= 0
-              ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
-              : "bg-accent text-accent-foreground hover:brightness-95"
+          isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
         }`}
       >
         {isRequested ? (
           <>
             <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
           </>
-        ) : credits <= 0 ? (
-          "No credits remaining"
         ) : (
-          "Request interview - 1 credit"
+          "Request interview"
         )}
       </button>
 
