@@ -31,7 +31,6 @@ export function Dashboard({
     toggleShortlist,
     requested,
     requestInterview,
-    credits,
     newThisWeek,
   } = useLungisa();
 
@@ -71,7 +70,7 @@ export function Dashboard({
         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={() => setNeedSheetOpen(true)}
-            className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:text-xl"
+            className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition h[...]"
           >
             I need someone
             <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
@@ -79,7 +78,7 @@ export function Dashboard({
 
           <button
             onClick={onBrowse}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent sm:text-xl"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent s[...]"
           >
             Browse candidates
           </button>
@@ -198,19 +197,15 @@ export function Dashboard({
                     <button
                       onClick={() => toggleShortlist(c.id)}
                       aria-label="Remove from shortlist"
-                      className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:border-accent hover:text-accent"
+                      className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:border-accent hove[...]"
                     >
                       Remove
                     </button>
                     <button
                       onClick={() => !isRequested && requestInterview(c.id)}
-                      disabled={isRequested || credits <= 0}
+                      disabled={isRequested}
                       className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
-                        isRequested
-                          ? "bg-success-soft text-success"
-                          : credits <= 0
-                            ? "cursor-not-allowed border border-border bg-muted text-muted-foreground"
-                            : "bg-accent text-accent-foreground hover:brightness-95"
+                        isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
                       }`}
                     >
                       {isRequested ? (
