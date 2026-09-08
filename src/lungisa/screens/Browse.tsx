@@ -41,7 +41,7 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
           No candidates in this role yet - we are vetting more this week.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
           {filtered.map((c) => (
             <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
           ))}
