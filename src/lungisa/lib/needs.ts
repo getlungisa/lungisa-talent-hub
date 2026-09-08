@@ -41,6 +41,11 @@ export async function ensureBusiness(user: User): Promise<{ id: string; name: st
   return inserted;
 }
 
+export async function fetchBusinessName(user: User): Promise<string> {
+  const business = await ensureBusiness(user);
+  return business.name;
+}
+
 export async function submitNeed(
   user: User,
   values: { role: string; timing: string; must_haves: string },
