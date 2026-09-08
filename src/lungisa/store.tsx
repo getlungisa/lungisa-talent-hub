@@ -1,4 +1,6 @@
-import { createContext, useContext, useMemo, useState, ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { fetchBusinessName } from "./lib/needs";
 
 type Placement = {
   candidateId: string;
@@ -22,13 +24,34 @@ type Store = {
 const Ctx = createContext<Store | null>(null);
 
 export function LungisaProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const [employerName, setEmployerName] = useState("Loading...");
   const [requested, setRequested] = useState<Set<string>>(new Set());
   const [interviews, setInterviews] = useState(2);
   const [shortlist, setShortlist] = useState<Set<string>>(new Set(["ayanda"]));
 
+  useEffect(() => {
+    if (!user) {
+      setEmployerName("Unknown Business");
+      return;
+    }
+
+    const loadBusinessName = async () => {
+      try {
+        const name = await fetchBusinessName(user);
+        setEmployerName(name);
+      } catch (err) {
+        console.error("Failed to load business name:", err);
+        setEmployerName("Business");
+      }
+    };
+
+    loadBusinessName();
+  }, [user?.id]);
+
   const value = useMemo<Store>(
     () => ({
-      employerName: "Rosetta Roastery",
+      employerName,
       requested,
       requestInterview: (id) => {
         if (requested.has(id)) return false;
@@ -56,7 +79,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         },
       ],
     }),
-    [requested, interviews, shortlist]
+    [employerName, requested, interviews, shortlist]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
