@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLungisa } from "../store";
-import { candidates } from "../data";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { VerifiedBadge } from "../components/VerifiedBadge";
@@ -9,6 +8,12 @@ import { ArrowRight, Heart, Sparkles, Check, Clock } from "lucide-react";
 import { NeedSheet } from "../components/NeedSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchOpenNeeds, relativeTime, formatStatus, type Need } from "../lib/needs";
+import {
+  fetchDashboardPlacements,
+  fetchDashboardShortlisted,
+  type DashboardPlacement,
+  type DashboardShortlistedCandidate,
+} from "../lib/dashboard";
 
 function greeting() {
   const h = new Date().getHours();
@@ -26,19 +31,16 @@ export function Dashboard({
 }) {
   const {
     employerName,
-    placements,
-    shortlist,
-    toggleShortlist,
     requested,
     requestInterview,
     newThisWeek,
   } = useLungisa();
 
-  const shortlisted = candidates.filter((c) => shortlist.has(c.id));
-
   const { user } = useAuth();
   const [needSheetOpen, setNeedSheetOpen] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
+  const [placements, setPlacements] = useState<DashboardPlacement[]>([]);
+  const [shortlisted, setShortlisted] = useState<DashboardShortlistedCandidate[]>([]);
 
   const loadNeeds = useCallback(async () => {
     if (!user) {
@@ -52,6 +54,39 @@ export function Dashboard({
   useEffect(() => {
     loadNeeds();
   }, [loadNeeds]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        if (!user) {
+          setPlacements([]);
+          setShortlisted([]);
+          return;
+        }
+
+        const [placementsData, shortlistedData] = await Promise.all([
+          fetchDashboardPlacements(user),
+          fetchDashboardShortlisted(user),
+        ]);
+
+        if (cancelled) return;
+        setPlacements(placementsData);
+        setShortlisted(shortlistedData);
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+        if (cancelled) return;
+        setPlacements([]);
+        setShortlisted([]);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   return (
     <div className="space-y-12">
@@ -194,13 +229,6 @@ export function Dashboard({
                   </button>
 
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => toggleShortlist(c.id)}
-                      aria-label="Remove from shortlist"
-                      className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-background px-3 text-xs text-muted-foreground transition hover:border-accent hove[...]"
-                    >
-                      Remove
-                    </button>
                     <button
                       onClick={() => !isRequested && requestInterview(c.id)}
                       disabled={isRequested}
