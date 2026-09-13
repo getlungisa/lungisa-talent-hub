@@ -73,7 +73,7 @@ export async function submitNeed(
     .invoke("notify-new-need", {
       body: {
         businessName: business.name,
-        contactEmail: business.contact_email,
+        contactEmail: (business as any)["contact email"],
         role: need.role,
         timing: need.timing,
         mustHaves: need.must_haves,
