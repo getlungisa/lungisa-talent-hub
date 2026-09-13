@@ -14,7 +14,7 @@ export type Need = {
 export async function ensureBusiness(user: User): Promise<{ id: string; name: string; contact_email: string }> {
   const { data: existing, error: selErr } = await supabase
     .from("businesses")
-    .select("id, name, contact_email")
+    .select("id, name, contact email")
     .eq("user_id", user.id)
     .maybeSingle();
   if (selErr) {
@@ -30,9 +30,9 @@ export async function ensureBusiness(user: User): Promise<{ id: string; name: st
     .insert({
       user_id: user.id,
       name: placeholderName,
-      contact_email: email,
+      "contact email": email,
     })
-    .select("id, name, contact_email")
+    .select("id, name, contact email")
     .single();
   if (insErr) {
     console.error("ensureBusiness insert error", insErr);
