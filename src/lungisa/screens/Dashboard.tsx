@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useLungisa } from "../store";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
-import { VerifiedBadge } from "../components/VerifiedBadge";
 import { RecommendedRow } from "../components/RecommendedRow";
 import { ArrowRight, Heart, Sparkles, Check, Clock } from "lucide-react";
 import { NeedSheet } from "../components/NeedSheet";
@@ -188,70 +187,6 @@ export function Dashboard({
       </section>
 
       {/* Shortlist */}
-      <section>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Your shortlist</h2>
-          {shortlisted.length > 0 && (
-            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              {shortlisted.length} saved
-            </span>
-          )}
-        </div>
-
-        {shortlisted.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-            <Heart className="mx-auto h-5 w-5 text-muted-foreground" strokeWidth={1.75} />
-            <p className="mt-3 text-sm text-muted-foreground text-balance">
-              Favourite candidates while browsing to save them here.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {shortlisted.map((c) => {
-              const isRequested = requested.has(c.id);
-              return (
-                <article
-                  key={c.id}
-                  className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 transition hover:border-accent/40 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <button
-                    onClick={() => onOpenCandidate(c.id)}
-                    className="flex flex-1 items-center gap-3 text-left"
-                  >
-                    <Avatar name={c.firstName} />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-display text-lg text-primary">{c.firstName}</h3>
-                        {c.verified && <VerifiedBadge />}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{c.role}</p>
-                    </div>
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => !isRequested && requestInterview(c.id)}
-                      disabled={isRequested}
-                      className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
-                        isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
-                      }`}
-                    >
-                      {isRequested ? (
-                        <>
-                          <Check className="h-3.5 w-3.5" strokeWidth={3} /> Requested
-                        </>
-                      ) : (
-                        "Request interview"
-                      )}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
       <p className="border-t border-border pt-6 text-sm text-muted-foreground text-balance">
         Lungisa stays in touch with all placed candidates. You will hear from us if anything needs attention.
       </p>
