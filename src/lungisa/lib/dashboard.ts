@@ -31,7 +31,7 @@ type Candidate = {
 
 type PlacementRecord = {
   candidate_id: string;
-  started_at: string;
+  placement_date: string;
   total_days: number;
   status: string;
   candidates: Candidate | Candidate[] | null;
@@ -80,11 +80,11 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
   const { data, error } = await db
     .from("placements")
     .select(
-      "candidate_id, started_at, total_days, status, candidates!placements_candidate_id_fkey(id, name, location)",
+      "candidate_id, placement_date, total_days, status, candidates!placements_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
     .eq("status", "active")
-    .order("started_at", { ascending: false });
+    .order("placement_date", { ascending: false });
 
   if (error) {
     console.error("fetchDashboardPlacements error", error);
@@ -100,9 +100,9 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
         candidateId: placement.candidate_id,
         candidateName: candidate.name,
         location: candidate.location,
-        startedDaysAgo: daysSince(placement.started_at),
+        startedDaysAgo: daysSince(placement.placement_date),
         totalDays: placement.total_days,
-        startedAt: placement.started_at,
+        startedAt: placement.placement_date,
         status: placement.status,
       },
     ];
