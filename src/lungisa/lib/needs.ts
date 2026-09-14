@@ -52,7 +52,7 @@ export async function submitNeed(
 ): Promise<Need> {
   const business = await ensureBusiness(user);
   const { data, error } = await supabase
-    .from("needs")
+    .from('"Needs"')
     .insert({
       business_id: business.id,
       role: values.role,
@@ -101,7 +101,7 @@ export async function fetchOpenNeeds(user: User): Promise<Need[]> {
   }
   if (!biz) return [];
   const { data, error } = await supabase
-    .from("needs")
+    .from('"Needs"')
     .select("*")
     .eq("business_id", biz.id)
     .order("created_at", { ascending: false });
