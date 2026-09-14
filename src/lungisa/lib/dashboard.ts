@@ -1,187 +1,152 @@
--- Create enum types for allocation and placement status
-CREATE TYPE public.allocation_status AS ENUM ('available', 'shortlisted', 'placed', 'confirmed');
-CREATE TYPE public.placement_status AS ENUM ('active', 'ended');
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
--- Create candidates table (shared pool, no business_id)
-CREATE TABLE public.candidates (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  first_name TEXT NOT NULL,
-  role TEXT NOT NULL,
-  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-  assessment TEXT,
-  background TEXT,
-  verified BOOLEAN NOT NULL DEFAULT false,
-  location TEXT,
-  transport TEXT,
-  earliest_start TEXT,
-  weekends TEXT,
-  languages TEXT,
-  work_status TEXT,
-  availability TEXT,
-  experience TEXT,
-  is_removed_by_candidate BOOLEAN NOT NULL DEFAULT false,
-  removed_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+export type DashboardPlacement = {
+  candidateId: string;
+  candidateName: string;
+  role: string;
+  location: string | null;
+  startedDaysAgo: number;
+  totalDays: number;
+  startedAt: string;
+  status: string;
+};
 
--- Create candidate_allocations table (the critical exclusivity table)
-CREATE TABLE public.candidate_allocations (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  candidate_id UUID NOT NULL UNIQUE REFERENCES public.candidates(id) ON DELETE CASCADE,
-  business_id UUID REFERENCES public.businesses(id) ON DELETE CASCADE,
-  status public.allocation_status NOT NULL DEFAULT 'available',
-  allocation_date TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  CONSTRAINT business_id_null_when_available CHECK (
-    (status = 'available' AND business_id IS NULL) OR 
-    (status IN ('shortlisted', 'placed', 'confirmed') AND business_id IS NOT NULL)
-  )
-);
+export type DashboardShortlistedCandidate = {
+  candidateId: string;
+  candidateName: string;
+  role: string;
+  location: string | null;
+  status: string;
+  allocatedAt: string | null;
+};
 
--- Create placements table
-CREATE TABLE public.placements (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  business_id UUID NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
-  candidate_id UUID NOT NULL REFERENCES public.candidates(id) ON DELETE CASCADE,
-  role TEXT NOT NULL,
-  started_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  confirmed_at TIMESTAMP WITH TIME ZONE,
-  ended_at TIMESTAMP WITH TIME ZONE,
-  total_days INTEGER NOT NULL DEFAULT 90,
-  status public.placement_status NOT NULL DEFAULT 'active',
-  reason_ended TEXT,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+type Business = {
+  id: string;
+};
 
--- Create business_activity table (tracks interview requests and other actions)
-CREATE TABLE public.business_activity (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  business_id UUID NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
-  candidate_id UUID NOT NULL REFERENCES public.candidates(id) ON DELETE CASCADE,
-  action_type TEXT NOT NULL CHECK (action_type IN ('interview_requested', 'shortlisted', 'placement_started')),
-  action_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+type Candidate = {
+  id: string;
+  first_name: string;
+  role: string;
+  location: string | null;
+};
 
--- Create indexes
-CREATE INDEX idx_candidate_allocations_business_id ON public.candidate_allocations(business_id);
-CREATE INDEX idx_candidate_allocations_status ON public.candidate_allocations(status);
-CREATE INDEX idx_placements_business_id ON public.placements(business_id);
-CREATE INDEX idx_placements_candidate_id ON public.placements(candidate_id);
-CREATE INDEX idx_placements_status ON public.placements(status);
-CREATE INDEX idx_business_activity_business_id ON public.business_activity(business_id);
-CREATE INDEX idx_business_activity_candidate_id ON public.business_activity(candidate_id);
-CREATE INDEX idx_business_activity_action_type ON public.business_activity(action_type);
+type PlacementRecord = {
+  candidate_id: string;
+  role: string;
+  started_at: string;
+  total_days: number;
+  status: string;
+  candidates: Candidate | Candidate[] | null;
+};
 
--- Enable RLS
-ALTER TABLE public.candidates ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.candidate_allocations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.placements ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.business_activity ENABLE ROW LEVEL SECURITY;
+type AllocationRecord = {
+  candidate_id: string;
+  status: string;
+  allocation_date: string | null;
+  candidates: Candidate | Candidate[] | null;
+};
 
--- RLS: All authenticated users can view available candidates
-CREATE POLICY "Anyone can view available candidates"
-  ON public.candidates FOR SELECT
-  USING (
-    is_removed_by_candidate = false AND
-    EXISTS (
-      SELECT 1 FROM public.candidate_allocations ca
-      WHERE ca.candidate_id = candidates.id AND ca.status = 'available'
+// The generated Supabase types have not yet been regenerated for the allocation
+// tables, so keep the runtime queries typed locally until they are included.
+const db = supabase as any;
+
+async function fetchBusiness(user: User): Promise<Business | null> {
+  const { data, error } = await db
+    .from("businesses")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("fetchDashboard business error", error);
+    return null;
+  }
+
+  return data as Business | null;
+}
+
+function oneCandidate(candidate: Candidate | Candidate[] | null): Candidate | null {
+  return Array.isArray(candidate) ? candidate[0] ?? null : candidate;
+}
+
+function daysSince(iso: string): number {
+  const startedAt = new Date(iso).getTime();
+  if (!Number.isFinite(startedAt)) return 0;
+  return Math.max(0, Math.floor((Date.now() - startedAt) / 86_400_000));
+}
+
+export async function fetchDashboardPlacements(user: User): Promise<DashboardPlacement[]> {
+  const business = await fetchBusiness(user);
+  if (!business) return [];
+
+  const { data, error } = await db
+    .from("placements")
+    .select(
+      "candidate_id, role, started_at, total_days, status, candidates!placements_candidate_id_fkey(id, first_name, role, location)",
     )
-  );
+    .eq("business_id", business.id)
+    .eq("status", "active")
+    .order("started_at", { ascending: false });
 
--- RLS: Only business-associated users can view non-available candidates (their own allocations)
-CREATE POLICY "Users can view candidates allocated to their business"
-  ON public.candidates FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.candidate_allocations ca
-      JOIN public.businesses b ON ca.business_id = b.id
-      WHERE ca.candidate_id = candidates.id 
-        AND ca.status IN ('shortlisted', 'placed', 'confirmed')
-        AND b.user_id = auth.uid()
+  if (error) {
+    console.error("fetchDashboardPlacements error", error);
+    return [];
+  }
+
+  return ((data ?? []) as PlacementRecord[]).flatMap((placement) => {
+    const candidate = oneCandidate(placement.candidates);
+    if (!candidate) return [];
+
+    return [
+      {
+        candidateId: placement.candidate_id,
+        candidateName: candidate.first_name,
+        role: placement.role || candidate.role,
+        location: candidate.location,
+        startedDaysAgo: daysSince(placement.started_at),
+        totalDays: placement.total_days,
+        startedAt: placement.started_at,
+        status: placement.status,
+      },
+    ];
+  });
+}
+
+export async function fetchDashboardShortlisted(
+  user: User,
+): Promise<DashboardShortlistedCandidate[]> {
+  const business = await fetchBusiness(user);
+  if (!business) return [];
+
+  const { data, error } = await db
+    .from("candidate_allocations")
+    .select(
+      "candidate_id, status, allocation_date, candidates!candidate_allocations_candidate_id_fkey(id, first_name, role, location)",
     )
-  );
+    .eq("business_id", business.id)
+    .eq("status", "shortlisted")
+    .order("allocation_date", { ascending: false });
 
--- RLS: candidate_allocations visibility
-CREATE POLICY "Users can view allocations for their business"
-  ON public.candidate_allocations FOR SELECT
-  USING (
-    business_id IS NULL OR
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
+  if (error) {
+    console.error("fetchDashboardShortlisted error", error);
+    return [];
+  }
 
-CREATE POLICY "Users can update allocations for their business"
-  ON public.candidate_allocations FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
+  return ((data ?? []) as AllocationRecord[]).flatMap((allocation) => {
+    const candidate = oneCandidate(allocation.candidates);
+    if (!candidate) return [];
 
--- RLS: placements visibility
-CREATE POLICY "Users can view placements for their business"
-  ON public.placements FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can insert placements for their business"
-  ON public.placements FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can update placements for their business"
-  ON public.placements FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
-
--- RLS: business_activity visibility and insertion
-CREATE POLICY "Users can view activity for their business"
-  ON public.business_activity FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can insert activity for their business"
-  ON public.business_activity FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.businesses b
-      WHERE b.id = business_id AND b.user_id = auth.uid()
-    )
-  );
-
--- Trigger for updated_at columns
-CREATE TRIGGER update_candidates_updated_at
-  BEFORE UPDATE ON public.candidates
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-CREATE TRIGGER update_candidate_allocations_updated_at
-  BEFORE UPDATE ON public.candidate_allocations
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-CREATE TRIGGER update_placements_updated_at
-  BEFORE UPDATE ON public.placements
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    return [
+      {
+        candidateId: allocation.candidate_id,
+        candidateName: candidate.first_name,
+        role: candidate.role,
+        location: candidate.location,
+        status: allocation.status,
+        allocatedAt: allocation.allocation_date,
+      },
+    ];
+  });
+}
