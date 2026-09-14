@@ -4,7 +4,6 @@ import type { User } from "@supabase/supabase-js";
 export type DashboardPlacement = {
   candidateId: string;
   candidateName: string;
-  role: string;
   location: string | null;
   startedDaysAgo: number;
   totalDays: number;
@@ -15,7 +14,6 @@ export type DashboardPlacement = {
 export type DashboardShortlistedCandidate = {
   candidateId: string;
   candidateName: string;
-  role: string;
   location: string | null;
   status: string;
   allocatedAt: string | null;
@@ -27,14 +25,12 @@ type Business = {
 
 type Candidate = {
   id: string;
-  first_name: string;
-  role: string;
+  name: string;
   location: string | null;
 };
 
 type PlacementRecord = {
   candidate_id: string;
-  role: string;
   started_at: string;
   total_days: number;
   status: string;
@@ -84,7 +80,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
   const { data, error } = await db
     .from("placements")
     .select(
-      "candidate_id, role, started_at, total_days, status, candidates!placements_candidate_id_fkey(id, first_name, role, location)",
+      "candidate_id, started_at, total_days, status, candidates!placements_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
     .eq("status", "active")
@@ -102,8 +98,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
     return [
       {
         candidateId: placement.candidate_id,
-        candidateName: candidate.first_name,
-        role: placement.role || candidate.role,
+        candidateName: candidate.name,
         location: candidate.location,
         startedDaysAgo: daysSince(placement.started_at),
         totalDays: placement.total_days,
@@ -123,7 +118,7 @@ export async function fetchDashboardShortlisted(
   const { data, error } = await db
     .from("candidate_allocations")
     .select(
-      "candidate_id, status, allocation_date, candidates!candidate_allocations_candidate_id_fkey(id, first_name, role, location)",
+      "candidate_id, status, allocation_date, candidates!candidate_allocations_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
     .eq("status", "shortlisted")
@@ -141,8 +136,7 @@ export async function fetchDashboardShortlisted(
     return [
       {
         candidateId: allocation.candidate_id,
-        candidateName: candidate.first_name,
-        role: candidate.role,
+        candidateName: candidate.name,
         location: candidate.location,
         status: allocation.status,
         allocatedAt: allocation.allocation_date,
