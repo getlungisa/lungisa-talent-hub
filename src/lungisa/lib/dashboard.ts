@@ -100,6 +100,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
         candidateName: candidate.name,
         location: candidate.location,
         startedDaysAgo: daysSince(placement.placement_date),
+        totalDays: 90,
         startedAt: placement.placement_date,
         status: placement.status,
       },
