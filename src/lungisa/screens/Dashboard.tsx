@@ -186,10 +186,40 @@ export function Dashboard({
         </div>
       </section>
 
-      {/* Shortlist */}
-      <p className="border-t border-border pt-6 text-sm text-muted-foreground text-balance">
-        Lungisa stays in touch with all placed candidates. You will hear from us if anything needs attention.
-      </p>
+     {/* Shortlist */}
+<section>
+  <div className="mb-3 flex items-baseline justify-between">
+    <h2 className="font-display text-2xl text-primary">Shortlist</h2>
+    <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+      {shortlisted.length} saved
+    </span>
+  </div>
+
+  {shortlisted.length === 0 ? (
+    <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+      You have no shortlisted candidates yet.
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {shortlisted.map((candidate) => (
+        <article
+          key={candidate.candidateId}
+          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5"
+        >
+          <Avatar name={candidate.candidateName} />
+          <div className="min-w-0">
+            <h3 className="font-display text-lg text-primary">
+              {candidate.candidateName}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {candidate.location ?? "Location not provided"}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+</section>
 
       <NeedSheet
         open={needSheetOpen}
