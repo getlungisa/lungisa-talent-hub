@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { fromMock } = vi.hoisted(() => ({
@@ -59,7 +60,8 @@ describe("fetchDashboardPlacements", () => {
       throw new Error(`Unexpected table: ${table}`);
     });
 
-    const placements = await fetchDashboardPlacements({ id: "user-1" } as any);
+    const user = { id: "user-1" } as User;
+    const placements = await fetchDashboardPlacements(user);
 
     expect(placementsQuery.select).toHaveBeenCalledWith(
       "candidate_id, placement_date, status, candidates!placements_candidate_id_fkey(id, name, location)",
