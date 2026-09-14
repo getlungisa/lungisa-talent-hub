@@ -40,7 +40,7 @@ type PlacementRecord = {
 type AllocationRecord = {
   candidate_id: string;
   status: string;
-  allocation_at: string | null;
+  allocated_at: string | null;
   candidates: Candidate | Candidate[] | null;
 };
 
@@ -118,11 +118,11 @@ export async function fetchDashboardShortlisted(
   const { data, error } = await db
     .from("candidate_allocations")
     .select(
-      "candidate_id, status, allocation_at, candidates!candidate_allocations_candidate_id_fkey(id, name, location)",
+      "candidate_id, status, allocated_at, candidates!candidate_allocations_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
     .eq("status", "shortlisted")
-    .order("allocation_at", { ascending: false });
+    .order("allocated_at", { ascending: false });
 
   if (error) {
     console.error("fetchDashboardShortlisted error", error);
@@ -139,7 +139,7 @@ export async function fetchDashboardShortlisted(
         candidateName: candidate.name,
         location: candidate.location,
         status: allocation.status,
-        allocatedAt: allocation.allocation_at,
+        allocatedAt: allocation.allocated_at,
       },
     ];
   });
