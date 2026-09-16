@@ -143,3 +143,68 @@ export async function fetchDashboardShortlisted(
     ];
   });
 }
+
+export type ActivityRecord = {
+  candidateId: string;
+  candidateName: string;
+  candidateLocation: string | null;
+  actionType: string;
+  actionDate: string;
+};
+
+export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]> {
+  const business = await fetchBusiness(user);
+  if (!business) return [];
+
+  const { data, error } = await db
+    .from("business_activity")
+    .select(
+      "candidate_id, action_type, action_date, candidates!business_activity_candidate_id_fkey(id, name, location)",
+    )
+    .eq("business_id", business.id)
+    .eq("action_type", "interview_requested")
+    .order("action_date", { ascending: false });
+
+  if (error) {
+    console.error("fetchRecentActivity error", error);
+    return [];
+  }
+
+  return ((data ?? []) as any[]).flatMap((activity) => {
+    const candidate = oneCandidate(activity.candidates);
+    if (!candidate) return [];
+
+    return [
+      {
+        candidateId: activity.candidate_id,
+        candidateName: candidate.name,
+        candidateLocation: candidate.location,
+        actionType: activity.action_type,
+        actionDate: activity.action_date,
+      },
+    ];
+  });
+}
+
+export async function insertBusinessActivity(
+  user: User,
+  candidateId: string,
+  actionType: string,
+): Promise<boolean> {
+  const business = await fetchBusiness(user);
+  if (!business) return false;
+
+  const { error } = await db.from("business_activity").insert({
+    business_id: business.id,
+    candidate_id: candidateId,
+    action_type: actionType,
+    action_date: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error("insertBusinessActivity error", error);
+    return false;
+  }
+
+  return true;
+}
