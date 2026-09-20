@@ -174,6 +174,26 @@ describe("RecommendedRow shortlist interactions", () => {
     expect(toggleShortlistMock).not.toHaveBeenCalled();
   });
 
+  it("reads the latest shortlist state when starting the persistence toggle", async () => {
+    toggleCandidateShortlistMock.mockResolvedValue(false);
+
+    const { rerender } = render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
+
+    await screen.findByRole("button", { name: "Save to shortlist" });
+
+    useLungisaMock.mockReturnValue({
+      shortlist: new Set(["candidate-1"]),
+      toggleShortlist: toggleShortlistMock,
+    });
+    rerender(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
+
+    await act(async () => {
+      fireEvent.click(await screen.findByRole("button", { name: "Remove from shortlist" }));
+    });
+
+    expect(toggleCandidateShortlistMock).toHaveBeenCalledWith({ id: "user-1" }, "candidate-1", true);
+  });
+
   it("shows the generic error toast without calling the RPC when no user is signed in", async () => {
     useAuthMock.mockReturnValue({
       user: null,

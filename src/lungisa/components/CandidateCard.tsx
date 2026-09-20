@@ -54,7 +54,8 @@ export function CandidateCard({
     setIsUpdatingShortlist(true);
 
     try {
-      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, isSaved);
+      const currentlySaved = shortlistRef.current.has(candidate.id);
+      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, currentlySaved);
       if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
         toggleShortlist(candidate.id);
       }
