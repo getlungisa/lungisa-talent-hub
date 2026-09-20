@@ -2,12 +2,12 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CandidateDetail } from "./CandidateDetail";
 
-const { fetchCandidatesMock } = vi.hoisted(() => ({
-  fetchCandidatesMock: vi.fn(),
+const { fetchCandidateMock } = vi.hoisted(() => ({
+  fetchCandidateMock: vi.fn(),
 }));
 
 vi.mock("../lib/dashboard", () => ({
-  fetchCandidates: fetchCandidatesMock,
+  fetchCandidate: fetchCandidateMock,
 }));
 
 vi.mock("../data", () => ({
@@ -16,7 +16,7 @@ vi.mock("../data", () => ({
 
 describe("CandidateDetail", () => {
   beforeEach(() => {
-    fetchCandidatesMock.mockReset();
+    fetchCandidateMock.mockReset();
     vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
@@ -25,7 +25,7 @@ describe("CandidateDetail", () => {
   });
 
   it("shows a loading state while the candidate is loading", () => {
-    fetchCandidatesMock.mockReturnValue(new Promise(() => {}));
+    fetchCandidateMock.mockReturnValue(new Promise(() => {}));
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
@@ -33,7 +33,7 @@ describe("CandidateDetail", () => {
   });
 
   it("shows an error state when the candidate fails to load", async () => {
-    fetchCandidatesMock.mockRejectedValue(new Error("boom"));
+    fetchCandidateMock.mockRejectedValue(new Error("boom"));
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
@@ -43,7 +43,7 @@ describe("CandidateDetail", () => {
   });
 
   it("shows a not-found state when the candidate does not exist", async () => {
-    fetchCandidatesMock.mockResolvedValue([]);
+    fetchCandidateMock.mockResolvedValue(null);
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
@@ -51,9 +51,11 @@ describe("CandidateDetail", () => {
   });
 
   it("renders fetched candidate details when the candidate exists", async () => {
-    fetchCandidatesMock.mockResolvedValue([
-      { id: "real-1", name: "Sipho", location: "Khayelitsha, Cape Town" },
-    ]);
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+    });
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 

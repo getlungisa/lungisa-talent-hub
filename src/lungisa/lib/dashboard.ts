@@ -88,6 +88,21 @@ export async function fetchCandidates(): Promise<Candidate[]> {
   return (data ?? []) as Candidate[];
 }
 
+export async function fetchCandidate(id: string): Promise<Candidate | null> {
+  const { data, error } = await db
+    .from("candidates")
+    .select<Candidate>("id, name, location")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("fetchCandidate error", error);
+    throw error;
+  }
+
+  return data;
+}
+
 async function fetchBusiness(user: User): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")

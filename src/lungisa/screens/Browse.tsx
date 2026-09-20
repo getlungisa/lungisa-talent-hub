@@ -7,7 +7,9 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const displayCandidates = candidates.length > 0 ? candidates : mockCandidates;
+  const [loadedFromRemote, setLoadedFromRemote] = useState(false);
+  const showMockFallback = loadError && mockCandidates.length > 0;
+  const displayCandidates = loadedFromRemote ? candidates : showMockFallback ? mockCandidates : [];
 
   useEffect(() => {
     let cancelled = false;
@@ -20,11 +22,13 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
         const data = await fetchCandidates();
         if (cancelled) return;
         setCandidates(data);
+        setLoadedFromRemote(true);
       } catch (error) {
         console.error("Failed to load candidates:", error);
         if (cancelled) return;
         setCandidates([]);
         setLoadError(true);
+        setLoadedFromRemote(false);
       } finally {
         if (!cancelled) {
           setLoading(false);

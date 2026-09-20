@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { orderMock, selectMock, fromMock } = vi.hoisted(() => {
+const { orderMock, selectMock, fromMock, eqMock, maybeSingleMock } = vi.hoisted(() => {
   const orderMock = vi.fn();
-  const selectMock = vi.fn(() => ({ order: orderMock }));
+  const maybeSingleMock = vi.fn();
+  const eqMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
+  const selectMock = vi.fn(() => ({ order: orderMock, eq: eqMock, maybeSingle: maybeSingleMock }));
   const fromMock = vi.fn(() => ({ select: selectMock }));
 
-  return { orderMock, selectMock, fromMock };
+  return { orderMock, selectMock, fromMock, eqMock, maybeSingleMock };
 });
 
 vi.mock("@/integrations/supabase/client", () => ({
@@ -14,13 +16,15 @@ vi.mock("@/integrations/supabase/client", () => ({
   },
 }));
 
-import { fetchCandidates } from "./dashboard";
+import { fetchCandidate, fetchCandidates } from "./dashboard";
 
 describe("fetchCandidates", () => {
   beforeEach(() => {
     fromMock.mockClear();
     selectMock.mockClear();
     orderMock.mockReset();
+    eqMock.mockReset();
+    maybeSingleMock.mockReset();
   });
 
   it("loads candidates from Supabase", async () => {
@@ -51,5 +55,32 @@ describe("fetchCandidates", () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith("fetchCandidates error", error);
 
     consoleErrorSpy.mockRestore();
+  });
+});
+
+describe("fetchCandidate", () => {
+  beforeEach(() => {
+    fromMock.mockClear();
+    selectMock.mockClear();
+    orderMock.mockReset();
+    eqMock.mockReset();
+    maybeSingleMock.mockReset();
+  });
+
+  it("loads a single candidate by id from Supabase", async () => {
+    maybeSingleMock.mockResolvedValue({
+      data: { id: "1", name: "Ayanda", location: "Langa, Cape Town" },
+      error: null,
+    });
+
+    await expect(fetchCandidate("1")).resolves.toEqual({
+      id: "1",
+      name: "Ayanda",
+      location: "Langa, Cape Town",
+    });
+
+    expect(fromMock).toHaveBeenCalledWith("candidates");
+    expect(selectMock).toHaveBeenCalledWith("id, name, location");
+    expect(eqMock).toHaveBeenCalledWith("id", "1");
   });
 });

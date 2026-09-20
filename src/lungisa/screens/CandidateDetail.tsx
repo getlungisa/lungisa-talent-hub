@@ -4,7 +4,7 @@ import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { useLungisa } from "../store";
 import { createPortal } from "react-dom";
-import { fetchCandidates, type Candidate } from "../lib/dashboard";
+import { fetchCandidate, type Candidate } from "../lib/dashboard";
 import {
   ArrowLeft,
   Check,
@@ -49,9 +49,8 @@ export function CandidateDetail({
       onCandidateStatusChange?.(null);
 
       try {
-        const candidates = await fetchCandidates();
+        const nextCandidate = await fetchCandidate(id);
         if (cancelled) return;
-        const nextCandidate = candidates.find((entry) => entry.id === id) ?? null;
         setCandidate(nextCandidate);
         onCandidateStatusChange?.(Boolean(nextCandidate));
       } catch (error) {
