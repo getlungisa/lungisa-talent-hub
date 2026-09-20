@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { candidates as mockCandidates } from "../data";
 import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
 import { useLungisa } from "../store";
 import { createPortal } from "react-dom";
-import { fetchCandidate, type Candidate } from "../lib/dashboard";
+import {
+  fetchCandidate,
+  insertBusinessActivity,
+  type Candidate,
+} from "../lib/dashboard";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   ArrowLeft,
   Check,
@@ -28,9 +33,27 @@ export function CandidateDetail({
   onCandidateStatusChange?: (exists: boolean | null) => void;
 }) {
   const mockCandidate = mockCandidates.find((candidate) => candidate.id === id);
+  const { user } = useAuth();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(!mockCandidate);
   const [loadError, setLoadError] = useState(false);
+  const viewedCandidateIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const candidateId = candidate?.id;
+
+    if (
+      !user ||
+      !candidateId ||
+      viewedCandidateIdRef.current === candidateId
+    ) {
+      return;
+    }
+
+    viewedCandidateIdRef.current = candidateId;
+
+    void insertBusinessActivity(user, candidateId, "candidate_viewed");
+  }, [user, candidate?.id]);
 
   useEffect(() => {
     if (mockCandidate) {
@@ -323,6 +346,6 @@ export function CandidateInterviewBar({
         </button>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
