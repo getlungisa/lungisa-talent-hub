@@ -13,12 +13,29 @@ type CandidatesQuery = {
       order: (
         column: string,
         options: { ascending: boolean },
-      ) => Promise<{ data: BrowseCandidate[] | null; error: Error | null }>;
+      ) => Promise<{ data: unknown[] | null; error: Error | null }>;
     };
   };
 };
 
 const db = supabase as unknown as CandidatesQuery;
+
+function toBrowseCandidate(candidate: unknown): BrowseCandidate | null {
+  if (!candidate || typeof candidate !== "object") return null;
+
+  const { id, name, role, location } = candidate as Record<string, unknown>;
+
+  if (typeof id !== "string" || typeof name !== "string") {
+    return null;
+  }
+
+  return {
+    id,
+    name,
+    role: typeof role === "string" ? role : null,
+    location: typeof location === "string" ? location : null,
+  };
+}
 
 export async function fetchCandidates(): Promise<BrowseCandidate[]> {
   const { data, error } = await db
@@ -30,7 +47,8 @@ export async function fetchCandidates(): Promise<BrowseCandidate[]> {
     throw error;
   }
 
-  return ((data ?? []) as BrowseCandidate[]).filter(
-    (candidate): candidate is BrowseCandidate => Boolean(candidate?.id && candidate?.name),
-  );
+  return (data ?? []).flatMap((candidate) => {
+    const normalized = toBrowseCandidate(candidate);
+    return normalized ? [normalized] : [];
+  });
 }
