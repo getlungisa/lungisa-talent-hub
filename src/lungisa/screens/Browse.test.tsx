@@ -11,11 +11,16 @@ vi.mock("../lib/dashboard", () => ({
 }));
 
 vi.mock("../components/CandidateCard", () => ({
-  CandidateCard: ({ candidate }: { candidate: { name: string } }) => <div>{candidate.name}</div>,
+  CandidateCard: ({ candidate }: { candidate: { name: string } }) => (
+    <div data-testid="candidate-card">{candidate.name}</div>
+  ),
 }));
 
 vi.mock("../data", () => ({
-  candidates: [],
+  candidates: [
+    { id: "ayanda", firstName: "Ayanda" },
+    { id: "nomvula", firstName: "Nomvula" },
+  ],
 }));
 
 describe("Browse", () => {
@@ -42,10 +47,12 @@ describe("Browse", () => {
     render(<Browse onOpenCandidate={vi.fn()} />);
 
     expect(
-      await screen.findByText(
-        "We could not load candidates right now. Showing saved example profiles instead.",
-      ),
+      await screen.findByText("We could not load candidates right now. Please try again shortly."),
     ).toBeInTheDocument();
+    expect(screen.queryByText("No candidates available yet - we are vetting more this week.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ayanda")).not.toBeInTheDocument();
+    expect(screen.queryByText("Nomvula")).not.toBeInTheDocument();
+    expect(screen.queryAllByTestId("candidate-card")).toHaveLength(0);
   });
 
   it("shows an empty state when no candidates are returned", async () => {
