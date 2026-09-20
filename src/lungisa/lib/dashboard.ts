@@ -135,7 +135,13 @@ export async function toggleCandidateShortlist(
     throw error;
   }
 
-  return Boolean(data);
+  if (typeof data !== "boolean") {
+    const invalidResponseError = new Error("invalid_shortlist_toggle_response");
+    console.error("toggleCandidateShortlist error", invalidResponseError);
+    throw invalidResponseError;
+  }
+
+  return data;
 }
 
 async function fetchBusiness(user: User): Promise<Business | null> {

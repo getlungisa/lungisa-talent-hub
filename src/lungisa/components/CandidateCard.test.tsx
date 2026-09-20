@@ -140,4 +140,23 @@ describe("CandidateCard shortlist interactions", () => {
     });
     expect(toggleShortlistMock).not.toHaveBeenCalled();
   });
+
+  it("prevents repeated shortlist clicks while a toggle is pending", async () => {
+    const pendingToggle = deferred<boolean>();
+    toggleCandidateShortlistMock.mockReturnValue(pendingToggle.promise);
+
+    render(<CandidateCard candidate={candidate} onOpen={vi.fn()} />);
+
+    const button = screen.getByRole("button", { name: "Save to shortlist" });
+
+    fireEvent.click(button);
+    fireEvent.click(button);
+
+    expect(toggleCandidateShortlistMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      pendingToggle.resolve(true);
+      await pendingToggle.promise;
+    });
+  });
 });

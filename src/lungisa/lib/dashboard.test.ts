@@ -156,4 +156,27 @@ describe("toggleCandidateShortlist", () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it("rejects invalid successful RPC responses that omit a boolean result", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    maybeSingleMock.mockResolvedValueOnce({
+      data: { id: "business-1" },
+      error: null,
+    });
+    rpcMock.mockResolvedValue({
+      data: null,
+      error: null,
+    });
+
+    await expect(toggleCandidateShortlist(user, "candidate-1", true)).rejects.toMatchObject({
+      message: "invalid_shortlist_toggle_response",
+    });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "toggleCandidateShortlist error",
+      expect.objectContaining({ message: "invalid_shortlist_toggle_response" }),
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
 });
