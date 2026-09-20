@@ -3,12 +3,17 @@ import { Avatar } from "../components/Avatar";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { fetchRecentActivity, type ActivityRecord } from "../lib/dashboard";
+import {
+  fetchBrowsedCount,
+  fetchRecentActivity,
+  type ActivityRecord,
+} from "../lib/dashboard";
 
 export function Activity() {
   const { stats } = useLungisa();
   const { user } = useAuth();
   const [activity, setActivity] = useState<ActivityRecord[]>([]);
+  const [browsedCount, setBrowsedCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +22,7 @@ export function Activity() {
     const loadActivity = async () => {
       if (!user) {
         setActivity([]);
+        setBrowsedCount(0);
         setLoading(false);
         return;
       }
@@ -24,16 +30,21 @@ export function Activity() {
       setLoading(true);
 
       try {
-        const data = await fetchRecentActivity(user);
+        const [data, count] = await Promise.all([
+          fetchRecentActivity(user),
+          fetchBrowsedCount(user),
+        ]);
 
         if (!cancelled) {
           setActivity(data);
+          setBrowsedCount(count);
         }
       } catch (err) {
         console.error("Failed to load activity:", err);
 
         if (!cancelled) {
           setActivity([]);
+          setBrowsedCount(0);
         }
       } finally {
         if (!cancelled) {
@@ -59,7 +70,7 @@ export function Activity() {
       </div>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Candidates browsed" value={stats.browsed} note="this month" />
+        <Stat label="Candidates browsed" value={browsedCount} note="this month" />
         <Stat label="Interviews requested" value={stats.interviews} note="this month" />
         <Stat label="Active placements" value={stats.placements} note="ongoing" />
       </section>
