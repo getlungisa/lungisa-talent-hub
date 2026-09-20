@@ -1,12 +1,17 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLungisa } from "../store";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { ArrowRight, Heart, Sparkles, Check, Clock } from "lucide-react";
+import { ArrowRight, Sparkles, Clock } from "lucide-react";
 import { NeedSheet } from "../components/NeedSheet";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchOpenNeeds, relativeTime, formatStatus, type Need } from "../lib/needs";
+import {
+  fetchOpenNeeds,
+  relativeTime,
+  formatStatus,
+  type Need,
+} from "../lib/needs";
 import {
   fetchDashboardPlacements,
   fetchDashboardShortlisted,
@@ -29,24 +34,25 @@ export function Dashboard({
   onOpenCandidate: (candidate: Candidate | string) => void;
   onBrowse: () => void;
 }) {
-  const {
-    employerName,
-    requested,
-    requestInterview,
-    newThisWeek,
-  } = useLungisa();
-
+  const { employerName, requested, requestInterview, newThisWeek } =
+    useLungisa();
   const { user } = useAuth();
   const [needSheetOpen, setNeedSheetOpen] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [placements, setPlacements] = useState<DashboardPlacement[]>([]);
-  const [shortlisted, setShortlisted] = useState<DashboardShortlistedCandidate[]>([]);
+  const [shortlisted, setShortlisted] = useState<
+    DashboardShortlistedCandidate[]
+  >([]);
+  const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   const loadNeeds = useCallback(async () => {
     if (!user) {
       setNeeds([]);
       return;
     }
+
     const data = await fetchOpenNeeds(user);
     setNeeds(data);
   }, [user]);
@@ -63,6 +69,7 @@ export function Dashboard({
         if (!user) {
           setPlacements([]);
           setShortlisted([]);
+          setShortlistedIds(new Set());
           return;
         }
 
@@ -72,21 +79,46 @@ export function Dashboard({
         ]);
 
         if (cancelled) return;
+
         setPlacements(placementsData);
         setShortlisted(shortlistedData);
-      } catch (err) {
-        console.error("Failed to load dashboard data:", err);
+        setShortlistedIds(
+          new Set(shortlistedData.map(({ candidateId }) => candidateId)),
+        );
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
         if (cancelled) return;
         setPlacements([]);
         setShortlisted([]);
+        setShortlistedIds(new Set());
       }
     };
 
     run();
+
     return () => {
       cancelled = true;
     };
   }, [user]);
+
+  const handleShortlistChanged = useCallback(
+    (candidateId: string, isShortlisted: boolean) => {
+      setShortlistedIds((current) => {
+        const next = new Set(current);
+        if (isShortlisted) next.add(candidateId);
+        else next.delete(candidateId);
+        return next;
+      });
+
+      setShortlisted((current) => {
+        if (isShortlisted) return current;
+        return current.filter(
+          (candidate) => candidate.candidateId !== candidateId,
+        );
+      });
+    },
+    [],
+  );
 
   return (
     <div className="space-y-12">
@@ -97,11 +129,9 @@ export function Dashboard({
         <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
           {employerName}
         </h1>
-
         <p className="mt-6 max-w-md font-display text-xl text-primary text-balance sm:text-2xl">
           Tell us who you need. We'll bring them to you.
         </p>
-
         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={() => setNeedSheetOpen(true)}
@@ -110,7 +140,6 @@ export function Dashboard({
             I need someone
             <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
           </button>
-
           <button
             onClick={onBrowse}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent"
@@ -118,7 +147,6 @@ export function Dashboard({
             Browse candidates
           </button>
         </div>
-
         <div className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
           <span>
@@ -137,25 +165,27 @@ export function Dashboard({
             </span>
           </div>
           <div className="space-y-3">
-            {needs.map((n) => (
+            {needs.map((need) => (
               <article
-                key={n.id}
+                key={need.id}
                 className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-display text-lg text-primary">{n.role}</h3>
+                    <h3 className="font-display text-lg text-primary">
+                      {need.role}
+                    </h3>
                     <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">
-                      {formatStatus(n.status)}
+                      {formatStatus(need.status)}
                     </span>
                   </div>
                   <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" strokeWidth={1.75} />
-                    {n.timing}
+                    {need.timing}
                   </p>
                 </div>
                 <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                  {relativeTime(n.created_at)}
+                  {relativeTime(need.created_at)}
                 </span>
               </article>
             ))}
@@ -163,9 +193,13 @@ export function Dashboard({
         </section>
       )}
 
-      <RecommendedRow onOpenCandidate={onOpenCandidate} onSeeAll={onBrowse} />
+      <RecommendedRow
+        onOpenCandidate={onOpenCandidate}
+        onSeeAll={onBrowse}
+        shortlistedIds={shortlistedIds}
+        onShortlistChanged={handleShortlistChanged}
+      />
 
-      {/* Active placements */}
       <section>
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-2xl text-primary">Active placements</h2>
@@ -174,20 +208,19 @@ export function Dashboard({
           </span>
         </div>
         <div className="space-y-3">
-          {placements.map((p) => (
+          {placements.map((placement) => (
             <PlacementRow
-              key={p.candidateId}
-              name={p.candidateName}
-              role={p.location ?? "Location not provided"}
-              day={p.startedDaysAgo}
-              total={p.totalDays}
-              startDate={`${p.startedDaysAgo} days ago`}
+              key={placement.candidateId}
+              name={placement.candidateName}
+              role={placement.location ?? "Location not provided"}
+              day={placement.startedDaysAgo}
+              total={placement.totalDays}
+              startDate={`${placement.startedDaysAgo} days ago`}
             />
           ))}
         </div>
       </section>
 
-      {/* Shortlist */}
       <section>
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-2xl text-primary">Shortlist</h2>
@@ -195,7 +228,6 @@ export function Dashboard({
             {shortlisted.length} saved
           </span>
         </div>
-
         {shortlisted.length === 0 ? (
           <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
             You have no shortlisted candidates yet.

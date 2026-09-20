@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { CandidateCard } from "../components/CandidateCard";
-import { fetchCandidates, type Candidate } from "../lib/dashboard";
+import {
+  fetchCandidates,
+  fetchDashboardShortlisted,
+  type Candidate,
+} from "../lib/dashboard";
 
-export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => void }) {
+export function Browse({
+  onOpenCandidate,
+}: {
+  onOpenCandidate: (id: string) => void;
+}) {
+  const { user } = useAuth();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
@@ -11,17 +24,35 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
     let cancelled = false;
 
     const loadCandidates = async () => {
+      if (!user) {
+        setCandidates([]);
+        setShortlistedIds(new Set());
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setLoadError(false);
 
       try {
-        const data = await fetchCandidates();
+        const [candidatesData, shortlistedData] = await Promise.all([
+          fetchCandidates(),
+          fetchDashboardShortlisted(user),
+        ]);
+
         if (cancelled) return;
-        setCandidates(data);
+
+        setCandidates(candidatesData);
+        setShortlistedIds(
+          new Set(shortlistedData.map(({ candidateId }) => candidateId)),
+        );
       } catch (error) {
         console.error("Failed to load candidates:", error);
+
         if (cancelled) return;
+
         setCandidates([]);
+        setShortlistedIds(new Set());
         setLoadError(true);
       } finally {
         if (!cancelled) {
@@ -35,14 +66,31 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
+
+  const handleShortlistChanged = (
+    candidateId: string,
+    shortlisted: boolean,
+  ) => {
+    setShortlistedIds((current) => {
+      const next = new Set(current);
+
+      if (shortlisted) next.add(candidateId);
+      else next.delete(candidateId);
+
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-4xl text-primary text-balance">Verified candidates</h1>
+        <h1 className="font-display text-4xl text-primary text-balance">
+          Verified candidates
+        </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          Each person here has completed a structured assessment and a face-to-face interview with us.
+          Each person here has completed a structured assessment and a
+          face-to-face interview with us.
         </p>
       </div>
 
@@ -62,8 +110,14 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
             </div>
           ) : (
             <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
-              {candidates.map((c) => (
-                <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
+              {candidates.map((candidate) => (
+                <CandidateCard
+                  key={candidate.id}
+                  candidate={candidate}
+                  isShortlisted={shortlistedIds.has(candidate.id)}
+                  onShortlistChanged={handleShortlistChanged}
+                  onOpen={onOpenCandidate}
+                />
               ))}
             </div>
           )}

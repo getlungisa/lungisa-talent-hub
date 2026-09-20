@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Avatar } from "./Avatar";
@@ -11,6 +11,7 @@ import type { Candidate as MockCandidate } from "../data";
 import type { Candidate as SupabaseCandidate } from "../lib/dashboard";
 
 type Candidate = MockCandidate | SupabaseCandidate;
+
 const shortlistConflictTitle = "Candidate no longer available";
 const shortlistConflictDescription =
   "Another business shortlisted this candidate first. The candidate was not added to your shortlist.";
@@ -19,34 +20,43 @@ const shortlistErrorDescription = "Please try again.";
 
 export function CandidateCard({
   candidate,
+  isShortlisted,
+  onShortlistChanged,
   onOpen,
 }: {
   candidate: Candidate;
+  isShortlisted: boolean;
+  onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
   onOpen: (id: string) => void;
 }) {
   const { user } = useAuth();
-  const { requested, requestInterview, shortlist, toggleShortlist } = useLungisa();
-  const shortlistRef = useRef(shortlist);
+  const { requested, requestInterview } = useLungisa();
   const shortlistRequestInFlight = useRef(false);
   const [isUpdatingShortlist, setIsUpdatingShortlist] = useState(false);
+
   const isRequested = requested.has(candidate.id);
-  const isSaved = shortlist.has(candidate.id);
+  const isSaved = isShortlisted;
   const name = "firstName" in candidate ? candidate.firstName : candidate.name;
-  const summary = "role" in candidate ? candidate.role : candidate.location ?? "Location not provided";
+  const summary =
+    "role" in candidate
+      ? candidate.role
+      : candidate.location ?? "Location not provided";
   const attributes = "attributes" in candidate ? candidate.attributes : [];
   const verified = "verified" in candidate ? candidate.verified : false;
 
-  useEffect(() => {
-    shortlistRef.current = shortlist;
-  }, [shortlist]);
-
-  const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
+  const handleShortlistClick = async (
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
     event.stopPropagation();
 
-    if (shortlistRequestInFlight.current) return;
+    if (shortlistRequestInFlight.current) {
+      return;
+    }
 
     if (!user) {
-      toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+      toast.error(shortlistErrorTitle, {
+        description: shortlistErrorDescription,
+      });
       return;
     }
 
@@ -54,16 +64,25 @@ export function CandidateCard({
     setIsUpdatingShortlist(true);
 
     try {
-      const currentlySaved = shortlistRef.current.has(candidate.id);
-      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, currentlySaved);
-      if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
-        toggleShortlist(candidate.id);
-      }
+      const nextShortlisted = await toggleCandidateShortlist(
+        user,
+        candidate.id,
+        isSaved,
+      );
+
+      onShortlistChanged(candidate.id, nextShortlisted);
     } catch (error) {
-      if (error instanceof Error && error.message === "candidate_already_claimed") {
-        toast.error(shortlistConflictTitle, { description: shortlistConflictDescription });
+      if (
+        error instanceof Error &&
+        error.message === "candidate_already_claimed"
+      ) {
+        toast.error(shortlistConflictTitle, {
+          description: shortlistConflictDescription,
+        });
       } else {
-        toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+        toast.error(shortlistErrorTitle, {
+          description: shortlistErrorDescription,
+        });
       }
     } finally {
       shortlistRequestInFlight.current = false;
@@ -79,9 +98,11 @@ export function CandidateCard({
     >
       <div className="flex items-start gap-3">
         <Avatar name={name} />
+
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-display text-xl text-primary">{name}</h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
+
           {verified && (
             <div className="mt-1.5">
               <VerifiedBadge />
@@ -116,18 +137,23 @@ export function CandidateCard({
       )}
 
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!isRequested) requestInterview(candidate.id);
+        onClick={(event) => {
+          event.stopPropagation();
+          if (!isRequested) {
+            requestInterview(candidate.id);
+          }
         }}
         disabled={isRequested}
         className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition ${
-          isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
+          isRequested
+            ? "bg-success-soft text-success"
+            : "bg-accent text-accent-foreground hover:brightness-95"
         }`}
       >
         {isRequested ? (
           <>
-            <Check className="h-4 w-4" strokeWidth={3} /> Interview requested
+            <Check className="h-4 w-4" strokeWidth={3} />
+            Interview requested
           </>
         ) : (
           "Request interview"
@@ -138,12 +164,18 @@ export function CandidateCard({
         <button
           onClick={handleShortlistClick}
           disabled={isUpdatingShortlist}
-          aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
+          aria-label={
+            isSaved ? "Remove from shortlist" : "Save to shortlist"
+          }
           className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition hover:opacity-70 ${
             isSaved ? "text-accent" : "text-muted-foreground"
           }`}
         >
-          <Heart className="h-4 w-4" strokeWidth={2} fill={isSaved ? "currentColor" : "none"} />
+          <Heart
+            className="h-4 w-4"
+            strokeWidth={2}
+            fill={isSaved ? "currentColor" : "none"}
+          />
           {isSaved ? "Saved to shortlist" : "Save to shortlist"}
         </button>
       </div>

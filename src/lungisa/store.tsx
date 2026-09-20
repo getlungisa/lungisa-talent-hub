@@ -28,7 +28,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
   const [employerName, setEmployerName] = useState("Loading...");
   const [requested, setRequested] = useState<Set<string>>(new Set());
   const [interviews, setInterviews] = useState(2);
-  const [shortlist, setShortlist] = useState<Set<string>>(new Set(["ayanda"]));
+  const [shortlist, setShortlist] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) {
@@ -54,20 +54,20 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
       employerName,
       requested,
       requestInterview: (id) => {
-  if (requested.has(id)) return false;
-  setInterviews((i) => i + 1);
-  setRequested((r) => new Set(r).add(id));
+        if (requested.has(id)) return false;
+        setInterviews((i) => i + 1);
+        setRequested((r) => new Set(r).add(id));
 
-  if (user) {
-    import("./lib/dashboard").then(({ insertBusinessActivity }) => {
-      insertBusinessActivity(user, id, "interview_requested").catch(() => {
-        // Client state is already updated; leave the request visible locally.
-      });
-    });
-  }
+        if (user) {
+          import("./lib/dashboard").then(({ insertBusinessActivity }) => {
+            insertBusinessActivity(user, id, "interview_requested").catch(() => {
+              // Client state is already updated; leave the request visible locally.
+            });
+          });
+        }
 
-  return true;
-},
+        return true;
+      },
       shortlist,
       toggleShortlist: (id) =>
         setShortlist((s) => {
@@ -88,7 +88,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         },
       ],
     }),
-    [employerName, requested, interviews, shortlist]
+    [employerName, requested, interviews, shortlist],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

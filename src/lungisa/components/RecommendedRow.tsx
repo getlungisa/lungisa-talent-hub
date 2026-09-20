@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { fetchCandidates, toggleCandidateShortlist, type Candidate } from "../lib/dashboard";
+import {
+  fetchCandidates,
+  toggleCandidateShortlist,
+  type Candidate,
+} from "../lib/dashboard";
 import { Avatar } from "./Avatar";
-import { useLungisa } from "../store";
 import { Heart, ArrowRight } from "lucide-react";
 
 const shortlistConflictTitle = "Candidate no longer available";
@@ -15,17 +18,21 @@ const shortlistErrorDescription = "Please try again.";
 export function RecommendedRow({
   onOpenCandidate,
   onSeeAll,
+  shortlistedIds,
+  onShortlistChanged,
 }: {
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
+  shortlistedIds: Set<string>;
+  onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
 }) {
   const { user } = useAuth();
-  const { shortlist, toggleShortlist } = useLungisa();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
-  const shortlistRef = useRef(shortlist);
   const shortlistRequestsInFlight = useRef<Set<string>>(new Set());
-  const [pendingShortlistIds, setPendingShortlistIds] = useState<Set<string>>(new Set());
+  const [pendingShortlistIds, setPendingShortlistIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -57,10 +64,6 @@ export function RecommendedRow({
     };
   }, []);
 
-  useEffect(() => {
-    shortlistRef.current = shortlist;
-  }, [shortlist]);
-
   const recommended = candidates.slice(0, 3);
 
   const handleShortlistClick = async (
@@ -72,24 +75,41 @@ export function RecommendedRow({
     if (shortlistRequestsInFlight.current.has(candidate.id)) return;
 
     if (!user) {
-      toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+      toast.error(shortlistErrorTitle, {
+        description: shortlistErrorDescription,
+      });
       return;
     }
 
     shortlistRequestsInFlight.current.add(candidate.id);
-    setPendingShortlistIds((current) => new Set(current).add(candidate.id));
+    setPendingShortlistIds((current) => {
+      const next = new Set(current);
+      next.add(candidate.id);
+      return next;
+    });
+
+    const isSaved = shortlistedIds.has(candidate.id);
 
     try {
-      const currentlySaved = shortlistRef.current.has(candidate.id);
-      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, currentlySaved);
-      if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
-        toggleShortlist(candidate.id);
-      }
+      const nextShortlisted = await toggleCandidateShortlist(
+        user,
+        candidate.id,
+        isSaved,
+      );
+
+      onShortlistChanged(candidate.id, nextShortlisted);
     } catch (error) {
-      if (error instanceof Error && error.message === "candidate_already_claimed") {
-        toast.error(shortlistConflictTitle, { description: shortlistConflictDescription });
+      if (
+        error instanceof Error &&
+        error.message === "candidate_already_claimed"
+      ) {
+        toast.error(shortlistConflictTitle, {
+          description: shortlistConflictDescription,
+        });
       } else {
-        toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+        toast.error(shortlistErrorTitle, {
+          description: shortlistErrorDescription,
+        });
       }
     } finally {
       shortlistRequestsInFlight.current.delete(candidate.id);
@@ -121,7 +141,7 @@ export function RecommendedRow({
         <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
           <div className="flex gap-4 pb-2">
             {recommended.map((candidate) => {
-              const isSaved = shortlist.has(candidate.id);
+              const isSaved = shortlistedIds.has(candidate.id);
               const isPending = pendingShortlistIds.has(candidate.id);
 
               return (
@@ -159,10 +179,14 @@ export function RecommendedRow({
 
                   <div className="mt-3 flex justify-center">
                     <button
-                      onClick={(event) => handleShortlistClick(event, candidate)}
+                      onClick={(event) =>
+                        handleShortlistClick(event, candidate)
+                      }
                       disabled={isPending}
                       aria-label={
-                        isSaved ? "Remove from shortlist" : "Save to shortlist"
+                        isSaved
+                          ? "Remove from shortlist"
+                          : "Save to shortlist"
                       }
                       className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] transition hover:opacity-70 ${
                         isSaved ? "text-accent" : "text-muted-foreground"
@@ -173,7 +197,9 @@ export function RecommendedRow({
                         strokeWidth={2}
                         fill={isSaved ? "currentColor" : "none"}
                       />
-                      {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+                      {isSaved
+                        ? "Saved to shortlist"
+                        : "Save to shortlist"}
                     </button>
                   </div>
                 </article>
