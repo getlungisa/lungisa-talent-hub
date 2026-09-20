@@ -1,7 +1,6 @@
-import { candidates } from "../data";
+import { useEffect, useState } from "react";
+import { fetchCandidates, type Candidate } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
-import { RatingDots } from "./RatingDots";
-import { VerifiedBadge } from "./VerifiedBadge";
 import { useLungisa } from "../store";
 import { Heart, ArrowRight } from "lucide-react";
 
@@ -9,15 +8,44 @@ export function RecommendedRow({
   onOpenCandidate,
   onSeeAll,
 }: {
-  onOpenCandidate: (id: string) => void;
+  onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
 }) {
   const { shortlist, toggleShortlist } = useLungisa();
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const recommended = [...candidates]
-    .filter((c) => c.verified)
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 3);
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCandidates = async () => {
+      setLoading(true);
+
+      try {
+        const data = await fetchCandidates();
+
+        if (cancelled) return;
+        setCandidates(data);
+      } catch (error) {
+        console.error("Failed to load recommended candidates:", error);
+
+        if (cancelled) return;
+        setCandidates([]);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCandidates();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const recommended = candidates.slice(0, 3);
 
   return (
     <section>
@@ -27,73 +55,80 @@ export function RecommendedRow({
         </p>
       </div>
 
-      <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <div className="flex gap-4 pb-2">
-          {recommended.map((c) => {
-            const isSaved = shortlist.has(c.id);
-            return (
-              <article
-                key={c.id}
-                className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
-                onClick={() => onOpenCandidate(c.id)}
-              >
-                <div className="flex items-start gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <Avatar name={c.firstName} />
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+      {loading ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">
+          Loading recommendations...
+        </div>
+      ) : recommended.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">
+          No candidates available yet.
+        </div>
+      ) : (
+        <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+          <div className="flex gap-4 pb-2">
+            {recommended.map((candidate) => {
+              const isSaved = shortlist.has(candidate.id);
+
+              return (
+                <article
+                  key={candidate.id}
+                  onClick={() => onOpenCandidate(candidate)}
+                  className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar name={candidate.name} />
+                      <div className="min-w-0">
                         <h3 className="truncate font-display text-lg leading-tight text-primary">
-                          {c.firstName}
+                          {candidate.name}
                         </h3>
-                        {c.verified && <VerifiedBadge />}
+                        <p className="truncate text-xs text-muted-foreground">
+                          {candidate.location ?? "Location not provided"}
+                        </p>
                       </div>
-                      <p className="truncate text-xs text-muted-foreground">{c.role}</p>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {c.attributes.slice(0, 2).map((a) => (
-                    <span
-                      key={a.label}
-                      className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-primary/80"
-                    >
-                      {a.label}
+                  <div className="mt-3">
+                    <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-primary/80">
+                      {candidate.location ?? "Location not provided"}
                     </span>
-                  ))}
-                </div>
+                  </div>
 
-                <div className="mt-3">
-                  <RatingDots value={c.rating} label={false} />
-                </div>
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-xs font-medium text-accent group-hover:underline">
+                      View profile
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-accent transition group-hover:translate-x-0.5" />
+                  </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                  <span className="text-xs font-medium text-accent group-hover:underline">
-                    View profile
-                  </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-accent transition group-hover:translate-x-0.5" />
-                </div>
-
-                <div className="mt-3 flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleShortlist(c.id);
-                    }}
-                    aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] transition hover:opacity-70 ${
-                      isSaved ? "text-accent" : "text-muted-foreground"
-                    }`}
-                  >
-                    <Heart className="h-3.5 w-3.5" strokeWidth={2} fill={isSaved ? "currentColor" : "none"} />
-                    {isSaved ? "Saved to shortlist" : "Save to shortlist"}
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+                  <div className="mt-3 flex justify-center">
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleShortlist(candidate.id);
+                      }}
+                      aria-label={
+                        isSaved ? "Remove from shortlist" : "Save to shortlist"
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] transition hover:opacity-70 ${
+                        isSaved ? "text-accent" : "text-muted-foreground"
+                      }`}
+                    >
+                      <Heart
+                        className="h-3.5 w-3.5"
+                        strokeWidth={2}
+                        fill={isSaved ? "currentColor" : "none"}
+                      />
+                      {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mt-2 flex justify-end">
         <button
