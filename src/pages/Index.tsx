@@ -6,6 +6,7 @@ import { Browse } from "@/lungisa/screens/Browse";
 import { Placements } from "@/lungisa/screens/Placements";
 import { CandidateDetail, CandidateInterviewBar } from "@/lungisa/screens/CandidateDetail";
 import { Activity } from "@/lungisa/screens/Activity";
+import type { Candidate } from "@/lungisa/lib/dashboard";
 
 type Tab = "dashboard" | "browse" | "activity" | "placements";
 
@@ -14,7 +15,8 @@ const Index = () => {
   const [openCandidate, setOpenCandidate] = useState<string | null>(null);
   const [openCandidateExists, setOpenCandidateExists] = useState<boolean | null>(null);
 
-  const goToCandidate = (id: string) => {
+  const goToCandidate = (candidate: Candidate | string) => {
+    const id = typeof candidate === "string" ? candidate : candidate.id;
     setOpenCandidate(id);
     setOpenCandidateExists(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
