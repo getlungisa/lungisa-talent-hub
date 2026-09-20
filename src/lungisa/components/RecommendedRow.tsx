@@ -23,6 +23,7 @@ export function RecommendedRow({
   const { shortlist, toggleShortlist } = useLungisa();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const shortlistRef = useRef(shortlist);
   const shortlistRequestsInFlight = useRef<Set<string>>(new Set());
   const [pendingShortlistIds, setPendingShortlistIds] = useState<Set<string>>(new Set());
 
@@ -56,6 +57,10 @@ export function RecommendedRow({
     };
   }, []);
 
+  useEffect(() => {
+    shortlistRef.current = shortlist;
+  }, [shortlist]);
+
   const recommended = candidates.slice(0, 3);
 
   const handleShortlistClick = async (
@@ -77,7 +82,7 @@ export function RecommendedRow({
 
     try {
       const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, isSaved);
-      if (nextShortlisted !== isSaved) {
+      if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
         toggleShortlist(candidate.id);
       }
     } catch (error) {

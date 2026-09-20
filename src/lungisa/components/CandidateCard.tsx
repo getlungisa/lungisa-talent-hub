@@ -1,4 +1,4 @@
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Avatar } from "./Avatar";
@@ -26,6 +26,7 @@ export function CandidateCard({
 }) {
   const { user } = useAuth();
   const { requested, requestInterview, shortlist, toggleShortlist } = useLungisa();
+  const shortlistRef = useRef(shortlist);
   const shortlistRequestInFlight = useRef(false);
   const [isUpdatingShortlist, setIsUpdatingShortlist] = useState(false);
   const isRequested = requested.has(candidate.id);
@@ -34,6 +35,10 @@ export function CandidateCard({
   const summary = "role" in candidate ? candidate.role : candidate.location ?? "Location not provided";
   const attributes = "attributes" in candidate ? candidate.attributes : [];
   const verified = "verified" in candidate ? candidate.verified : false;
+
+  useEffect(() => {
+    shortlistRef.current = shortlist;
+  }, [shortlist]);
 
   const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -50,7 +55,7 @@ export function CandidateCard({
 
     try {
       const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, isSaved);
-      if (nextShortlisted !== isSaved) {
+      if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
         toggleShortlist(candidate.id);
       }
     } catch (error) {

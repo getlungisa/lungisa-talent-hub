@@ -160,6 +160,30 @@ describe("CandidateCard shortlist interactions", () => {
     });
   });
 
+  it("does not toggle local shortlist state if it already matches the persisted result", async () => {
+    const pendingToggle = deferred<boolean>();
+    toggleCandidateShortlistMock.mockReturnValue(pendingToggle.promise);
+
+    const { rerender } = render(<CandidateCard candidate={candidate} onOpen={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save to shortlist" }));
+
+    useLungisaMock.mockReturnValue({
+      requested: new Set(),
+      requestInterview: requestInterviewMock,
+      shortlist: new Set(["candidate-1"]),
+      toggleShortlist: toggleShortlistMock,
+    });
+    rerender(<CandidateCard candidate={candidate} onOpen={vi.fn()} />);
+
+    await act(async () => {
+      pendingToggle.resolve(true);
+      await pendingToggle.promise;
+    });
+
+    expect(toggleShortlistMock).not.toHaveBeenCalled();
+  });
+
   it("shows the generic error toast without calling the RPC when no user is signed in", async () => {
     useAuthMock.mockReturnValue({
       user: null,
