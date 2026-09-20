@@ -10,6 +10,7 @@ import { fetchOpenNeeds, relativeTime, formatStatus, type Need } from "../lib/ne
 import {
   fetchDashboardPlacements,
   fetchDashboardShortlisted,
+  type Candidate,
   type DashboardPlacement,
   type DashboardShortlistedCandidate,
 } from "../lib/dashboard";
@@ -25,7 +26,7 @@ export function Dashboard({
   onOpenCandidate,
   onBrowse,
 }: {
-  onOpenCandidate: (id: string) => void;
+  onOpenCandidate: (candidate: Candidate | string) => void;
   onBrowse: () => void;
 }) {
   const {
@@ -104,7 +105,7 @@ export function Dashboard({
         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={() => setNeedSheetOpen(true)}
-            className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition h[...]"
+            className="group inline-flex items-center gap-2 rounded-full bg-accent px-9 py-5 text-lg font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95"
           >
             I need someone
             <ArrowRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
@@ -112,7 +113,7 @@ export function Dashboard({
 
           <button
             onClick={onBrowse}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent s[...]"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-9 py-5 text-lg font-medium text-primary transition hover:border-accent hover:text-accent"
           >
             Browse candidates
           </button>
@@ -177,7 +178,7 @@ export function Dashboard({
             <PlacementRow
               key={p.candidateId}
               name={p.candidateName}
-              role={p.role}
+              role={p.location ?? "Location not provided"}
               day={p.startedDaysAgo}
               total={p.totalDays}
               startDate={`${p.startedDaysAgo} days ago`}
@@ -186,40 +187,47 @@ export function Dashboard({
         </div>
       </section>
 
-     {/* Shortlist */}
-<section>
-  <div className="mb-3 flex items-baseline justify-between">
-    <h2 className="font-display text-2xl text-primary">Shortlist</h2>
-    <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-      {shortlisted.length} saved
-    </span>
-  </div>
+      {/* Shortlist */}
+      <section>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="font-display text-2xl text-primary">Shortlist</h2>
+          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+            {shortlisted.length} saved
+          </span>
+        </div>
 
-  {shortlisted.length === 0 ? (
-    <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-      You have no shortlisted candidates yet.
-    </p>
-  ) : (
-    <div className="space-y-3">
-      {shortlisted.map((candidate) => (
-        <article
-          key={candidate.candidateId}
-          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5"
-        >
-          <Avatar name={candidate.candidateName} />
-          <div className="min-w-0">
-            <h3 className="font-display text-lg text-primary">
-              {candidate.candidateName}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {candidate.location ?? "Location not provided"}
-            </p>
+        {shortlisted.length === 0 ? (
+          <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+            You have no shortlisted candidates yet.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {shortlisted.map((candidate) => (
+              <article
+                key={candidate.candidateId}
+                onClick={() =>
+                  onOpenCandidate({
+                    id: candidate.candidateId,
+                    name: candidate.candidateName,
+                    location: candidate.location,
+                  })
+                }
+                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
+              >
+                <Avatar name={candidate.candidateName} />
+                <div className="min-w-0">
+                  <h3 className="font-display text-lg text-primary">
+                    {candidate.candidateName}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {candidate.location ?? "Location not provided"}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
-        </article>
-      ))}
-    </div>
-  )}
-</section>
+        )}
+      </section>
 
       <NeedSheet
         open={needSheetOpen}
