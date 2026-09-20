@@ -1,8 +1,16 @@
-import { useEffect, useState } from "react";
-import { fetchCandidates, type Candidate } from "../lib/dashboard";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { fetchCandidates, toggleCandidateShortlist, type Candidate } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
 import { useLungisa } from "../store";
 import { Heart, ArrowRight } from "lucide-react";
+
+const shortlistConflictTitle = "Candidate no longer available";
+const shortlistConflictDescription =
+  "Another business shortlisted this candidate first. The candidate was not added to your shortlist.";
+const shortlistErrorTitle = "Couldn't update shortlist";
+const shortlistErrorDescription = "Please try again.";
 
 export function RecommendedRow({
   onOpenCandidate,
@@ -11,9 +19,13 @@ export function RecommendedRow({
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
 }) {
+  const { user } = useAuth();
   const { shortlist, toggleShortlist } = useLungisa();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const shortlistRef = useRef(shortlist);
+  const shortlistRequestsInFlight = useRef<Set<string>>(new Set());
+  const [pendingShortlistIds, setPendingShortlistIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +57,49 @@ export function RecommendedRow({
     };
   }, []);
 
+  useEffect(() => {
+    shortlistRef.current = shortlist;
+  }, [shortlist]);
+
   const recommended = candidates.slice(0, 3);
+
+  const handleShortlistClick = async (
+    event: MouseEvent<HTMLButtonElement>,
+    candidate: Candidate,
+  ) => {
+    event.stopPropagation();
+
+    if (shortlistRequestsInFlight.current.has(candidate.id)) return;
+
+    if (!user) {
+      toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+      return;
+    }
+
+    shortlistRequestsInFlight.current.add(candidate.id);
+    setPendingShortlistIds((current) => new Set(current).add(candidate.id));
+
+    try {
+      const currentlySaved = shortlistRef.current.has(candidate.id);
+      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, currentlySaved);
+      if (nextShortlisted !== shortlistRef.current.has(candidate.id)) {
+        toggleShortlist(candidate.id);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === "candidate_already_claimed") {
+        toast.error(shortlistConflictTitle, { description: shortlistConflictDescription });
+      } else {
+        toast.error(shortlistErrorTitle, { description: shortlistErrorDescription });
+      }
+    } finally {
+      shortlistRequestsInFlight.current.delete(candidate.id);
+      setPendingShortlistIds((current) => {
+        const next = new Set(current);
+        next.delete(candidate.id);
+        return next;
+      });
+    }
+  };
 
   return (
     <section>
@@ -68,6 +122,7 @@ export function RecommendedRow({
           <div className="flex gap-4 pb-2">
             {recommended.map((candidate) => {
               const isSaved = shortlist.has(candidate.id);
+              const isPending = pendingShortlistIds.has(candidate.id);
 
               return (
                 <article
@@ -104,10 +159,8 @@ export function RecommendedRow({
 
                   <div className="mt-3 flex justify-center">
                     <button
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        toggleShortlist(candidate.id);
-                      }}
+                      onClick={(event) => handleShortlistClick(event, candidate)}
+                      disabled={isPending}
                       aria-label={
                         isSaved ? "Remove from shortlist" : "Save to shortlist"
                       }
