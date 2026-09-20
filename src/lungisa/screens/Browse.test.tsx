@@ -82,6 +82,7 @@ describe("Browse", () => {
   });
 
   it("renders an error state without legacy mock candidates when the fetch fails", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     mockedFetchCandidates.mockRejectedValueOnce(new Error("network down"));
 
     renderBrowse();
@@ -95,5 +96,7 @@ describe("Browse", () => {
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Request interview" })).not.toBeInTheDocument();
     });
+
+    consoleError.mockRestore();
   });
 });

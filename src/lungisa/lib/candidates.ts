@@ -7,7 +7,18 @@ export type BrowseCandidate = {
   location: string | null;
 };
 
-const db = supabase as any;
+type CandidatesQuery = {
+  from: (table: "candidates") => {
+    select: (query: string) => {
+      order: (
+        column: string,
+        options: { ascending: boolean },
+      ) => Promise<{ data: BrowseCandidate[] | null; error: Error | null }>;
+    };
+  };
+};
+
+const db = supabase as unknown as CandidatesQuery;
 
 export async function fetchCandidates(): Promise<BrowseCandidate[]> {
   const { data, error } = await db
