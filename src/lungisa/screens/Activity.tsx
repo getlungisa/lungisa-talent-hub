@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import {
   fetchBrowsedCount,
+  fetchDashboardPlacements,
   fetchRecentActivity,
   type ActivityRecord,
 } from "../lib/dashboard";
@@ -14,6 +15,7 @@ export function Activity() {
   const { user } = useAuth();
   const [activity, setActivity] = useState<ActivityRecord[]>([]);
   const [browsedCount, setBrowsedCount] = useState(0);
+  const [placementsCount, setPlacementsCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +25,7 @@ export function Activity() {
       if (!user) {
         setActivity([]);
         setBrowsedCount(0);
+        setPlacementsCount(0);
         setLoading(false);
         return;
       }
@@ -30,14 +33,16 @@ export function Activity() {
       setLoading(true);
 
       try {
-        const [data, count] = await Promise.all([
+        const [data, count, placements] = await Promise.all([
           fetchRecentActivity(user),
           fetchBrowsedCount(user),
+          fetchDashboardPlacements(user),
         ]);
 
         if (!cancelled) {
           setActivity(data);
           setBrowsedCount(count);
+          setPlacementsCount(placements.length);
         }
       } catch (err) {
         console.error("Failed to load activity:", err);
@@ -45,6 +50,7 @@ export function Activity() {
         if (!cancelled) {
           setActivity([]);
           setBrowsedCount(0);
+          setPlacementsCount(0);
         }
       } finally {
         if (!cancelled) {
@@ -72,7 +78,7 @@ export function Activity() {
       <section className="grid gap-4 sm:grid-cols-3">
         <Stat label="Candidates browsed" value={browsedCount} note="this month" />
         <Stat label="Interviews requested" value={stats.interviews} note="this month" />
-        <Stat label="Active placements" value={stats.placements} note="ongoing" />
+        <Stat label="Active placements" value={placementsCount} note="ongoing" />
       </section>
 
       <section>
