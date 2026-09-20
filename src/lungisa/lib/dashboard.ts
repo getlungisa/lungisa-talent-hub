@@ -82,7 +82,7 @@ export async function fetchCandidates(): Promise<Candidate[]> {
 
   if (error) {
     console.error("fetchCandidates error", error);
-    return [];
+    throw error;
   }
 
   return (data ?? []) as Candidate[];

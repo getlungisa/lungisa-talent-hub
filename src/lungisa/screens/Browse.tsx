@@ -5,12 +5,14 @@ import { fetchCandidates, type Candidate } from "../lib/dashboard";
 export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => void }) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadCandidates = async () => {
       setLoading(true);
+      setLoadError(false);
 
       try {
         const data = await fetchCandidates();
@@ -20,6 +22,7 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
         console.error("Failed to load candidates:", error);
         if (cancelled) return;
         setCandidates([]);
+        setLoadError(true);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -46,6 +49,10 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
       {loading ? (
         <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
           Loading candidates...
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
+          We could not load candidates right now. Please try again shortly.
         </div>
       ) : candidates.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">

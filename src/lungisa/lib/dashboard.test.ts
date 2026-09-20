@@ -38,7 +38,7 @@ describe("fetchCandidates", () => {
     expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
 
-  it("returns an empty list when Supabase returns an error", async () => {
+  it("throws when Supabase returns an error", async () => {
     const error = new Error("boom");
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
@@ -47,7 +47,7 @@ describe("fetchCandidates", () => {
       error,
     });
 
-    await expect(fetchCandidates()).resolves.toEqual([]);
+    await expect(fetchCandidates()).rejects.toBe(error);
     expect(consoleErrorSpy).toHaveBeenCalledWith("fetchCandidates error", error);
 
     consoleErrorSpy.mockRestore();

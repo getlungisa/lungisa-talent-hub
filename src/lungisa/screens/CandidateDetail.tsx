@@ -23,11 +23,13 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
   const mockCandidate = mockCandidates.find((candidate) => candidate.id === id);
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(!mockCandidate);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (mockCandidate) {
       setCandidate(null);
       setLoading(false);
+      setLoadError(false);
       return;
     }
 
@@ -35,6 +37,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 
     const loadCandidate = async () => {
       setLoading(true);
+      setLoadError(false);
 
       try {
         const candidates = await fetchCandidates();
@@ -44,6 +47,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
         console.error("Failed to load candidate:", error);
         if (cancelled) return;
         setCandidate(null);
+        setLoadError(true);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -161,6 +165,22 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
     );
   }
 
+  if (loadError) {
+    return (
+      <div className="space-y-6 pb-28">
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-accent"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
+        </button>
+        <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+          We could not load this candidate right now. Please try again shortly.
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="space-y-6 pb-28">
@@ -252,8 +272,49 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
 
 export function CandidateInterviewBar({ id }: { id: string }) {
   const { requested, requestInterview } = useLungisa();
+  const mockCandidate = mockCandidates.find((candidate) => candidate.id === id);
+  const [candidateExists, setCandidateExists] = useState(Boolean(mockCandidate));
+  const [loading, setLoading] = useState(!mockCandidate);
+  const [loadError, setLoadError] = useState(false);
 
-  if (typeof document === "undefined") return null;
+  useEffect(() => {
+    if (mockCandidate) {
+      setCandidateExists(true);
+      setLoading(false);
+      setLoadError(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadCandidate = async () => {
+      setLoading(true);
+      setLoadError(false);
+
+      try {
+        const candidates = await fetchCandidates();
+        if (cancelled) return;
+        setCandidateExists(candidates.some((candidate) => candidate.id === id));
+      } catch (error) {
+        console.error("Failed to load candidate interview bar:", error);
+        if (cancelled) return;
+        setCandidateExists(false);
+        setLoadError(true);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCandidate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, mockCandidate]);
+
+  if (typeof document === "undefined" || loading || loadError || !candidateExists) return null;
 
   const isRequested = requested.has(id);
 
