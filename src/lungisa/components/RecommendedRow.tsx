@@ -66,7 +66,6 @@ export function RecommendedRow({
   const handleShortlistClick = async (
     event: MouseEvent<HTMLButtonElement>,
     candidate: Candidate,
-    isSaved: boolean,
   ) => {
     event.stopPropagation();
 
@@ -160,7 +159,7 @@ export function RecommendedRow({
 
                   <div className="mt-3 flex justify-center">
                     <button
-                      onClick={(event) => handleShortlistClick(event, candidate, isSaved)}
+                      onClick={(event) => handleShortlistClick(event, candidate)}
                       disabled={isPending}
                       aria-label={
                         isSaved ? "Remove from shortlist" : "Save to shortlist"
