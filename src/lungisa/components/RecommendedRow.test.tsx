@@ -151,4 +151,22 @@ describe("RecommendedRow shortlist interactions", () => {
       await pendingToggle.promise;
     });
   });
+
+  it("shows the generic error toast without calling the RPC when no user is signed in", async () => {
+    useAuthMock.mockReturnValue({
+      user: null,
+    });
+
+    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
+
+    await waitFor(() => {
+      expect(toastErrorMock).toHaveBeenCalledWith("Couldn't update shortlist", {
+        description: "Please try again.",
+      });
+    });
+    expect(toggleCandidateShortlistMock).not.toHaveBeenCalled();
+    expect(toggleShortlistMock).not.toHaveBeenCalled();
+  });
 });

@@ -159,4 +159,22 @@ describe("CandidateCard shortlist interactions", () => {
       await pendingToggle.promise;
     });
   });
+
+  it("shows the generic error toast without calling the RPC when no user is signed in", async () => {
+    useAuthMock.mockReturnValue({
+      user: null,
+    });
+
+    render(<CandidateCard candidate={candidate} onOpen={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save to shortlist" }));
+
+    await waitFor(() => {
+      expect(toastErrorMock).toHaveBeenCalledWith("Couldn't update shortlist", {
+        description: "Please try again.",
+      });
+    });
+    expect(toggleCandidateShortlistMock).not.toHaveBeenCalled();
+    expect(toggleShortlistMock).not.toHaveBeenCalled();
+  });
 });

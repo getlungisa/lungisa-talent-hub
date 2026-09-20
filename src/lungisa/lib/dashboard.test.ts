@@ -179,4 +179,16 @@ describe("toggleCandidateShortlist", () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it("rejects when the current user has no business record", async () => {
+    maybeSingleMock.mockResolvedValueOnce({
+      data: null,
+      error: null,
+    });
+
+    await expect(toggleCandidateShortlist(user, "candidate-1", false)).rejects.toMatchObject({
+      message: "business_not_found",
+    });
+    expect(rpcMock).not.toHaveBeenCalled();
+  });
 });
