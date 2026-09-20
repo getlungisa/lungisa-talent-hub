@@ -55,6 +55,11 @@ type QueryResult<T> = Promise<{
   error: unknown;
 }>;
 
+type RpcResult<T> = Promise<{
+  data: T | null;
+  error: { message?: string } | null;
+}>;
+
 type UntypedSelectQuery<T> = {
   eq: (column: string, value: string) => UntypedSelectQuery<T>;
   order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
@@ -68,6 +73,7 @@ type UntypedTableQuery = {
 
 type UntypedDb = {
   from: (table: string) => UntypedTableQuery;
+  rpc: <T = unknown>(fn: string, args: Record<string, unknown>) => RpcResult<T>;
 };
 
 // The generated Supabase types have not yet been regenerated for the allocation
@@ -101,6 +107,35 @@ export async function fetchCandidate(id: string): Promise<Candidate | null> {
   }
 
   return data;
+}
+
+export async function toggleCandidateShortlist(
+  user: User,
+  candidateId: string,
+  currentlyShortlisted: boolean,
+): Promise<boolean> {
+  const business = await fetchBusiness(user);
+
+  if (!business) {
+    throw new Error("business_not_found");
+  }
+
+  const { data, error } = await db.rpc<boolean>("toggle_candidate_shortlist", {
+    p_business_id: business.id,
+    p_candidate_id: candidateId,
+    p_currently_shortlisted: currentlyShortlisted,
+  });
+
+  if (error) {
+    if (error.message === "candidate_already_claimed") {
+      throw new Error("candidate_already_claimed");
+    }
+
+    console.error("toggleCandidateShortlist error", error);
+    throw error;
+  }
+
+  return Boolean(data);
 }
 
 async function fetchBusiness(user: User): Promise<Business | null> {
