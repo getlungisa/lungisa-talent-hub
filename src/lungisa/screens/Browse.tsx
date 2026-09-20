@@ -1,10 +1,47 @@
-import { useState } from "react";
-import { candidates, roleFilters } from "../data";
+import { useEffect, useState } from "react";
+import { roleFilters } from "../data";
 import { CandidateCard } from "../components/CandidateCard";
+import { fetchCandidates, type BrowseCandidate } from "../lib/candidates";
 
 export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => void }) {
   const [filter, setFilter] = useState<(typeof roleFilters)[number]>("All roles");
-  const filtered = filter === "All roles" ? candidates : candidates.filter((c) => c.role === filter);
+  const [candidates, setCandidates] = useState<BrowseCandidate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCandidates = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchCandidates();
+
+        if (cancelled) return;
+        setCandidates(data);
+      } catch (err) {
+        console.error("Failed to load candidates:", err);
+
+        if (cancelled) return;
+        setCandidates([]);
+        setError("We couldn't load verified candidates right now. Please try again in a moment.");
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadCandidates();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filtered = filter === "All roles" ? candidates : candidates.filter((candidate) => candidate.role === filter);
 
   return (
     <div className="space-y-6">
@@ -36,7 +73,15 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
+          Loading candidates...
+        </div>
+      ) : error ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
+          {error}
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
           No candidates in this role yet - we are vetting more this week.
         </div>
