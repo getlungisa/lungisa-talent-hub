@@ -12,14 +12,17 @@ type Tab = "dashboard" | "browse" | "activity" | "placements";
 const Index = () => {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [openCandidate, setOpenCandidate] = useState<string | null>(null);
+  const [openCandidateExists, setOpenCandidateExists] = useState<boolean | null>(null);
 
   const goToCandidate = (id: string) => {
     setOpenCandidate(id);
+    setOpenCandidateExists(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goToBrowse = () => {
     setOpenCandidate(null);
+    setOpenCandidateExists(null);
     setTab("browse");
   };
 
@@ -29,11 +32,19 @@ const Index = () => {
         active={tab}
         onNavigate={(t) => {
           setOpenCandidate(null);
+          setOpenCandidateExists(null);
           setTab(t);
         }}
       >
         {openCandidate ? (
-          <CandidateDetail id={openCandidate} onBack={() => setOpenCandidate(null)} />
+          <CandidateDetail
+            id={openCandidate}
+            onBack={() => {
+              setOpenCandidate(null);
+              setOpenCandidateExists(null);
+            }}
+            onCandidateStatusChange={setOpenCandidateExists}
+          />
         ) : tab === "dashboard" ? (
           <Dashboard onOpenCandidate={goToCandidate} onBrowse={goToBrowse} />
         ) : tab === "browse" ? (
@@ -44,7 +55,9 @@ const Index = () => {
           <Placements />
         )}
       </Shell>
-      {openCandidate && <CandidateInterviewBar id={openCandidate} />}
+      {openCandidate && (
+        <CandidateInterviewBar id={openCandidate} candidateExists={openCandidateExists} />
+      )}
     </LungisaProvider>
   );
 };

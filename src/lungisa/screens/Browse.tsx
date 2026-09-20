@@ -1,10 +1,47 @@
-import { useState } from "react";
-import { candidates, roleFilters } from "../data";
+import { useEffect, useState } from "react";
 import { CandidateCard } from "../components/CandidateCard";
+import { fetchCandidates, type Candidate } from "../lib/dashboard";
+import { candidates as mockCandidates } from "../data";
 
 export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => void }) {
-  const [filter, setFilter] = useState<(typeof roleFilters)[number]>("All roles");
-  const filtered = filter === "All roles" ? candidates : candidates.filter((c) => c.role === filter);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadedFromRemote, setLoadedFromRemote] = useState(false);
+  const showMockFallback = loadError && mockCandidates.length > 0;
+  const displayCandidates = loadedFromRemote ? candidates : showMockFallback ? mockCandidates : [];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCandidates = async () => {
+      setLoading(true);
+      setLoadError(false);
+
+      try {
+        const data = await fetchCandidates();
+        if (cancelled) return;
+        setCandidates(data);
+        setLoadedFromRemote(true);
+      } catch (error) {
+        console.error("Failed to load candidates:", error);
+        if (cancelled) return;
+        setCandidates([]);
+        setLoadError(true);
+        setLoadedFromRemote(false);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCandidates();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -15,36 +52,28 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
         </p>
       </div>
 
-      <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 pb-1">
-          {roleFilters.map((r) => {
-            const active = r === filter;
-            return (
-              <button
-                key={r}
-                onClick={() => setFilter(r)}
-                className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm transition ${
-                  active
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-primary hover:border-accent hover:text-accent"
-                }`}
-              >
-                {r}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
-          No candidates in this role yet - we are vetting more this week.
+      {loading ? (
+        <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
+          Loading candidates...
         </div>
       ) : (
-        <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
-          {filtered.map((c) => (
-            <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
-          ))}
+        <div className="space-y-4">
+          {loadError && (
+            <div className="rounded-2xl border border-dashed border-border bg-card p-5 text-center text-muted-foreground">
+              We could not load candidates right now. Showing saved example profiles instead.
+            </div>
+          )}
+          {displayCandidates.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
+              No candidates available yet - we are vetting more this week.
+            </div>
+          ) : (
+            <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+              {displayCandidates.map((c) => (
+                <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

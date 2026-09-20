@@ -23,7 +23,7 @@ type Business = {
   id: string;
 };
 
-type Candidate = {
+export type Candidate = {
   id: string;
   name: string;
   location: string | null;
@@ -43,14 +43,70 @@ type AllocationRecord = {
   candidates: Candidate | Candidate[] | null;
 };
 
+type ActivityRow = {
+  candidate_id: string;
+  action_type: string;
+  action_date: string;
+  candidates: Candidate | Candidate[] | null;
+};
+
+type QueryResult<T> = Promise<{
+  data: T | null;
+  error: unknown;
+}>;
+
+type UntypedSelectQuery<T> = {
+  eq: (column: string, value: string) => UntypedSelectQuery<T>;
+  order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
+  maybeSingle: () => QueryResult<T>;
+};
+
+type UntypedTableQuery = {
+  select: <T = Record<string, unknown>>(columns: string) => UntypedSelectQuery<T>;
+  insert: (values: Record<string, unknown>) => Promise<{ error: unknown }>;
+};
+
+type UntypedDb = {
+  from: (table: string) => UntypedTableQuery;
+};
+
 // The generated Supabase types have not yet been regenerated for the allocation
 // tables, so keep the runtime queries typed locally until they are included.
-const db = supabase as any;
+const db = supabase as unknown as UntypedDb;
+
+export async function fetchCandidates(): Promise<Candidate[]> {
+  const { data, error } = await db
+    .from("candidates")
+    .select<Candidate>("id, name, location")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("fetchCandidates error", error);
+    throw error;
+  }
+
+  return (data ?? []) as Candidate[];
+}
+
+export async function fetchCandidate(id: string): Promise<Candidate | null> {
+  const { data, error } = await db
+    .from("candidates")
+    .select<Candidate>("id, name, location")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("fetchCandidate error", error);
+    throw error;
+  }
+
+  return data;
+}
 
 async function fetchBusiness(user: User): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")
-    .select("id")
+    .select<Business>("id")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -78,7 +134,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
 
   const { data, error } = await db
     .from("placements")
-    .select(
+    .select<PlacementRecord>(
       "candidate_id, placement_date, status, candidates!placements_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
@@ -90,7 +146,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
     return [];
   }
 
-  return ((data ?? []) as PlacementRecord[]).flatMap((placement) => {
+  return (data ?? []).flatMap((placement) => {
     const candidate = oneCandidate(placement.candidates);
     if (!candidate) return [];
 
@@ -116,7 +172,7 @@ export async function fetchDashboardShortlisted(
 
   const { data, error } = await db
     .from("candidate_allocations")
-    .select(
+    .select<AllocationRecord>(
       "candidate_id, status, allocated_at, candidates!candidate_allocations_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
@@ -128,7 +184,7 @@ export async function fetchDashboardShortlisted(
     return [];
   }
 
-  return ((data ?? []) as AllocationRecord[]).flatMap((allocation) => {
+  return (data ?? []).flatMap((allocation) => {
     const candidate = oneCandidate(allocation.candidates);
     if (!candidate) return [];
 
@@ -158,7 +214,7 @@ export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]>
 
   const { data, error } = await db
     .from("business_activity")
-    .select(
+    .select<ActivityRow>(
       "candidate_id, action_type, action_date, candidates!business_activity_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
@@ -170,7 +226,7 @@ export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]>
     return [];
   }
 
-  return ((data ?? []) as any[]).flatMap((activity) => {
+  return (data ?? []).flatMap((activity) => {
     const candidate = oneCandidate(activity.candidates);
     if (!candidate) return [];
 

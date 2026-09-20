@@ -1,9 +1,12 @@
-import { Candidate } from "../data";
 import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { useLungisa } from "../store";
 import { Check, Heart } from "lucide-react";
+import type { Candidate as MockCandidate } from "../data";
+import type { Candidate as SupabaseCandidate } from "../lib/dashboard";
+
+type Candidate = MockCandidate | SupabaseCandidate;
 
 export function CandidateCard({
   candidate,
@@ -15,18 +18,23 @@ export function CandidateCard({
   const { requested, requestInterview, shortlist, toggleShortlist } = useLungisa();
   const isRequested = requested.has(candidate.id);
   const isSaved = shortlist.has(candidate.id);
+  const name = "firstName" in candidate ? candidate.firstName : candidate.name;
+  const summary = "role" in candidate ? candidate.role : candidate.location ?? "Location not provided";
+  const attributes = "attributes" in candidate ? candidate.attributes : [];
+  const verified = "verified" in candidate ? candidate.verified : false;
 
   return (
     <article
       onClick={() => onOpen(candidate.id)}
+      aria-label={`${name} — ${summary}`}
       className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
     >
       <div className="flex items-start gap-3">
-        <Avatar name={candidate.firstName} />
+        <Avatar name={name} />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-display text-xl text-primary">{candidate.firstName}</h3>
-          <p className="text-sm text-muted-foreground">{candidate.role}</p>
-          {candidate.verified && (
+          <h3 className="truncate font-display text-xl text-primary">{name}</h3>
+          <p className="text-sm text-muted-foreground">{summary}</p>
+          {verified && (
             <div className="mt-1.5">
               <VerifiedBadge />
             </div>
@@ -34,20 +42,30 @@ export function CandidateCard({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {candidate.attributes.map((a) => (
-          <span
-            key={a.label}
-            className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80"
-          >
-            {a.label}
+      {attributes.length > 0 ? (
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {attributes.map((attribute) => (
+            <span
+              key={attribute.label}
+              className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80"
+            >
+              {attribute.label}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4">
+          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80">
+            {summary}
           </span>
-        ))}
-      </div>
+        </div>
+      )}
 
-      <div className="mt-4">
-        <RatingDots value={candidate.rating} />
-      </div>
+      {"rating" in candidate && (
+        <div className="mt-4">
+          <RatingDots value={candidate.rating} />
+        </div>
+      )}
 
       <button
         onClick={(e) => {
