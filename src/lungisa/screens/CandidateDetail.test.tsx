@@ -49,4 +49,15 @@ describe("CandidateDetail", () => {
 
     expect(await screen.findByText("Candidate not found.")).toBeInTheDocument();
   });
+
+  it("renders fetched candidate details when the candidate exists", async () => {
+    fetchCandidatesMock.mockResolvedValue([
+      { id: "real-1", name: "Sipho", location: "Khayelitsha, Cape Town" },
+    ]);
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(2);
+  });
 });

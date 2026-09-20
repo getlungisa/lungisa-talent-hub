@@ -51,4 +51,14 @@ describe("Browse", () => {
       await screen.findByText("No candidates available yet - we are vetting more this week."),
     ).toBeInTheDocument();
   });
+
+  it("renders fetched candidates when loading succeeds", async () => {
+    fetchCandidatesMock.mockResolvedValue([
+      { id: "cand-1", name: "Ayanda", location: "Langa, Cape Town" },
+    ]);
+
+    render(<Browse onOpenCandidate={vi.fn()} />);
+
+    expect(await screen.findByText("Ayanda")).toBeInTheDocument();
+  });
 });
