@@ -50,6 +50,10 @@ type ActivityRow = {
   candidates: Candidate | Candidate[] | null;
 };
 
+type BrowsedActivityRow = {
+  candidate_id: string;
+};
+
 type QueryResult<T> = Promise<{
   data: T | null;
   error: unknown;
@@ -281,6 +285,24 @@ export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]>
       },
     ];
   });
+}
+
+export async function fetchBrowsedCount(user: User): Promise<number> {
+  const business = await fetchBusiness(user);
+  if (!business) return 0;
+
+  const { data, error } = await db
+    .from("business_activity")
+    .select<BrowsedActivityRow>("candidate_id")
+    .eq("business_id", business.id)
+    .eq("action_type", "candidate_viewed");
+
+  if (error) {
+    console.error("fetchBrowsedCount error", error);
+    return 0;
+  }
+
+  return new Set((data ?? []).map((activity) => activity.candidate_id)).size;
 }
 
 export async function insertBusinessActivity(
