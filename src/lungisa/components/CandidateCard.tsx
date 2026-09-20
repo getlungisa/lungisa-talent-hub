@@ -1,12 +1,21 @@
+import { useState, type MouseEvent } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { toggleCandidateShortlist } from "../lib/dashboard";
 import { useLungisa } from "../store";
 import { Check, Heart } from "lucide-react";
 import type { Candidate as MockCandidate } from "../data";
 import type { Candidate as SupabaseCandidate } from "../lib/dashboard";
+import { toast } from "sonner";
 
 type Candidate = MockCandidate | SupabaseCandidate;
+const conflictTitle = "Candidate no longer available";
+const conflictDescription =
+  "Another business shortlisted this candidate first. The candidate was not added to your shortlist.";
+const genericErrorTitle = "Couldn’t update shortlist";
+const genericErrorDescription = "Please try again.";
 
 export function CandidateCard({
   candidate,
@@ -15,13 +24,46 @@ export function CandidateCard({
   candidate: Candidate;
   onOpen: (id: string) => void;
 }) {
+  const { user } = useAuth();
   const { requested, requestInterview, shortlist, toggleShortlist } = useLungisa();
+  const [isUpdatingShortlist, setIsUpdatingShortlist] = useState(false);
   const isRequested = requested.has(candidate.id);
   const isSaved = shortlist.has(candidate.id);
   const name = "firstName" in candidate ? candidate.firstName : candidate.name;
   const summary = "role" in candidate ? candidate.role : candidate.location ?? "Location not provided";
   const attributes = "attributes" in candidate ? candidate.attributes : [];
   const verified = "verified" in candidate ? candidate.verified : false;
+
+  const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+
+    if (isUpdatingShortlist) {
+      return;
+    }
+
+    if (!user) {
+      toast.error(genericErrorTitle, { description: genericErrorDescription });
+      return;
+    }
+
+    setIsUpdatingShortlist(true);
+
+    try {
+      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, isSaved);
+
+      if (nextShortlisted !== isSaved) {
+        toggleShortlist(candidate.id);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === "candidate_already_claimed") {
+        toast.error(conflictTitle, { description: conflictDescription });
+      } else {
+        toast.error(genericErrorTitle, { description: genericErrorDescription });
+      }
+    } finally {
+      setIsUpdatingShortlist(false);
+    }
+  };
 
   return (
     <article
@@ -88,10 +130,8 @@ export function CandidateCard({
 
       <div className="mt-3 flex justify-center">
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleShortlist(candidate.id);
-          }}
+          onClick={handleShortlistClick}
+          disabled={isUpdatingShortlist}
           aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
           className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition hover:opacity-70 ${
             isSaved ? "text-accent" : "text-muted-foreground"

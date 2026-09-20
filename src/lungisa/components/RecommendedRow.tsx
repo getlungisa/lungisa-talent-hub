@@ -1,8 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { fetchCandidates, type Candidate } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
 import { useLungisa } from "../store";
+import { toggleCandidateShortlist } from "../lib/dashboard";
 import { Heart, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+
+const conflictTitle = "Candidate no longer available";
+const conflictDescription =
+  "Another business shortlisted this candidate first. The candidate was not added to your shortlist.";
+const genericErrorTitle = "Couldn’t update shortlist";
+const genericErrorDescription = "Please try again.";
 
 export function RecommendedRow({
   onOpenCandidate,
@@ -11,9 +20,11 @@ export function RecommendedRow({
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
 }) {
+  const { user } = useAuth();
   const { shortlist, toggleShortlist } = useLungisa();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingCandidateIds, setSavingCandidateIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +58,45 @@ export function RecommendedRow({
 
   const recommended = candidates.slice(0, 3);
 
+  const handleShortlistClick = async (
+    event: MouseEvent<HTMLButtonElement>,
+    candidate: Candidate,
+    isSaved: boolean,
+  ) => {
+    event.stopPropagation();
+
+    if (savingCandidateIds.has(candidate.id)) {
+      return;
+    }
+
+    if (!user) {
+      toast.error(genericErrorTitle, { description: genericErrorDescription });
+      return;
+    }
+
+    setSavingCandidateIds((current) => new Set(current).add(candidate.id));
+
+    try {
+      const nextShortlisted = await toggleCandidateShortlist(user, candidate.id, isSaved);
+
+      if (nextShortlisted !== isSaved) {
+        toggleShortlist(candidate.id);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === "candidate_already_claimed") {
+        toast.error(conflictTitle, { description: conflictDescription });
+      } else {
+        toast.error(genericErrorTitle, { description: genericErrorDescription });
+      }
+    } finally {
+      setSavingCandidateIds((current) => {
+        const next = new Set(current);
+        next.delete(candidate.id);
+        return next;
+      });
+    }
+  };
+
   return (
     <section>
       <div className="mb-3 flex items-baseline justify-between">
@@ -68,6 +118,7 @@ export function RecommendedRow({
           <div className="flex gap-4 pb-2">
             {recommended.map((candidate) => {
               const isSaved = shortlist.has(candidate.id);
+              const isSaving = savingCandidateIds.has(candidate.id);
 
               return (
                 <article
@@ -104,10 +155,8 @@ export function RecommendedRow({
 
                   <div className="mt-3 flex justify-center">
                     <button
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        toggleShortlist(candidate.id);
-                      }}
+                      onClick={(event) => handleShortlistClick(event, candidate, isSaved)}
+                      disabled={isSaving}
                       aria-label={
                         isSaved ? "Remove from shortlist" : "Save to shortlist"
                       }
