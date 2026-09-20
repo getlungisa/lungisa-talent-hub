@@ -14,6 +14,10 @@ vi.mock("../components/CandidateCard", () => ({
   CandidateCard: ({ candidate }: { candidate: { name: string } }) => <div>{candidate.name}</div>,
 }));
 
+vi.mock("../data", () => ({
+  candidates: [],
+}));
+
 describe("Browse", () => {
   beforeEach(() => {
     fetchCandidatesMock.mockReset();
@@ -38,7 +42,9 @@ describe("Browse", () => {
     render(<Browse onOpenCandidate={vi.fn()} />);
 
     expect(
-      await screen.findByText("We could not load candidates right now. Please try again shortly."),
+      await screen.findByText(
+        "We could not load candidates right now. Showing saved example profiles instead.",
+      ),
     ).toBeInTheDocument();
   });
 

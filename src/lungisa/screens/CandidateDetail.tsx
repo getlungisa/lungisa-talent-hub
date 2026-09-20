@@ -18,7 +18,15 @@ import {
   Coffee,
 } from "lucide-react";
 
-export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void }) {
+export function CandidateDetail({
+  id,
+  onBack,
+  onCandidateStatusChange,
+}: {
+  id: string;
+  onBack: () => void;
+  onCandidateStatusChange?: (exists: boolean | null) => void;
+}) {
   const mockCandidate = mockCandidates.find((candidate) => candidate.id === id);
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(!mockCandidate);
@@ -29,6 +37,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
       setCandidate(null);
       setLoading(false);
       setLoadError(false);
+      onCandidateStatusChange?.(true);
       return;
     }
 
@@ -37,16 +46,20 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
     const loadCandidate = async () => {
       setLoading(true);
       setLoadError(false);
+      onCandidateStatusChange?.(null);
 
       try {
         const candidates = await fetchCandidates();
         if (cancelled) return;
-        setCandidate(candidates.find((entry) => entry.id === id) ?? null);
+        const nextCandidate = candidates.find((entry) => entry.id === id) ?? null;
+        setCandidate(nextCandidate);
+        onCandidateStatusChange?.(Boolean(nextCandidate));
       } catch (error) {
         console.error("Failed to load candidate:", error);
         if (cancelled) return;
         setCandidate(null);
         setLoadError(true);
+        onCandidateStatusChange?.(null);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -59,7 +72,7 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
     return () => {
       cancelled = true;
     };
-  }, [id, mockCandidate]);
+  }, [id, mockCandidate, onCandidateStatusChange]);
 
   if (mockCandidate) {
     const candidate = mockCandidate;
@@ -266,51 +279,16 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
   );
 }
 
-export function CandidateInterviewBar({ id }: { id: string }) {
+export function CandidateInterviewBar({
+  id,
+  candidateExists,
+}: {
+  id: string;
+  candidateExists: boolean | null;
+}) {
   const { requested, requestInterview } = useLungisa();
-  const mockCandidate = mockCandidates.find((candidate) => candidate.id === id);
-  const [candidateExists, setCandidateExists] = useState(Boolean(mockCandidate));
-  const [loading, setLoading] = useState(!mockCandidate);
-  const [loadError, setLoadError] = useState(false);
 
-  useEffect(() => {
-    if (mockCandidate) {
-      setCandidateExists(true);
-      setLoading(false);
-      setLoadError(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    const loadCandidate = async () => {
-      setLoading(true);
-      setLoadError(false);
-
-      try {
-        const candidates = await fetchCandidates();
-        if (cancelled) return;
-        setCandidateExists(candidates.some((candidate) => candidate.id === id));
-      } catch (error) {
-        console.error("Failed to load candidate interview bar:", error);
-        if (cancelled) return;
-        setCandidateExists(false);
-        setLoadError(true);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadCandidate();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [id, mockCandidate]);
-
-  if (typeof document === "undefined" || loading || loadError || !candidateExists) return null;
+  if (typeof document === "undefined" || candidateExists !== true) return null;
 
   const isRequested = requested.has(id);
 
