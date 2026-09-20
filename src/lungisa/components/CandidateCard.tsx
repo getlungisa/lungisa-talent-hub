@@ -1,9 +1,7 @@
-import { Candidate } from "../data";
 import { Avatar } from "./Avatar";
-import { RatingDots } from "./RatingDots";
-import { VerifiedBadge } from "./VerifiedBadge";
 import { useLungisa } from "../store";
 import { Check, Heart } from "lucide-react";
+import type { Candidate } from "../lib/dashboard";
 
 export function CandidateCard({
   candidate,
@@ -22,31 +20,13 @@ export function CandidateCard({
       className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
     >
       <div className="flex items-start gap-3">
-        <Avatar name={candidate.firstName} />
+        <Avatar name={candidate.name} />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-display text-xl text-primary">{candidate.firstName}</h3>
-          <p className="text-sm text-muted-foreground">{candidate.role}</p>
-          {candidate.verified && (
-            <div className="mt-1.5">
-              <VerifiedBadge />
-            </div>
-          )}
+          <h3 className="truncate font-display text-xl text-primary">{candidate.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {candidate.location ?? "Location not provided"}
+          </p>
         </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {candidate.attributes.map((a) => (
-          <span
-            key={a.label}
-            className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80"
-          >
-            {a.label}
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-4">
-        <RatingDots value={candidate.rating} />
       </div>
 
       <button

@@ -1,10 +1,38 @@
-import { useState } from "react";
-import { candidates, roleFilters } from "../data";
+import { useEffect, useState } from "react";
 import { CandidateCard } from "../components/CandidateCard";
+import { fetchCandidates, type Candidate } from "../lib/dashboard";
 
 export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => void }) {
-  const [filter, setFilter] = useState<(typeof roleFilters)[number]>("All roles");
-  const filtered = filter === "All roles" ? candidates : candidates.filter((c) => c.role === filter);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCandidates = async () => {
+      setLoading(true);
+
+      try {
+        const data = await fetchCandidates();
+        if (cancelled) return;
+        setCandidates(data);
+      } catch (error) {
+        console.error("Failed to load candidates:", error);
+        if (cancelled) return;
+        setCandidates([]);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCandidates();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -15,34 +43,17 @@ export function Browse({ onOpenCandidate }: { onOpenCandidate: (id: string) => v
         </p>
       </div>
 
-      <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 pb-1">
-          {roleFilters.map((r) => {
-            const active = r === filter;
-            return (
-              <button
-                key={r}
-                onClick={() => setFilter(r)}
-                className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm transition ${
-                  active
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-primary hover:border-accent hover:text-accent"
-                }`}
-              >
-                {r}
-              </button>
-            );
-          })}
+      {loading ? (
+        <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
+          Loading candidates...
         </div>
-      </div>
-
-      {filtered.length === 0 ? (
+      ) : candidates.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
-          No candidates in this role yet - we are vetting more this week.
+          No candidates available yet - we are vetting more this week.
         </div>
       ) : (
         <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
-          {filtered.map((c) => (
+          {candidates.map((c) => (
             <CandidateCard key={c.id} candidate={c} onOpen={onOpenCandidate} />
           ))}
         </div>

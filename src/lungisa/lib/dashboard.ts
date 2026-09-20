@@ -23,7 +23,7 @@ type Business = {
   id: string;
 };
 
-type Candidate = {
+export type Candidate = {
   id: string;
   name: string;
   location: string | null;
@@ -46,6 +46,20 @@ type AllocationRecord = {
 // The generated Supabase types have not yet been regenerated for the allocation
 // tables, so keep the runtime queries typed locally until they are included.
 const db = supabase as any;
+
+export async function fetchCandidates(): Promise<Candidate[]> {
+  const { data, error } = await db
+    .from("candidates")
+    .select("id, name, location")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("fetchCandidates error", error);
+    return [];
+  }
+
+  return (data ?? []) as Candidate[];
+}
 
 async function fetchBusiness(user: User): Promise<Business | null> {
   const { data, error } = await db
