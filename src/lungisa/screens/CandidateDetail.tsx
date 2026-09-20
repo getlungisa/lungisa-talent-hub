@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { candidates as mockCandidates } from "../data";
 import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
-import { VerifiedBadge } from "../components/VerifiedBadge";
 import { useLungisa } from "../store";
 import { createPortal } from "react-dom";
 import { fetchCandidates, type Candidate } from "../lib/dashboard";
@@ -79,7 +78,6 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
             <Avatar name={candidate.firstName} size={48} />
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <h1 className="font-display text-3xl text-primary">{candidate.firstName}</h1>
-              {candidate.verified && <VerifiedBadge />}
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 pl-[60px]">
@@ -246,10 +244,8 @@ export function CandidateDetail({ id, onBack }: { id: string; onBack: () => void
                   </div>
                 </dl>
               </div>
-
               <div className="rounded-2xl border border-border bg-card p-5 text-sm text-primary/80">
-                We have verified this candidate and can help coordinate the next step if you would
-                like to meet them.
+                We can help coordinate the next step if you would like to meet this candidate.
               </div>
             </div>
 
