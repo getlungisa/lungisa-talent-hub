@@ -49,6 +49,12 @@ export function Dashboard({
   const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
     new Set(),
   );
+  const [isTrainingPartner, setIsTrainingPartner] = useState<boolean | null>(
+    null,
+  );
+  const [trainingPartnerCandidates, setTrainingPartnerCandidates] = useState<
+    TrainingPartnerCandidate[]
+  >([]);
 
   const loadNeeds = useCallback(async () => {
     if (!user) {
@@ -61,147 +67,39 @@ export function Dashboard({
   }, [user]);
 
   useEffect(() => {
-  let cancelled = false;
+    let cancelled = false;
 
-  const run = async () => {
-    try {
-      if (!user) {
-        setIsTrainingPartner(false);
-        setTrainingPartnerCandidates([]);
-        setPlacements([]);
-        setShortlisted([]);
-        setShortlistedIds(new Set());
-        return;
-      }
+    const run = async () => {
+      try {
+        if (!user) {
+          setIsTrainingPartner(false);
+          setTrainingPartnerCandidates([]);
+          setPlacements([]);
+          setShortlisted([]);
+          setShortlistedIds(new Set());
+          return;
+        }
 
-      const business = await fetchBusiness(user);
-
-      if (cancelled) return;
-
-      const trainingPartner = business?.is_training_partner === true;
-      setIsTrainingPartner(trainingPartner);
-
-      if (trainingPartner) {
-        const candidates = await fetchTrainingPartnerCandidates(user);
+        const business = await fetchBusiness(user);
 
         if (cancelled) return;
 
-        setTrainingPartnerCandidates(candidates);
-        setPlacements([]);
-        setShortlisted([]);
-        setShortlistedIds(new Set());
-        return;
-      }
+        const trainingPartner = business?.is_training_partner === true;
+        setIsTrainingPartner(trainingPartner);
 
-      setTrainingPartnerCandidates([]);
+        if (trainingPartner) {
+          const candidates = await fetchTrainingPartnerCandidates(user);
 
-      const [placementsData, shortlistedData] = await Promise.all([
-        fetchDashboardPlacements(user),
-        fetchDashboardShortlisted(user),
-      ]);
+          if (cancelled) return;
 
-      if (cancelled) return;
+          setTrainingPartnerCandidates(candidates);
+          setPlacements([]);
+          setShortlisted([]);
+          setShortlistedIds(new Set());
+          return;
+        }
 
-      setPlacements(placementsData);
-      setShortlisted(shortlistedData);
-      setShortlistedIds(
-        new Set(shortlistedData.map(({ candidateId }) => candidateId)),
-      );
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-
-      if (cancelled) return;
-
-      setIsTrainingPartner(false);
-      setTrainingPartnerCandidates([]);
-      setPlacements([]);
-      setShortlisted([]);
-      setShortlistedIds(new Set());
-    }
-  };
-
-  run();
-if (isTrainingPartner === true) {
-  return (
-    <div className="space-y-8">
-      <section className="pt-4 sm:pt-8">
-        <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
-          {greeting()}
-        </p>
-        <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
-          {employerName}
-        </h1>
-        <p className="mt-4 max-w-xl text-muted-foreground">
-          Candidates connected to your training partner program.
-        </p>
-      </section>
-
-      <section>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Candidates</h2>
-          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {trainingPartnerCandidates.length} total
-          </span>
-        </div>
-
-        {trainingPartnerCandidates.length === 0 ? (
-          <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-            No candidates are currently linked to your training partner account.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {trainingPartnerCandidates.map((candidate) => {
-              let statusLabel: string;
-
-              switch (candidate.status) {
-                case "shortlisted":
-                  statusLabel = "Shortlisted";
-                  break;
-                case "placed":
-                  statusLabel = candidate.businessName
-                    ? `Placed with ${candidate.businessName}`
-                    : "Placed";
-                  break;
-                case "confirmed":
-                  statusLabel = candidate.businessName
-                    ? `Confirmed with ${candidate.businessName}`
-                    : "Confirmed";
-                  break;
-                default:
-                  statusLabel = "Available";
-              }
-
-              return (
-                <article
-                  key={candidate.id}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5"
-                >
-                  <Avatar name={candidate.name} />
-
-                  <div className="min-w-0">
-                    <h3 className="font-display text-lg text-primary">
-                      {candidate.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {candidate.location ?? "Location not provided"}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {statusLabel}
-                    </p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
-  return () => {
-    cancelled = true;
-  };
-}, [user]);
+        setTrainingPartnerCandidates([]);
 
         const [placementsData, shortlistedData] = await Promise.all([
           fetchDashboardPlacements(user),
@@ -215,15 +113,13 @@ if (isTrainingPartner === true) {
         setShortlistedIds(
           new Set(shortlistedData.map(({ candidateId }) => candidateId)),
         );
-        const [isTrainingPartner, setIsTrainingPartner] = useState<boolean | null>(
-  null,
-);
-const [trainingPartnerCandidates, setTrainingPartnerCandidates] = useState<
-  TrainingPartnerCandidate[]
->([]);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
+
         if (cancelled) return;
+
+        setIsTrainingPartner(false);
+        setTrainingPartnerCandidates([]);
         setPlacements([]);
         setShortlisted([]);
         setShortlistedIds(new Set());
@@ -255,6 +151,84 @@ const [trainingPartnerCandidates, setTrainingPartnerCandidates] = useState<
     },
     [],
   );
+
+  if (isTrainingPartner === true) {
+    return (
+      <div className="space-y-8">
+        <section className="pt-4 sm:pt-8">
+          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            {greeting()}
+          </p>
+          <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
+            {employerName}
+          </h1>
+          <p className="mt-4 max-w-xl text-muted-foreground">
+            Candidates connected to your training partner program.
+          </p>
+        </section>
+
+        <section>
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="font-display text-2xl text-primary">Candidates</h2>
+            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              {trainingPartnerCandidates.length} total
+            </span>
+          </div>
+
+          {trainingPartnerCandidates.length === 0 ? (
+            <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+              No candidates are currently linked to your training partner account.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {trainingPartnerCandidates.map((candidate) => {
+                let statusLabel: string;
+
+                switch (candidate.status) {
+                  case "shortlisted":
+                    statusLabel = "Shortlisted";
+                    break;
+                  case "placed":
+                    statusLabel = candidate.businessName
+                      ? `Placed with ${candidate.businessName}`
+                      : "Placed";
+                    break;
+                  case "confirmed":
+                    statusLabel = candidate.businessName
+                      ? `Confirmed with ${candidate.businessName}`
+                      : "Confirmed";
+                    break;
+                  default:
+                    statusLabel = "Available";
+                }
+
+                return (
+                  <article
+                    key={candidate.id}
+                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5"
+                  >
+                    <Avatar name={candidate.name} />
+
+                    <div className="min-w-0">
+                      <h3 className="font-display text-lg text-primary">
+                        {candidate.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {candidate.location ?? "Location not provided"}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {statusLabel}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">
@@ -405,3 +379,4 @@ const [trainingPartnerCandidates, setTrainingPartnerCandidates] = useState<
     </div>
   );
 }
+
