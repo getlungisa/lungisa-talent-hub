@@ -21,12 +21,35 @@ export type DashboardShortlistedCandidate = {
 
 type Business = {
   id: string;
+  is_training_partner: boolean;
 };
 
 export type Candidate = {
   id: string;
   name: string;
   location: string | null;
+};
+
+export type TrainingPartnerCandidate = {
+  id: string;
+  name: string;
+  location: string | null;
+  status: "available" | "shortlisted" | "placed" | "confirmed";
+  businessName: string | null;
+};
+
+type TrainingPartnerAllocationRecord = {
+  status: string;
+  businesses: {
+    name: string;
+  } | null;
+};
+
+type TrainingPartnerCandidateRecord = Candidate & {
+  candidate_allocations:
+    | TrainingPartnerAllocationRecord
+    | TrainingPartnerAllocationRecord[]
+    | null;
 };
 
 type PlacementRecord = {
@@ -148,10 +171,10 @@ export async function toggleCandidateShortlist(
   return data;
 }
 
-async function fetchBusiness(user: User): Promise<Business | null> {
+export async function fetchBusiness(user: User): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")
-    .select<Business>("id")
+    .select<Business>("id, is_training_partner")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -161,6 +184,54 @@ async function fetchBusiness(user: User): Promise<Business | null> {
   }
 
   return data as Business | null;
+}
+
+function oneAllocation(
+  allocation:
+    | TrainingPartnerAllocationRecord
+    | TrainingPartnerAllocationRecord[]
+    | null,
+): TrainingPartnerAllocationRecord | null {
+  return Array.isArray(allocation) ? allocation[0] ?? null : allocation;
+}
+
+export async function fetchTrainingPartnerCandidates(
+  user: User,
+): Promise<TrainingPartnerCandidate[]> {
+  const business = await fetchBusiness(user);
+
+  if (!business || !business.is_training_partner) {
+    return [];
+  }
+
+  const { data, error } = await db
+    .from("candidates")
+    .select<TrainingPartnerCandidateRecord>(
+      "id, name, location, candidate_allocations!candidate_allocations_candidate_id_fkey(status, businesses!candidate_allocations_business_id_fkey(name))",
+    )
+    .eq("training_partner_id", business.id)
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("fetchTrainingPartnerCandidates error", error);
+    return [];
+  }
+
+  return (data ?? []).map((candidate) => {
+    const allocation = oneAllocation(candidate.candidate_allocations);
+    const status = allocation?.status ?? "available";
+    const showBusinessName = status === "placed" || status === "confirmed";
+
+    return {
+      id: candidate.id,
+      name: candidate.name,
+      location: candidate.location,
+      status: status as TrainingPartnerCandidate["status"],
+      businessName: showBusinessName
+        ? allocation?.businesses?.name ?? null
+        : null,
+    };
+  });
 }
 
 function oneCandidate(candidate: Candidate | Candidate[] | null): Candidate | null {
