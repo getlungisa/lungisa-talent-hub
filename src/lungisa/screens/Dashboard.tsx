@@ -204,9 +204,16 @@ export function Dashboard({
 
                 return (
                   <article
-                    key={candidate.id}
-                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5"
-                  >
+  key={candidate.id}
+  onClick={() =>
+    onOpenCandidate({
+      id: candidate.id,
+      name: candidate.name,
+      location: candidate.location,
+    })
+  }
+  className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
+>
                     <Avatar name={candidate.name} />
 
                     <div className="min-w-0">
