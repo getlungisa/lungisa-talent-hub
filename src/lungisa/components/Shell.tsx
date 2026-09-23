@@ -8,10 +8,12 @@ export type Tab = "dashboard" | "browse" | "activity" | "placements";
 
 export function Shell({
   active,
+  isTrainingPartner,
   onNavigate,
   children,
 }: {
   active: Tab;
+  isTrainingPartner: boolean | null;
   onNavigate: (tab: Tab) => void;
   children: ReactNode;
 }) {
@@ -30,6 +32,10 @@ export function Shell({
     { id: "activity", label: "Activity", icon: Activity },
     { id: "placements", label: "Placements", icon: ClipboardList },
   ];
+  const visibleNavItems =
+    isTrainingPartner === false
+      ? navItems
+      : navItems.filter((item) => item.id === "dashboard");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -60,7 +66,7 @@ export function Shell({
         </div>
 
         <nav className="mx-auto flex max-w-6xl justify-evenly gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = active === item.id;
             return (

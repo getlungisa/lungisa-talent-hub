@@ -13,7 +13,6 @@ import {
   type Need,
 } from "../lib/needs";
 import {
-  fetchBusiness,
   fetchDashboardPlacements,
   fetchDashboardShortlisted,
   fetchTrainingPartnerCandidates,
@@ -31,10 +30,15 @@ function greeting() {
 }
 
 export function Dashboard({
+  isTrainingPartner,
   onOpenCandidate,
   onBrowse,
 }: {
-  onOpenCandidate: (candidate: Candidate | string) => void;
+  isTrainingPartner: boolean | null;
+  onOpenCandidate: (
+    candidate: Candidate | string,
+    isTrainingPartner?: boolean,
+  ) => void;
   onBrowse: () => void;
 }) {
   const { employerName, requested, requestInterview, newThisWeek } =
@@ -48,9 +52,6 @@ export function Dashboard({
   >([]);
   const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
     new Set(),
-  );
-  const [isTrainingPartner, setIsTrainingPartner] = useState<boolean | null>(
-    null,
   );
   const [trainingPartnerCandidates, setTrainingPartnerCandidates] = useState<
     TrainingPartnerCandidate[]
@@ -72,7 +73,6 @@ export function Dashboard({
     const run = async () => {
       try {
         if (!user) {
-          setIsTrainingPartner(false);
           setTrainingPartnerCandidates([]);
           setPlacements([]);
           setShortlisted([]);
@@ -80,14 +80,15 @@ export function Dashboard({
           return;
         }
 
-        const business = await fetchBusiness(user);
+        if (isTrainingPartner === null) {
+          setTrainingPartnerCandidates([]);
+          setPlacements([]);
+          setShortlisted([]);
+          setShortlistedIds(new Set());
+          return;
+        }
 
-        if (cancelled) return;
-
-        const trainingPartner = business?.is_training_partner === true;
-        setIsTrainingPartner(trainingPartner);
-
-        if (trainingPartner) {
+        if (isTrainingPartner) {
           const candidates = await fetchTrainingPartnerCandidates(user);
 
           if (cancelled) return;
@@ -118,7 +119,6 @@ export function Dashboard({
 
         if (cancelled) return;
 
-        setIsTrainingPartner(false);
         setTrainingPartnerCandidates([]);
         setPlacements([]);
         setShortlisted([]);
@@ -131,7 +131,7 @@ export function Dashboard({
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [isTrainingPartner, user]);
 
   const handleShortlistChanged = useCallback(
     (candidateId: string, isShortlisted: boolean) => {
@@ -151,6 +151,24 @@ export function Dashboard({
     },
     [],
   );
+
+  if (isTrainingPartner === null) {
+    return (
+      <div className="space-y-8">
+        <section className="pt-4 sm:pt-8">
+          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            {greeting()}
+          </p>
+          <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
+            {employerName}
+          </h1>
+          <p className="mt-4 max-w-xl text-muted-foreground">
+            Loading dashboard...
+          </p>
+        </section>
+      </div>
+    );
+  }
 
   if (isTrainingPartner === true) {
     return (
@@ -204,19 +222,19 @@ export function Dashboard({
 
                 return (
                   <article
-  key={candidate.id}
-onClick={() =>
-  onOpenCandidate(
-    {
-      id: candidate.id,
-      name: candidate.name,
-      location: candidate.location,
-    },
-    true,
-  )
-}
-  className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
->
+                    key={candidate.id}
+                    onClick={() =>
+                      onOpenCandidate(
+                        {
+                          id: candidate.id,
+                          name: candidate.name,
+                          location: candidate.location,
+                        },
+                        true,
+                      )
+                    }
+                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
+                  >
                     <Avatar name={candidate.name} />
 
                     <div className="min-w-0">
@@ -389,4 +407,3 @@ onClick={() =>
     </div>
   );
 }
-
