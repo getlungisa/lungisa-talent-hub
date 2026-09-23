@@ -215,8 +215,6 @@ export function CandidateDetail({
 
   if (loadError) {
     return (
-  if (loadError) {
-    return (
       <div className="space-y-6 pb-28">
         <button
           onClick={onBack}
