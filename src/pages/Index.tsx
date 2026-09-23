@@ -14,11 +14,13 @@ const Index = () => {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [openCandidate, setOpenCandidate] = useState<string | null>(null);
   const [openCandidateExists, setOpenCandidateExists] = useState<boolean | null>(null);
+  const [openCandidateIsTrainingPartner, setOpenCandidateIsTrainingPartner] = useState(false);
 
-  const goToCandidate = (candidate: Candidate | string) => {
+  const goToCandidate = (candidate: Candidate | string, isTrainingPartner = false) => {
     const id = typeof candidate === "string" ? candidate : candidate.id;
     setOpenCandidate(id);
     setOpenCandidateExists(null);
+    setOpenCandidateIsTrainingPartner(isTrainingPartner);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -30,14 +32,15 @@ const Index = () => {
 
   return (
     <LungisaProvider>
-      <Shell
-        active={tab}
-        onNavigate={(t) => {
-          setOpenCandidate(null);
-          setOpenCandidateExists(null);
-          setTab(t);
-        }}
-      >
+<Shell
+  active={tab}
+  onNavigate={(t) => {
+    setOpenCandidate(null);
+    setOpenCandidateExists(null);
+    setOpenCandidateIsTrainingPartner(false);
+    setTab(t);
+  }}
+>
         {openCandidate ? (
           <CandidateDetail
             id={openCandidate}
@@ -57,8 +60,12 @@ const Index = () => {
           <Placements />
         )}
       </Shell>
-      {openCandidate && (
-        <CandidateInterviewBar id={openCandidate} candidateExists={openCandidateExists} />
+           {openCandidate && (
+        <CandidateInterviewBar
+          id={openCandidate}
+          candidateExists={openCandidateExists}
+          isTrainingPartner={openCandidateIsTrainingPartner}
+        />
       )}
     </LungisaProvider>
   );
