@@ -3,18 +3,22 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Dashboard } from "./Dashboard";
 
 const {
+  authUser,
   fetchOpenNeedsMock,
   fetchDashboardPlacementsMock,
   fetchDashboardShortlistedMock,
+  fetchTrainingPartnerCandidatesMock,
 } = vi.hoisted(() => ({
+  authUser: { id: "business-user", email: "owner@example.com" },
   fetchOpenNeedsMock: vi.fn(),
   fetchDashboardPlacementsMock: vi.fn(),
   fetchDashboardShortlistedMock: vi.fn(),
+  fetchTrainingPartnerCandidatesMock: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({
-    user: { id: "business-user", email: "owner@example.com" },
+    user: authUser,
   }),
 }));
 
@@ -36,6 +40,7 @@ vi.mock("../lib/needs", () => ({
 vi.mock("../lib/dashboard", () => ({
   fetchDashboardPlacements: fetchDashboardPlacementsMock,
   fetchDashboardShortlisted: fetchDashboardShortlistedMock,
+  fetchTrainingPartnerCandidates: fetchTrainingPartnerCandidatesMock,
 }));
 
 vi.mock("../components/RecommendedRow", () => ({
@@ -67,14 +72,21 @@ describe("Dashboard", () => {
         allocatedAt: null,
       },
     ]);
+    fetchTrainingPartnerCandidatesMock.mockResolvedValue([]);
   });
 
   it("opens a shortlisted candidate with the Candidate payload", async () => {
     const onOpenCandidate = vi.fn();
 
-    render(<Dashboard onOpenCandidate={onOpenCandidate} onBrowse={vi.fn()} />);
+    render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={onOpenCandidate}
+        onBrowse={vi.fn()}
+      />,
+    );
 
-    const candidateName = await screen.findByText("Ayanda");
+    const candidateName = await screen.findByRole("heading", { name: "Ayanda" });
     fireEvent.click(candidateName);
 
     expect(onOpenCandidate).toHaveBeenCalledWith({
@@ -82,5 +94,38 @@ describe("Dashboard", () => {
       name: "Ayanda",
       location: "Langa, Cape Town",
     });
+  });
+
+  it("opens a training-partner candidate with the training-partner context", async () => {
+    const onOpenCandidate = vi.fn();
+
+    fetchTrainingPartnerCandidatesMock.mockResolvedValue([
+      {
+        id: "candidate-2",
+        name: "Lindiwe",
+        location: "Khayelitsha, Cape Town",
+        status: "available",
+        businessName: null,
+      },
+    ]);
+
+    render(
+      <Dashboard
+        isTrainingPartner={true}
+        onOpenCandidate={onOpenCandidate}
+        onBrowse={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(await screen.findByRole("heading", { name: "Lindiwe" }));
+
+    expect(onOpenCandidate).toHaveBeenCalledWith(
+      {
+        id: "candidate-2",
+        name: "Lindiwe",
+        location: "Khayelitsha, Cape Town",
+      },
+      true,
+    );
   });
 });
