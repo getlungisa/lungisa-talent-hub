@@ -164,7 +164,7 @@ export function CandidateCard({
            event.stopPropagation();
            if (!isRequested) {
              requestInterview(candidate.id);
-@@
+
          ) : (
            "Request interview"
          )}
