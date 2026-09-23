@@ -205,13 +205,16 @@ export function Dashboard({
                 return (
                   <article
   key={candidate.id}
-  onClick={() =>
-    onOpenCandidate({
+onClick={() =>
+  onOpenCandidate(
+    {
       id: candidate.id,
       name: candidate.name,
       location: candidate.location,
-    })
-  }
+    },
+    true,
+  )
+}
   className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
 >
                     <Avatar name={candidate.name} />
