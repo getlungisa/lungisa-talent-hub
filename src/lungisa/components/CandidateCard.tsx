@@ -159,6 +159,26 @@ export function CandidateCard({
           "Request interview"
         )}
       </button>
+             <button
+         onClick={(event) => {
+           event.stopPropagation();
+           if (!isRequested) {
+             requestInterview(candidate.id);
+@@
+         ) : (
+           "Request interview"
+         )}
+       </button>
+ 
++      {isRequested && (
++        <p className="mt-2 text-center text-xs text-muted-foreground">
++          We'll be in touch within 24 hours.
++        </p>
++      )}
++
+       <div className="mt-3 flex justify-center">
+         <button
+           onClick={handleShortlistClick}
 
       <div className="mt-3 flex justify-center">
         <button
