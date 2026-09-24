@@ -417,3 +417,10 @@ export async function insertBusinessActivity(
 
   return true;
 }
+
+export async function requestCandidateInterview(
+  user: User,
+  candidateId: string,
+): Promise<boolean> {
+  return insertBusinessActivity(user, candidateId, "interview_requested");
+}
