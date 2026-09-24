@@ -4,6 +4,8 @@ import { CandidateCard } from "../components/CandidateCard";
 import {
   fetchCandidates,
   fetchDashboardShortlisted,
+  fetchInterviewRequestedCandidateIds,
+  requestCandidateInterview,
   type Candidate,
 } from "../lib/dashboard";
 
@@ -17,6 +19,9 @@ export function Browse({
   const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
     new Set(),
   );
+  const [interviewRequestedIds, setInterviewRequestedIds] = useState
+    Set<string>
+  >(new Set());
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
@@ -27,6 +32,7 @@ export function Browse({
       if (!user) {
         setCandidates([]);
         setShortlistedIds(new Set());
+        setInterviewRequestedIds(new Set());
         setLoading(false);
         return;
       }
@@ -35,9 +41,14 @@ export function Browse({
       setLoadError(false);
 
       try {
-        const [candidatesData, shortlistedData] = await Promise.all([
+        const [
+          candidatesData,
+          shortlistedData,
+          interviewRequestedData,
+        ] = await Promise.all([
           fetchCandidates(),
           fetchDashboardShortlisted(user),
+          fetchInterviewRequestedCandidateIds(user),
         ]);
 
         if (cancelled) return;
@@ -46,6 +57,7 @@ export function Browse({
         setShortlistedIds(
           new Set(shortlistedData.map(({ candidateId }) => candidateId)),
         );
+        setInterviewRequestedIds(interviewRequestedData);
       } catch (error) {
         console.error("Failed to load candidates:", error);
 
@@ -53,6 +65,7 @@ export function Browse({
 
         setCandidates([]);
         setShortlistedIds(new Set());
+        setInterviewRequestedIds(new Set());
         setLoadError(true);
       } finally {
         if (!cancelled) {
@@ -80,6 +93,28 @@ export function Browse({
 
       return next;
     });
+  };
+
+  const handleInterviewRequested = async (
+    candidateId: string,
+  ): Promise<boolean> => {
+    if (!user) {
+      return false;
+    }
+
+    const saved = await requestCandidateInterview(user, candidateId);
+
+    if (!saved) {
+      return false;
+    }
+
+    setInterviewRequestedIds((current) => {
+      const next = new Set(current);
+      next.add(candidateId);
+      return next;
+    });
+
+    return true;
   };
 
   return (
@@ -115,7 +150,9 @@ export function Browse({
                   key={candidate.id}
                   candidate={candidate}
                   isShortlisted={shortlistedIds.has(candidate.id)}
+                  isRequested={interviewRequestedIds.has(candidate.id)}
                   onShortlistChanged={handleShortlistChanged}
+                  onInterviewRequested={handleInterviewRequested}
                   onOpen={onOpenCandidate}
                 />
               ))}
