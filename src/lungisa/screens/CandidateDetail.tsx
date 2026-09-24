@@ -42,6 +42,7 @@ export function CandidateDetail({
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(!mockCandidate);
   const [loadError, setLoadError] = useState(false);
+  const [isInterviewRequested, setIsInterviewRequested] = useState(false);
   const viewedCandidateIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -63,9 +64,10 @@ export function CandidateDetail({
   useEffect(() => {
     let cancelled = false;
 
-    const loadInterviewStatus = async () => {
+        const loadInterviewStatus = async () => {
       if (!user || !id || mockCandidate) {
         if (!cancelled) {
+          setIsInterviewRequested(false);
           onInterviewRequestedChange?.(false);
         }
         return;
@@ -74,10 +76,12 @@ export function CandidateDetail({
       const requestedCandidateIds = await fetchInterviewRequestedCandidateIds(user);
 
       if (!cancelled) {
-        onInterviewRequestedChange?.(requestedCandidateIds.has(id));
+        const requested = requestedCandidateIds.has(id);
+        setIsInterviewRequested(requested);
+        onInterviewRequestedChange?.(requested);
       }
     };
-
+    
     void loadInterviewStatus();
 
     return () => {
@@ -222,8 +226,10 @@ export function CandidateDetail({
                   Next step
                 </div>
                 <p className="mt-2 text-sm text-primary/80">
-                  We will arrange a time that works for you both - usually within 24 hours.
-                </p>
+  {isInterviewRequested
+    ? "Interview requested, we'll be in touch within 24 hours."
+    : "We will arrange a time that works for you both - usually within 24 hours."}
+</p>
               </div>
             </aside>
           )}
@@ -326,9 +332,11 @@ export function CandidateDetail({
                   <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
                     Next step
                   </div>
-                  <p className="mt-2 text-sm text-primary/80">
-                    We will arrange a time that works for you both - usually within 24 hours.
-                  </p>
+                 <p className="mt-2 text-sm text-primary/80">
+  {isInterviewRequested
+    ? "Interview requested, we'll be in touch within 24 hours."
+    : "We will arrange a time that works for you both - usually within 24 hours."}
+</p>
                 </div>
               </aside>
             )}
