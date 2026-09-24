@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { candidates as mockCandidates } from "../data";
 import { Avatar } from "../components/Avatar";
 import { RatingDots } from "../components/RatingDots";
-import { useLungisa } from "../store";
 import { createPortal } from "react-dom";
 import {
   fetchCandidate,
+  fetchInterviewRequestedCandidateIds,
   insertBusinessActivity,
   type Candidate,
 } from "../lib/dashboard";
@@ -27,11 +27,13 @@ export function CandidateDetail({
   id,
   onBack,
   onCandidateStatusChange,
+  onInterviewRequestedChange,
   isTrainingPartner = false
 }: {
   id: string;
   onBack: () => void;
   onCandidateStatusChange?: (exists: boolean | null) => void;
+  onInterviewRequestedChange?: (requested: boolean) => void;
   isTrainingPartner?: boolean;
 }) {
 
@@ -57,6 +59,31 @@ export function CandidateDetail({
 
     void insertBusinessActivity(user, candidateId, "candidate_viewed");
   }, [user, candidate?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInterviewStatus = async () => {
+      if (!user || !id || mockCandidate) {
+        if (!cancelled) {
+          onInterviewRequestedChange?.(false);
+        }
+        return;
+      }
+
+      const requestedCandidateIds = await fetchInterviewRequestedCandidateIds(user);
+
+      if (!cancelled) {
+        onInterviewRequestedChange?.(requestedCandidateIds.has(id));
+      }
+    };
+
+    void loadInterviewStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, id, mockCandidate, onInterviewRequestedChange]);
 
   useEffect(() => {
     if (mockCandidate) {
@@ -286,14 +313,14 @@ export function CandidateDetail({
                   </div>
                 </dl>
               </div>
-             {!isTrainingPartner && (
-  <div className="rounded-2xl border border-border bg-card p-5 text-sm text-primary/80">
-    We can help coordinate the next step if you would like to meet this candidate.
-  </div>
-)}
+              {!isTrainingPartner && (
+                <div className="rounded-2xl border border-border bg-card p-5 text-sm text-primary/80">
+                  We can help coordinate the next step if you would like to meet this candidate.
+                </div>
+              )}
             </div>
 
-           {!isTrainingPartner && (
+            {!isTrainingPartner && (
               <aside className="lg:sticky lg:top-32 lg:self-start">
                 <div className="rounded-2xl border border-border bg-card p-5">
                   <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
@@ -316,13 +343,15 @@ export function CandidateInterviewBar({
   id,
   candidateExists,
   isTrainingPartner = false,
+  isRequested,
+  onInterviewRequested,
 }: {
   id: string;
   candidateExists: boolean | null;
   isTrainingPartner?: boolean;
+  isRequested: boolean;
+  onInterviewRequested: (candidateId: string) => Promise<boolean>;
 }) {
-  const { requested, requestInterview } = useLungisa();
-
   if (
     typeof document === "undefined" ||
     candidateExists !== true ||
@@ -330,8 +359,6 @@ export function CandidateInterviewBar({
   ) {
     return null;
   }
-
-  const isRequested = requested.has(id);
 
   return createPortal(
     <div
@@ -349,7 +376,11 @@ export function CandidateInterviewBar({
     >
       <div className="mx-auto max-w-6xl px-5 pt-3.5">
         <button
-          onClick={() => !isRequested && requestInterview(id)}
+          onClick={async () => {
+            if (!isRequested) {
+              await onInterviewRequested(id);
+            }
+          }}
           disabled={isRequested}
           className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
             isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
