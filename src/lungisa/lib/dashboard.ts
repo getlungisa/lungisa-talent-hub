@@ -316,6 +316,25 @@ export async function fetchDashboardShortlisted(
   });
 }
 
+export async function fetchInterviewRequestedCandidateIds(
+  user: User,
+): Promise<Set<string>> {
+  const business = await fetchBusiness(user);
+  if (!business) return new Set();
+
+  const { data, error } = await db
+    .from("business_activity")
+    .select<BrowsedActivityRow>("candidate_id")
+    .eq("business_id", business.id)
+    .eq("action_type", "interview_requested");
+
+  if (error) {
+    console.error("fetchInterviewRequestedCandidateIds error", error);
+    return new Set();
+  }
+
+  return new Set((data ?? []).map(({ candidate_id }) => candidate_id));
+}
 export type ActivityRecord = {
   candidateId: string;
   candidateName: string;
