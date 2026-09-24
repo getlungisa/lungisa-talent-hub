@@ -5,7 +5,6 @@ import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { toggleCandidateShortlist } from "../lib/dashboard";
-import { useLungisa } from "../store";
 import { Check, Heart } from "lucide-react";
 import type { Candidate as MockCandidate } from "../data";
 import type { Candidate as SupabaseCandidate } from "../lib/dashboard";
@@ -21,20 +20,22 @@ const shortlistErrorDescription = "Please try again.";
 export function CandidateCard({
   candidate,
   isShortlisted,
+  isRequested,
   onShortlistChanged,
+  onInterviewRequested,
   onOpen,
 }: {
   candidate: Candidate;
   isShortlisted: boolean;
+  isRequested: boolean;
   onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
+  onInterviewRequested: (candidateId: string) => Promise<boolean>;
   onOpen: (id: string) => void;
 }) {
   const { user } = useAuth();
-  const { requested, requestInterview } = useLungisa();
   const shortlistRequestInFlight = useRef(false);
   const [isUpdatingShortlist, setIsUpdatingShortlist] = useState(false);
 
-  const isRequested = requested.has(candidate.id);
   const isSaved = isShortlisted;
   const name = "firstName" in candidate ? candidate.firstName : candidate.name;
   const summary =
@@ -137,10 +138,10 @@ export function CandidateCard({
       )}
 
       <button
-                onClick={(event) => {
+        onClick={async (event) => {
           event.stopPropagation();
           if (!isRequested) {
-            requestInterview(candidate.id);
+            await onInterviewRequested(candidate.id);
           }
         }}
         disabled={isRequested}
