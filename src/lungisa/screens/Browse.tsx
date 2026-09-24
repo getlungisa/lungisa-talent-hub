@@ -19,9 +19,7 @@ export function Browse({
   const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(
     new Set(),
   );
-const [interviewRequestedIds, setInterviewRequestedIds] = useState
-    Set<string>
-  >(new Set());
+const [interviewRequestedIds, setInterviewRequestedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
