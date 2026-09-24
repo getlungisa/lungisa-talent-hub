@@ -7,7 +7,7 @@ import { Placements } from "@/lungisa/screens/Placements";
 import { CandidateDetail, CandidateInterviewBar } from "@/lungisa/screens/CandidateDetail";
 import { Activity } from "@/lungisa/screens/Activity";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchBusiness, type Candidate } from "@/lungisa/lib/dashboard";
+import { fetchBusiness, requestCandidateInterview, type Candidate } from "@/lungisa/lib/dashboard";
 
 type Tab = "dashboard" | "browse" | "activity" | "placements";
 
@@ -18,6 +18,7 @@ const Index = () => {
   const [openCandidate, setOpenCandidate] = useState<string | null>(null);
   const [openCandidateExists, setOpenCandidateExists] = useState<boolean | null>(null);
   const [openCandidateIsTrainingPartner, setOpenCandidateIsTrainingPartner] = useState(false);
+  const [isInterviewRequested, setIsInterviewRequested] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +61,7 @@ const Index = () => {
     setOpenCandidate(id);
     setOpenCandidateExists(null);
     setOpenCandidateIsTrainingPartner(isTrainingPartner);
+    setIsInterviewRequested(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -67,7 +69,22 @@ const Index = () => {
     setOpenCandidate(null);
     setOpenCandidateExists(null);
     setOpenCandidateIsTrainingPartner(false);
+    setIsInterviewRequested(false);
     setTab(isTrainingPartner === true ? "dashboard" : "browse");
+  };
+
+  const handleInterviewRequested = async (candidateId: string): Promise<boolean> => {
+    if (!user) {
+      return false;
+    }
+
+    const saved = await requestCandidateInterview(user, candidateId);
+
+    if (saved) {
+      setIsInterviewRequested(true);
+    }
+
+    return saved;
   };
 
   return (
@@ -82,6 +99,7 @@ const Index = () => {
           setOpenCandidate(null);
           setOpenCandidateExists(null);
           setOpenCandidateIsTrainingPartner(false);
+          setIsInterviewRequested(false);
           setTab(nextTab);
         }}
       >
@@ -89,10 +107,12 @@ const Index = () => {
           <CandidateDetail
             id={openCandidate}
             isTrainingPartner={openCandidateIsTrainingPartner}
+            onInterviewRequestedChange={setIsInterviewRequested}
             onBack={() => {
               setOpenCandidate(null);
               setOpenCandidateExists(null);
               setOpenCandidateIsTrainingPartner(false);
+              setIsInterviewRequested(false);
             }}
             onCandidateStatusChange={setOpenCandidateExists}
           />
@@ -115,6 +135,8 @@ const Index = () => {
           id={openCandidate}
           candidateExists={openCandidateExists}
           isTrainingPartner={openCandidateIsTrainingPartner}
+          isRequested={isInterviewRequested}
+          onInterviewRequested={handleInterviewRequested}
         />
       )}
     </LungisaProvider>
