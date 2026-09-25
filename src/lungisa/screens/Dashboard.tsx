@@ -154,8 +154,6 @@ export function Dashboard({
   }, []);
 
   const handleShortlistChanged = useCallback(
-
-  const handleShortlistChanged = useCallback(
     (candidateId: string, isShortlisted: boolean) => {
       setShortlistedIds((current) => {
         const next = new Set(current);
