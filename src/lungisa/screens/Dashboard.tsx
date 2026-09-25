@@ -134,7 +134,6 @@ export function Dashboard({
       cancelled = true;
     };
   }, [isTrainingPartner, user]);
-    }, [isTrainingPartner, user]);
 
   useEffect(() => {
     let cancelled = false;
