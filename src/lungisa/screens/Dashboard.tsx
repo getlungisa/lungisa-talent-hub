@@ -19,6 +19,7 @@ import {
   type Candidate,
   type DashboardPlacement,
   type DashboardShortlistedCandidate,
+  fetchNewCandidatesThisWeekCount,
   type TrainingPartnerCandidate,
 } from "../lib/dashboard";
 
@@ -41,10 +42,11 @@ export function Dashboard({
   ) => void;
   onBrowse: () => void;
 }) {
-  const { employerName, requested, requestInterview, newThisWeek } =
+  const { employerName, requested, requestInterview } =
     useLungisa();
   const { user } = useAuth();
   const [needSheetOpen, setNeedSheetOpen] = useState(false);
+  const [newThisWeek, setNewThisWeek] = useState(0);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [placements, setPlacements] = useState<DashboardPlacement[]>([]);
   const [shortlisted, setShortlisted] = useState<
@@ -132,6 +134,27 @@ export function Dashboard({
       cancelled = true;
     };
   }, [isTrainingPartner, user]);
+    }, [isTrainingPartner, user]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadNewCandidatesCount = async () => {
+      const count = await fetchNewCandidatesThisWeekCount();
+
+      if (!cancelled) {
+        setNewThisWeek(count);
+      }
+    };
+
+    void loadNewCandidatesCount();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleShortlistChanged = useCallback(
 
   const handleShortlistChanged = useCallback(
     (candidateId: string, isShortlisted: boolean) => {
