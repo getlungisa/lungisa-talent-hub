@@ -16,7 +16,6 @@ type Store = {
   requestInterview: (id: string) => boolean;
   shortlist: Set<string>;
   toggleShortlist: (id: string) => void;
-  newThisWeek: number;
   stats: { browsed: number; interviews: number; placements: number };
   placements: Placement[];
 };
@@ -76,7 +75,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
           else next.add(id);
           return next;
         }),
-      newThisWeek: 12,
+ 
       stats: { browsed: 14, interviews, placements: 1 },
       placements: [
         {
