@@ -89,6 +89,7 @@ type RpcResult<T> = Promise<{
 
 type UntypedSelectQuery<T> = {
   eq: (column: string, value: string) => UntypedSelectQuery<T>;
+  gte: (column: string, value: string) => QueryResult<T[]>;
   order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
   maybeSingle: () => QueryResult<T>;
 };
@@ -119,6 +120,24 @@ export async function fetchCandidates(): Promise<Candidate[]> {
   }
 
   return (data ?? []) as Candidate[];
+}
+
+export async function fetchNewCandidatesThisWeekCount(): Promise<number> {
+  const cutoff = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+
+  const { data, error } = await db
+    .from("candidates")
+    .select<{ id: string }>("id")
+    .gte("created_at", cutoff);
+
+  if (error) {
+    console.error("fetchNewCandidatesThisWeekCount error", error);
+    return 0;
+  }
+
+  return data?.length ?? 0;
 }
 
 export async function fetchCandidate(id: string): Promise<Candidate | null> {
