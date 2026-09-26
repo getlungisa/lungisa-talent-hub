@@ -74,7 +74,7 @@ describe("Shell", () => {
     const primaryGroup = screen.getByTestId("primary-nav-group");
     const aboutButton = screen.getByRole("button", { name: "About" });
 
-    expect(primaryGroup).toHaveClass("md:justify-between");
+    expect(primaryGroup).toHaveClass("sm:justify-between");
     expect(primaryGroup).not.toContainElement(aboutButton);
     expect(aboutButton).toHaveClass("ml-auto");
   });
