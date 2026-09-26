@@ -67,7 +67,7 @@ export function Shell({
           </div>
         </div>
 
-       <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-5 pb-1">
+       <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
          <div
            data-testid="primary-nav-group"
            className="flex items-center gap-4 sm:w-full sm:max-w-3xl sm:justify-between sm:gap-6"
