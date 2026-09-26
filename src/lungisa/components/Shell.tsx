@@ -38,10 +38,12 @@ export function Shell({
     isTrainingPartner === false
       ? navItems
       : navItems.filter((item) => item.id === "dashboard");
-  const primaryNavGroupClassName =
-    visibleNavItems.length > 1
-      ? "flex items-center gap-4 sm:gap-8 lg:w-[70%] lg:justify-between lg:gap-0"
-      : "flex items-center gap-4 sm:gap-8";
+  const primaryNavGroupClassName = [
+    "flex items-center gap-4 sm:gap-8",
+    visibleNavItems.length > 1 && "lg:w-[70%] lg:justify-between lg:gap-0",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
