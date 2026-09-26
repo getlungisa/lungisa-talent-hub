@@ -97,3 +97,7 @@ export function Shell({
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">
   {children}
 </main>
+            {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
+    </div>
+  );
+}
