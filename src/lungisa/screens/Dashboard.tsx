@@ -280,40 +280,45 @@ export function Dashboard({
 
   return (
     <div className="space-y-12">
-     <section className="pt-4 sm:pt-8">
-  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h1 className="font-display text-3xl text-primary sm:text-4xl">
-        {greeting()}, {employerName}
-      </h1>
+      <section className="pt-4 sm:pt-8">
+        <div
+          data-testid="dashboard-hero"
+          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <h1 className="font-display text-3xl text-primary sm:text-4xl">
+              {greeting()}, {employerName}
+            </h1>
 
-      <div className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
-        <span>
-          <span className="font-medium text-primary">{newThisWeek} new candidates</span>{" "}
-          verified this week
-        </span>
-      </div>
-    </div>
+            <div className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
+              <span>
+                <span className="font-medium text-primary">
+                  {newThisWeek} new candidates
+                </span>{" "}
+                verified this week
+              </span>
+            </div>
+          </div>
 
-    <div className="flex flex-col gap-2 sm:flex-row">
-      <button
-        onClick={() => setNeedSheetOpen(true)}
-        className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground shadow-sm transition hover:brightness-95"
-      >
-        I need someone
-        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-      </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              onClick={() => setNeedSheetOpen(true)}
+              className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground shadow-sm transition hover:brightness-95"
+            >
+              I need someone
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </button>
 
-      <button
-        onClick={onBrowse}
-        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-transparent px-4 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
-      >
-        Browse candidates
-      </button>
-    </div>
-  </div>
-</section>
+            <button
+              onClick={onBrowse}
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-transparent px-4 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
+            >
+              Browse candidates
+            </button>
+          </div>
+        </div>
+      </section>
 
       {needs.length > 0 && (
         <section>

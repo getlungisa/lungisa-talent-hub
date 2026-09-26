@@ -68,46 +68,49 @@ export function Shell({
         </div>
 
        <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
-  <div className="-ml-3 flex w-full max-w-md items-center justify-between sm:max-w-lg">
-    {visibleNavItems.map((item) => {
-      const Icon = item.icon;
-      const isActive = active === item.id;
+         <div
+           data-testid="primary-nav-group"
+           className="flex items-center gap-4 sm:w-full sm:max-w-2xl sm:justify-between sm:gap-6 md:max-w-3xl md:gap-8 lg:max-w-4xl"
+         >
+           {visibleNavItems.map((item) => {
+             const Icon = item.icon;
+             const isActive = active === item.id;
 
-      return (
-        <button
-          key={item.id}
-          onClick={() => onNavigate(item.id)}
-          className={`relative flex items-center gap-2 whitespace-nowrap px-3 py-2.5 text-sm transition ${
-            isActive
-              ? "text-primary"
-              : "text-muted-foreground hover:text-primary"
-          }`}
-        >
-          <Icon className="h-4 w-4" />
-          <span>{item.label}</span>
+             return (
+               <button
+                 key={item.id}
+                 onClick={() => onNavigate(item.id)}
+                 className={`relative flex items-center gap-2 whitespace-nowrap px-3 py-2.5 text-sm transition ${
+                   isActive
+                     ? "text-primary"
+                     : "text-muted-foreground hover:text-primary"
+                 }`}
+               >
+                 <Icon className="h-4 w-4" />
+                 <span>{item.label}</span>
 
-          {isActive && (
-            <span className="absolute inset-x-2 -bottom-px h-px bg-accent" />
-          )}
-        </button>
-      );
-    })}
-  </div>
+                 {isActive && (
+                   <span className="absolute inset-x-2 -bottom-px h-px bg-accent" />
+                 )}
+               </button>
+             );
+           })}
+         </div>
 
-  <button
-    onClick={() => setAboutOpen(true)}
-    className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
-  >
-    About
-  </button>
-</nav>
-        
+         <button
+           onClick={() => setAboutOpen(true)}
+           className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
+         >
+           About
+         </button>
+       </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">
-  {children}
-</main>
-            {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
+        {children}
+      </main>
+
+      {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }
