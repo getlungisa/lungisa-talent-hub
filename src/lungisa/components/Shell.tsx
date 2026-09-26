@@ -38,6 +38,10 @@ export function Shell({
     isTrainingPartner === false
       ? navItems
       : navItems.filter((item) => item.id === "dashboard");
+  const primaryNavGroupClassName =
+    visibleNavItems.length > 1
+      ? "flex items-center gap-4 sm:gap-8 lg:w-[70%] lg:justify-between lg:gap-0"
+      : "flex items-center gap-4 sm:gap-8";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -70,7 +74,7 @@ export function Shell({
        <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
          <div
            data-testid="primary-nav-group"
-           className="flex items-center gap-4 sm:gap-8 md:gap-10"
+           className={primaryNavGroupClassName}
          >
            {visibleNavItems.map((item) => {
              const Icon = item.icon;
