@@ -281,7 +281,7 @@ export function Dashboard({
   return (
     <div className="space-y-12">
      <section className="pt-4 sm:pt-8">
-  <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div className="flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
       <h1 className="font-display text-3xl text-primary sm:text-4xl">
         {greeting()}, {employerName}
