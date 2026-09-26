@@ -81,7 +81,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
                 
                   href="mailto:hi@lungisa.co"
                   className="text-accent underline-offset-2 hover:underline"
-                <a>
+                >
                   hi@lungisa.co
                 </a>{" "}
                 and we'll get back to you.
@@ -102,7 +102,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
                 
                   href="mailto:hi@lungisa.co"
                   className="text-accent underline-offset-2 hover:underline"
-                <a>
+                >
                   hi@lungisa.co
                 </a>{" "}
                 and we'll get back to you within 48 hours.
