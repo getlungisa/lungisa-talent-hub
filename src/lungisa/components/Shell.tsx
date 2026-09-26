@@ -39,7 +39,7 @@ export function Shell({
       ? navItems
       : navItems.filter((item) => item.id === "dashboard");
   const primaryNavGroupClassName = [
-    "flex items-center gap-4 sm:gap-8",
+    "flex items-center gap-4 sm:gap-8 md:gap-10",
     visibleNavItems.length > 1 && "lg:w-[70%] lg:justify-between lg:gap-0",
   ]
     .filter(Boolean)
