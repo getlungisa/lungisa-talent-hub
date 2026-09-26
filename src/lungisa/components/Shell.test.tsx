@@ -58,7 +58,7 @@ describe("Shell", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("keeps About separate from the stretched primary nav group", () => {
+  it("keeps About separate while primary nav items stay grouped", () => {
     const { container } = render(
       <MemoryRouter>
         <Shell
@@ -74,7 +74,7 @@ describe("Shell", () => {
     const primaryGroup = screen.getByTestId("primary-nav-group");
     const aboutButton = screen.getByRole("button", { name: "About" });
 
-    expect(primaryGroup).toHaveClass("sm:justify-between");
+    expect(primaryGroup).toHaveClass("sm:gap-8");
     expect(primaryGroup).not.toContainElement(aboutButton);
     expect(aboutButton).toHaveClass("ml-auto");
   });

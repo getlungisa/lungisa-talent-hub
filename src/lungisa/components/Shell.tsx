@@ -70,7 +70,7 @@ export function Shell({
        <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
          <div
            data-testid="primary-nav-group"
-           className="flex items-center gap-4 sm:w-full sm:max-w-3xl sm:justify-between sm:gap-6"
+           className="flex items-center gap-4 sm:gap-8 md:gap-10"
          >
            {visibleNavItems.map((item) => {
              const Icon = item.icon;
