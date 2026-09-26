@@ -57,6 +57,12 @@ export function Shell({
 
           <div className="ml-auto flex items-center gap-2">
             <button
+  onClick={() => setAboutOpen(true)}
+  className="text-sm text-muted-foreground transition hover:text-primary"
+>
+  About
+</button>
+            <button
               onClick={handleSignOut}
               aria-label="Sign out"
               title="Sign out"
@@ -91,18 +97,3 @@ export function Shell({
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">
   {children}
 </main>
-
-<footer className="mx-auto flex max-w-6xl items-center justify-between px-5 pb-6 text-xs text-muted-foreground">
-  <span>© Lungisa</span>
-  <button
-    onClick={() => setAboutOpen(true)}
-    className="transition hover:text-primary"
-  >
-    About
-  </button>
-</footer>
-
-{aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
-    </div>
-  );
-}
