@@ -71,8 +71,7 @@ describe("Shell", () => {
       </MemoryRouter>,
     );
 
-    const nav = container.querySelector("nav");
-    const primaryGroup = nav?.querySelector("div");
+    const primaryGroup = screen.getByTestId("primary-nav-group");
     const aboutButton = screen.getByRole("button", { name: "About" });
 
     expect(primaryGroup).toHaveClass("md:justify-between");

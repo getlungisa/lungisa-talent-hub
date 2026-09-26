@@ -144,10 +144,8 @@ describe("Dashboard", () => {
 
     await screen.findByText(/verified this week/i);
 
-    const greetingHeading = screen.getByRole("heading", {
-      name: /good (morning|afternoon|evening), test business/i,
-    });
-    const heroLayout = greetingHeading.closest("div")?.parentElement;
+    const heroLayout = screen.getByTestId("dashboard-hero");
+
     expect(heroLayout).toHaveClass("sm:justify-between");
     expect(heroLayout).not.toHaveClass("max-w-4xl");
   });
