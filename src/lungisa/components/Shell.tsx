@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useLungisa } from "../store";
 import { Coffee, LayoutDashboard, Users, Activity, ClipboardList, LogOut } from "lucide-react";
+import { AboutModal } from "./AboutModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +21,7 @@ export function Shell({
   const { employerName } = useLungisa();
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -86,7 +88,21 @@ export function Shell({
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">{children}</main>
+      <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">
+  {children}
+</main>
+
+<footer className="mx-auto flex max-w-6xl items-center justify-between px-5 pb-6 text-xs text-muted-foreground">
+  <span>© Lungisa</span>
+  <button
+    onClick={() => setAboutOpen(true)}
+    className="transition hover:text-primary"
+  >
+    About
+  </button>
+</footer>
+
+{aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }
