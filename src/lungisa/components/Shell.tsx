@@ -67,10 +67,10 @@ export function Shell({
           </div>
         </div>
 
-       <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
+       <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-5 pb-1">
          <div
            data-testid="primary-nav-group"
-           className="flex items-center gap-4 sm:w-full sm:max-w-2xl sm:justify-between sm:gap-6 md:max-w-3xl md:gap-8 lg:max-w-4xl"
+           className="flex items-center gap-4 sm:w-full sm:max-w-3xl sm:justify-between sm:gap-6"
          >
            {visibleNavItems.map((item) => {
              const Icon = item.icon;
