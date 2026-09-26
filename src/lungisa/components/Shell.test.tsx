@@ -37,6 +37,11 @@ describe("Shell", () => {
     expect(
       screen.queryByRole("button", { name: "Placements" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByTestId("primary-nav-group")).not.toHaveClass(
+      "lg:w-[70%]",
+      "lg:justify-between",
+      "lg:gap-0",
+    );
   });
 
   it("hides restricted tabs while the role is still loading", () => {
@@ -59,7 +64,7 @@ describe("Shell", () => {
   });
 
   it("keeps About separate while primary nav items stay grouped", () => {
-    const { container } = render(
+    render(
       <MemoryRouter>
         <Shell
           active="dashboard"
@@ -74,7 +79,7 @@ describe("Shell", () => {
     const primaryGroup = screen.getByTestId("primary-nav-group");
     const aboutButton = screen.getByRole("button", { name: "About" });
 
-    expect(primaryGroup).toHaveClass("sm:gap-8");
+    expect(primaryGroup).toHaveClass("lg:w-[70%]", "lg:justify-between", "lg:gap-0");
     expect(primaryGroup).not.toContainElement(aboutButton);
     expect(aboutButton).toHaveClass("ml-auto");
   });
