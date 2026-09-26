@@ -68,6 +68,7 @@ export function Shell({
         </div>
 
         <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
+          <div className="flex items-center gap-8">
           {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = active === item.id;
@@ -85,6 +86,8 @@ export function Shell({
               </button>
             );
           })}
+            </div>
+          
           <button
   onClick={() => setAboutOpen(true)}
   className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
