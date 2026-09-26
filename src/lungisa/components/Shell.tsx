@@ -57,12 +57,6 @@ export function Shell({
 
           <div className="ml-auto flex items-center gap-2">
             <button
-  onClick={() => setAboutOpen(true)}
-  className="text-sm text-muted-foreground transition hover:text-primary"
->
-  About
-</button>
-            <button
               onClick={handleSignOut}
               aria-label="Sign out"
               title="Sign out"
@@ -73,7 +67,7 @@ export function Shell({
           </div>
         </div>
 
-        <nav className="mx-auto flex max-w-6xl justify-evenly gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
+        <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
           {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = active === item.id;
@@ -91,6 +85,12 @@ export function Shell({
               </button>
             );
           })}
+          <button
+  onClick={() => setAboutOpen(true)}
+  className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
+>
+  About
+</button>
         </nav>
       </header>
 
