@@ -37,6 +37,11 @@ describe("Shell", () => {
     expect(
       screen.queryByRole("button", { name: "Placements" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByTestId("primary-nav-group")).not.toHaveClass(
+      "lg:w-[70%]",
+      "lg:justify-between",
+      "lg:gap-0",
+    );
   });
 
   it("hides restricted tabs while the role is still loading", () => {
