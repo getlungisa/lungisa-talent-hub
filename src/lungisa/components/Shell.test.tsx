@@ -57,4 +57,26 @@ describe("Shell", () => {
       screen.queryByRole("button", { name: "Candidates" }),
     ).not.toBeInTheDocument();
   });
+
+  it("keeps About separate from the stretched primary nav group", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Shell
+          active="dashboard"
+          isTrainingPartner={false}
+          onNavigate={vi.fn()}
+        >
+          <div>content</div>
+        </Shell>
+      </MemoryRouter>,
+    );
+
+    const nav = container.querySelector("nav");
+    const primaryGroup = nav?.querySelector("div");
+    const aboutButton = screen.getByRole("button", { name: "About" });
+
+    expect(primaryGroup).toHaveClass("md:justify-between");
+    expect(primaryGroup).not.toContainElement(aboutButton);
+    expect(aboutButton).toHaveClass("ml-auto");
+  });
 });

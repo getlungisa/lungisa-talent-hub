@@ -8,12 +8,14 @@ const {
   fetchDashboardPlacementsMock,
   fetchDashboardShortlistedMock,
   fetchTrainingPartnerCandidatesMock,
+  fetchNewCandidatesThisWeekCountMock,
 } = vi.hoisted(() => ({
   authUser: { id: "business-user", email: "owner@example.com" },
   fetchOpenNeedsMock: vi.fn(),
   fetchDashboardPlacementsMock: vi.fn(),
   fetchDashboardShortlistedMock: vi.fn(),
   fetchTrainingPartnerCandidatesMock: vi.fn(),
+  fetchNewCandidatesThisWeekCountMock: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -41,6 +43,7 @@ vi.mock("../lib/dashboard", () => ({
   fetchDashboardPlacements: fetchDashboardPlacementsMock,
   fetchDashboardShortlisted: fetchDashboardShortlistedMock,
   fetchTrainingPartnerCandidates: fetchTrainingPartnerCandidatesMock,
+  fetchNewCandidatesThisWeekCount: fetchNewCandidatesThisWeekCountMock,
 }));
 
 vi.mock("../components/RecommendedRow", () => ({
@@ -73,6 +76,7 @@ describe("Dashboard", () => {
       },
     ]);
     fetchTrainingPartnerCandidatesMock.mockResolvedValue([]);
+    fetchNewCandidatesThisWeekCountMock.mockResolvedValue(3);
   });
 
   it("opens a shortlisted candidate with the Candidate payload", async () => {
@@ -127,5 +131,24 @@ describe("Dashboard", () => {
       },
       true,
     );
+  });
+
+  it("uses the full content width for the hero section", async () => {
+    render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+
+    await screen.findByText(/verified this week/i);
+
+    const greetingHeading = screen.getByRole("heading", {
+      name: /good (morning|afternoon|evening), test business/i,
+    });
+    const heroLayout = greetingHeading.closest("div")?.parentElement;
+    expect(heroLayout).toHaveClass("sm:justify-between");
+    expect(heroLayout).not.toHaveClass("max-w-4xl");
   });
 });
