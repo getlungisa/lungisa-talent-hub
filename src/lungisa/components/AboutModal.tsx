@@ -78,7 +78,8 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
               <h3 className="font-display text-xl text-primary">Contact</h3>
               <p className="mt-2">
                 Questions, feedback, or anything else, email{" "}
-                
+
+                  <a
                   href="mailto:hi@lungisa.co"
                   className="text-accent underline-offset-2 hover:underline"
                 >
@@ -99,7 +100,8 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
                 only a summary of a candidate's strengths. If you'd like to see
                 our full privacy notice, or have any question about how
                 information is used, email{" "}
-                
+
+                  <a
                   href="mailto:hi@lungisa.co"
                   className="text-accent underline-offset-2 hover:underline"
                 >
