@@ -59,7 +59,7 @@ describe("Shell", () => {
   });
 
   it("keeps About separate while primary nav items stay grouped", () => {
-    const { container } = render(
+    render(
       <MemoryRouter>
         <Shell
           active="dashboard"
