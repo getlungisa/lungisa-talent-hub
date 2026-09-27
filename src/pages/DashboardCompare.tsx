@@ -157,10 +157,10 @@ export default function DashboardCompare() {
           </span>
         </div>
         <nav
-          className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5"
+          className="mx-auto flex max-w-6xl items-stretch px-2 pb-1 sm:items-center sm:gap-1 sm:px-5"
           aria-label="Lungisa navigation"
         >
-          <div className="flex items-center gap-4 sm:gap-8 md:gap-10 lg:w-[70%] lg:justify-between lg:gap-0">
+          <div className="flex min-w-0 flex-1 items-stretch justify-between sm:flex-none sm:items-center sm:gap-8 md:gap-10 lg:w-[70%] lg:justify-between lg:gap-0">
             {navigation.map((item) => {
               const Icon = item.icon;
 
@@ -170,7 +170,7 @@ export default function DashboardCompare() {
                   type="button"
                   variant="ghost"
                   aria-current={item.active ? "page" : undefined}
-                  className={`relative h-auto rounded-none px-3 py-2.5 text-sm font-normal hover:bg-transparent ${
+                  className={`relative h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal hover:bg-transparent sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm ${
                     item.active
                       ? "text-primary hover:text-primary"
                       : "text-muted-foreground hover:text-primary"
@@ -189,8 +189,9 @@ export default function DashboardCompare() {
             type="button"
             variant="ghost"
             onClick={() => setAboutOpen(true)}
-            className="ml-auto h-auto rounded-none px-3 py-2.5 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary"
+            className="ml-0 h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal text-muted-foreground hover:bg-transparent hover:text-primary sm:ml-auto sm:block sm:px-3 sm:py-2.5 sm:text-sm"
           >
+            <Coffee className="h-4 w-4 sm:hidden" />
             About
           </Button>
         </nav>
