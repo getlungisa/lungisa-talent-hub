@@ -1,214 +1,84 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RecommendedRow } from "./RecommendedRow";
 
-const {
-  fetchCandidatesMock,
-  toggleCandidateShortlistMock,
-  useAuthMock,
-  useLungisaMock,
-  toastErrorMock,
-  toggleShortlistMock,
-} = vi.hoisted(() => ({
-  fetchCandidatesMock: vi.fn(),
-  toggleCandidateShortlistMock: vi.fn(),
-  useAuthMock: vi.fn(),
-  useLungisaMock: vi.fn(),
-  toastErrorMock: vi.fn(),
-  toggleShortlistMock: vi.fn(),
+const { fetchMock, toggleMock, authMock, toastMock, onChanged } = vi.hoisted(() => ({
+  fetchMock: vi.fn(), toggleMock: vi.fn(), authMock: vi.fn(), toastMock: vi.fn(), onChanged: vi.fn(),
 }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: authMock }));
+vi.mock("sonner", () => ({ toast: { error: toastMock } }));
+vi.mock("../lib/dashboard", () => ({ fetchCandidates: fetchMock, toggleCandidateShortlist: toggleMock }));
+vi.mock("./Avatar", () => ({ Avatar: ({ name }: { name: string }) => <div>{name}</div> }));
 
-vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: useAuthMock,
-}));
-
-vi.mock("sonner", () => ({
-  toast: {
-    error: toastErrorMock,
-  },
-}));
-
-vi.mock("../lib/dashboard", () => ({
-  fetchCandidates: fetchCandidatesMock,
-  toggleCandidateShortlist: toggleCandidateShortlistMock,
-}));
-
-vi.mock("../store", () => ({
-  useLungisa: useLungisaMock,
-}));
-
-vi.mock("./Avatar", () => ({
-  Avatar: ({ name }: { name: string }) => <div>{name}</div>,
-}));
+const candidate = { id: "candidate-1", name: "Ayanda", location: "Langa, Cape Town" };
+const props = { onOpenCandidate: vi.fn(), onSeeAll: vi.fn(), shortlistedIds: new Set<string>(), onShortlistChanged: onChanged };
 
 function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return { promise, resolve, reject };
+  let resolve: (value: T) => void = () => {};
+  const promise = new Promise<T>((res) => { resolve = res; });
+  return { promise, resolve };
 }
 
 describe("RecommendedRow shortlist interactions", () => {
-  const candidate = {
-    id: "candidate-1",
-    name: "Ayanda",
-    location: "Langa, Cape Town",
-  };
-
   beforeEach(() => {
-    fetchCandidatesMock.mockReset();
-    toggleCandidateShortlistMock.mockReset();
-    useAuthMock.mockReset();
-    useLungisaMock.mockReset();
-    toastErrorMock.mockReset();
-    toggleShortlistMock.mockReset();
-
-    fetchCandidatesMock.mockResolvedValue([candidate]);
-    useAuthMock.mockReturnValue({
-      user: { id: "user-1" },
-    });
-    useLungisaMock.mockReturnValue({
-      shortlist: new Set(),
-      toggleShortlist: toggleShortlistMock,
-    });
+    vi.clearAllMocks();
+    fetchMock.mockResolvedValue([candidate]);
+    authMock.mockReturnValue({ user: { id: "user-1" } });
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("waits for the persistence toggle before updating shortlist state", async () => {
-    const pendingToggle = deferred<boolean>();
-    toggleCandidateShortlistMock.mockReturnValue(pendingToggle.promise);
-
-    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
+  it("updates the parent only after the shortlist request succeeds", async () => {
+    const pending = deferred<boolean>();
+    toggleMock.mockReturnValue(pending.promise);
+    render(<RecommendedRow {...props} />);
     fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
-
-    expect(toggleCandidateShortlistMock).toHaveBeenCalledWith({ id: "user-1" }, "candidate-1", false);
-    expect(toggleShortlistMock).not.toHaveBeenCalled();
-
-    await act(async () => {
-      pendingToggle.resolve(true);
-      await pendingToggle.promise;
-    });
-
-    await waitFor(() => {
-      expect(toggleShortlistMock).toHaveBeenCalledWith("candidate-1");
-    });
+    expect(toggleMock).toHaveBeenCalledWith({ id: "user-1" }, candidate.id, false);
+    expect(onChanged).not.toHaveBeenCalled();
+    await act(async () => { pending.resolve(true); await pending.promise; });
+    expect(onChanged).toHaveBeenCalledWith(candidate.id, true);
   });
 
-  it("shows the generic error toast for shortlist failures", async () => {
-    toggleCandidateShortlistMock.mockRejectedValue(new Error("boom"));
-
-    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
-    fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
-
-    await waitFor(() => {
-      expect(toastErrorMock).toHaveBeenCalledWith("Couldn't update shortlist", {
-        description: "Please try again.",
-      });
-    });
-    expect(toggleShortlistMock).not.toHaveBeenCalled();
-  });
-
-  it("shows the required conflict toast when the candidate was already claimed", async () => {
-    toggleCandidateShortlistMock.mockRejectedValue(new Error("candidate_already_claimed"));
-
-    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
-    fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
-
-    await waitFor(() => {
-      expect(toastErrorMock).toHaveBeenCalledWith("Candidate no longer available", {
-        description:
-          "Another business shortlisted this candidate first. The candidate was not added to your shortlist.",
-      });
-    });
-    expect(toggleShortlistMock).not.toHaveBeenCalled();
-  });
-
-  it("prevents repeated shortlist clicks for the same candidate while a toggle is pending", async () => {
-    const pendingToggle = deferred<boolean>();
-    toggleCandidateShortlistMock.mockReturnValue(pendingToggle.promise);
-
-    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
+  it("prevents repeated clicks for the same candidate while pending", async () => {
+    const pending = deferred<boolean>();
+    toggleMock.mockReturnValue(pending.promise);
+    render(<RecommendedRow {...props} />);
     const button = await screen.findByRole("button", { name: "Save to shortlist" });
-
     fireEvent.click(button);
     fireEvent.click(button);
-
-    expect(toggleCandidateShortlistMock).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      pendingToggle.resolve(true);
-      await pendingToggle.promise;
-    });
+    expect(toggleMock).toHaveBeenCalledTimes(1);
+    await act(async () => { pending.resolve(true); await pending.promise; });
   });
 
-  it("does not toggle local shortlist state if it already matches the persisted result", async () => {
-    const pendingToggle = deferred<boolean>();
-    toggleCandidateShortlistMock.mockReturnValue(pendingToggle.promise);
+  it("uses saved state when removing a candidate", async () => {
+    toggleMock.mockResolvedValue(false);
+    render(<RecommendedRow {...props} shortlistedIds={new Set([candidate.id])} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Remove from shortlist" }));
+    await waitFor(() => expect(toggleMock).toHaveBeenCalledWith({ id: "user-1" }, candidate.id, true));
+    expect(onChanged).toHaveBeenCalledWith(candidate.id, false);
+  });
 
-    const { rerender } = render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
+  it("shows a conflict when a candidate was claimed elsewhere", async () => {
+    toggleMock.mockRejectedValue(new Error("candidate_already_claimed"));
+    render(<RecommendedRow {...props} />);
     fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
-
-    useLungisaMock.mockReturnValue({
-      shortlist: new Set(["candidate-1"]),
-      toggleShortlist: toggleShortlistMock,
-    });
-    rerender(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
-    await act(async () => {
-      pendingToggle.resolve(true);
-      await pendingToggle.promise;
-    });
-
-    expect(toggleShortlistMock).not.toHaveBeenCalled();
+    await waitFor(() => expect(toastMock).toHaveBeenCalledWith("Candidate no longer available", {
+      description: "Another business shortlisted this candidate first. The candidate was not added to your shortlist.",
+    }));
+    expect(onChanged).not.toHaveBeenCalled();
   });
 
-  it("reads the latest shortlist state when starting the persistence toggle", async () => {
-    toggleCandidateShortlistMock.mockResolvedValue(false);
-
-    const { rerender } = render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
-    await screen.findByRole("button", { name: "Save to shortlist" });
-
-    useLungisaMock.mockReturnValue({
-      shortlist: new Set(["candidate-1"]),
-      toggleShortlist: toggleShortlistMock,
-    });
-    rerender(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
-    await act(async () => {
-      fireEvent.click(await screen.findByRole("button", { name: "Remove from shortlist" }));
-    });
-
-    expect(toggleCandidateShortlistMock).toHaveBeenCalledWith({ id: "user-1" }, "candidate-1", true);
-  });
-
-  it("shows the generic error toast without calling the RPC when no user is signed in", async () => {
-    useAuthMock.mockReturnValue({
-      user: null,
-    });
-
-    render(<RecommendedRow onOpenCandidate={vi.fn()} onSeeAll={vi.fn()} />);
-
+  it("reports other failures without changing the shortlist", async () => {
+    toggleMock.mockRejectedValue(new Error("offline"));
+    render(<RecommendedRow {...props} />);
     fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
+    await waitFor(() => expect(toastMock).toHaveBeenCalledWith("Couldn't update shortlist", { description: "Please try again." }));
+    expect(onChanged).not.toHaveBeenCalled();
+  });
 
-    await waitFor(() => {
-      expect(toastErrorMock).toHaveBeenCalledWith("Couldn't update shortlist", {
-        description: "Please try again.",
-      });
-    });
-    expect(toggleCandidateShortlistMock).not.toHaveBeenCalled();
-    expect(toggleShortlistMock).not.toHaveBeenCalled();
+  it("does not request a change without a signed-in user", async () => {
+    authMock.mockReturnValue({ user: null });
+    render(<RecommendedRow {...props} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
+    expect(toggleMock).not.toHaveBeenCalled();
+    expect(toastMock).toHaveBeenCalledWith("Couldn't update shortlist", { description: "Please try again." });
   });
 });
