@@ -128,21 +128,22 @@ export default function DashboardCompare() {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
+        <div className="border-b border-border pb-5">
           <div>
             <h1 className="font-display text-2xl text-primary">Compare dashboard layouts</h1>
             <p className="mt-1 text-sm text-muted-foreground">The same four profiles appear in both versions.</p>
           </div>
-          <div className="inline-flex rounded-lg border border-border p-1" aria-label="Dashboard version">
+          <div className="mt-6 flex w-full border-b border-border" role="tablist" aria-label="Dashboard versions">
             {(["latest", "previous"] as const).map((item) => (
               <Button
                 key={item}
-                variant={version === item ? "default" : "ghost"}
-                aria-pressed={version === item}
+                role="tab"
+                variant="ghost"
+                aria-selected={version === item}
                 onClick={() => setVersion(item)}
-                className={`h-9 rounded-md px-4 text-sm capitalize ${version === item ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+                className={`h-11 min-w-0 flex-1 rounded-none border-b-2 px-2 text-sm sm:flex-none sm:px-8 ${version === item ? "border-accent font-semibold text-primary hover:bg-background hover:text-primary" : "border-transparent text-muted-foreground hover:bg-muted hover:text-primary"}`}
               >
-                {item}
+                {item === "latest" ? "Latest dashboard" : "Previous dashboard"}
               </Button>
             ))}
           </div>
