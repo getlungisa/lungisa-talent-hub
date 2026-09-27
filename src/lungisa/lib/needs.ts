@@ -14,7 +14,7 @@ export type Need = {
 export async function ensureBusiness(user: User): Promise<{ id: string; name: string; contact_email: string }> {
   const { data: existing, error: selErr } = await supabase
     .from("businesses")
-    .select('id, name, "contact email"')
+    .select("id, name, contact_email")
     .eq("user_id", user.id)
     .maybeSingle();
   if (selErr) {
@@ -30,9 +30,9 @@ export async function ensureBusiness(user: User): Promise<{ id: string; name: st
     .insert({
       user_id: user.id,
       name: placeholderName,
-      "contact email": email,
+      contact_email: email,
     })
-    .select('id, name, "contact email"')
+    .select("id, name, contact_email")
     .single();
   if (insErr) {
     console.error("ensureBusiness insert error", insErr);
@@ -52,7 +52,7 @@ export async function submitNeed(
 ): Promise<Need> {
   const business = await ensureBusiness(user);
   const { data, error } = await supabase
-    .from('"Needs"')
+    .from("needs")
     .insert({
       business_id: business.id,
       role: values.role,
@@ -73,7 +73,7 @@ export async function submitNeed(
     .invoke("notify-new-need", {
       body: {
         businessName: business.name,
-        contactEmail: (business as any)["contact email"],
+        contactEmail: business.contact_email,
         role: need.role,
         timing: need.timing,
         mustHaves: need.must_haves,
@@ -101,7 +101,7 @@ export async function fetchOpenNeeds(user: User): Promise<Need[]> {
   }
   if (!biz) return [];
   const { data, error } = await supabase
-    .from('"Needs"')
+    .from("needs")
     .select("*")
     .eq("business_id", biz.id)
     .order("created_at", { ascending: false });
