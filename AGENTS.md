@@ -1,0 +1,1 @@
+- Keep dashboard layout comparisons on a standalone sample-data page, separate from authenticated employer workflows, so visual experiments cannot change live hiring actions.
