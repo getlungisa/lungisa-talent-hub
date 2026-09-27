@@ -1,6 +1,16 @@
 import { useState } from "react";
-import { ArrowRight, Heart, Sparkles } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  ClipboardList,
+  Coffee,
+  Heart,
+  LayoutDashboard,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AboutModal } from "@/lungisa/components/AboutModal";
 import { Avatar } from "@/lungisa/components/Avatar";
 import { RatingDots } from "@/lungisa/components/RatingDots";
 import { VerifiedBadge } from "@/lungisa/components/VerifiedBadge";
@@ -118,14 +128,73 @@ function PreviewDashboard({ version }: { version: Version }) {
 
 export default function DashboardCompare() {
   const [version, setVersion] = useState<Version>("latest");
+  const [aboutOpen, setAboutOpen] = useState(false);
+
+  const navigation = [
+    { label: "Dashboard", icon: LayoutDashboard, active: true },
+    { label: "Candidates", icon: Users, active: false },
+    { label: "Activity", icon: Activity, active: false },
+    { label: "Placements", icon: ClipboardList, active: false },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <span className="font-display text-lg text-primary">Lungisa</span>
-          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Dashboard comparison · sample data</span>
+      <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center px-5 pb-2 pt-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Coffee className="h-4 w-4" />
+            </div>
+            <div className="leading-tight">
+              <div className="font-display text-lg text-primary">Lungisa</div>
+              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                Rosetta Roastery
+              </div>
+            </div>
+          </div>
+          <span className="ml-auto hidden text-xs uppercase tracking-[0.14em] text-muted-foreground sm:block">
+            Sample comparison
+          </span>
         </div>
+        <nav
+          className="mx-auto flex max-w-6xl items-stretch px-2 pb-1 sm:items-center sm:gap-1 sm:px-5"
+          aria-label="Lungisa navigation"
+        >
+          <div className="flex min-w-0 flex-1 items-stretch justify-between sm:flex-none sm:items-center sm:gap-8 md:gap-10 lg:w-[70%] lg:justify-between lg:gap-0">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <Button
+                  key={item.label}
+                  type="button"
+                  variant="ghost"
+                  aria-current={item.active ? "page" : undefined}
+                  className={`relative h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal hover:bg-transparent sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm ${
+                    item.active
+                      ? "text-primary hover:text-primary"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                  {item.active && (
+                    <span className="absolute inset-x-2 -bottom-px h-px bg-accent" />
+                  )}
+                </Button>
+              );
+            })}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setAboutOpen(true)}
+            className="ml-0 h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal text-muted-foreground hover:bg-transparent hover:text-primary sm:ml-auto sm:block sm:px-3 sm:py-2.5 sm:text-sm"
+          >
+            <Coffee className="h-4 w-4 sm:hidden" />
+            About
+          </Button>
+        </nav>
       </header>
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8">
         <div className="border-b border-border pb-5">
@@ -150,6 +219,7 @@ export default function DashboardCompare() {
         </div>
         <PreviewDashboard version={version} />
       </main>
+      {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }
