@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AuthTest from "./pages/AuthTest.tsx";
 import SignIn from "./pages/SignIn.tsx";
+import DashboardCompare from "./pages/DashboardCompare.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { RequireAuth } from "./components/RequireAuth";
 
@@ -30,6 +31,7 @@ const App = () => (
             />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/auth-test" element={<AuthTest />} />
+            <Route path="/dashboard-compare" element={<DashboardCompare />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

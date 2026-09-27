@@ -92,6 +92,7 @@ type UntypedSelectQuery<T> = {
   gte: (column: string, value: string) => QueryResult<T[]>;
   order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
   maybeSingle: () => QueryResult<T>;
+  then: Promise<{ data: T[] | null; error: unknown }>["then"];
 };
 
 type UntypedTableQuery = {
