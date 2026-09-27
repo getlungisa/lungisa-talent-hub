@@ -137,10 +137,10 @@ export default function DashboardCompare() {
             {(["latest", "previous"] as const).map((item) => (
               <Button
                 key={item}
-                variant="ghost"
+                variant={version === item ? "default" : "ghost"}
                 aria-pressed={version === item}
                 onClick={() => setVersion(item)}
-                className={`h-9 rounded-md px-4 text-sm capitalize ${version === item ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+                className={`h-9 rounded-md px-4 text-sm capitalize ${version === item ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
               >
                 {item}
               </Button>
