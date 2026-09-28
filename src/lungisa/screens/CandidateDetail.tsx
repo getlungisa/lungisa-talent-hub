@@ -144,6 +144,8 @@ export function CandidateDetail({
     );
   }
 
+  const strengthsSummary = candidate?.strengths_summary?.trim() ?? "";
+
   return (
     <div className="space-y-6 pb-28">
       <button
@@ -193,6 +195,16 @@ export function CandidateDetail({
                   </div>
                 </dl>
               </div>
+              {strengthsSummary && (
+                <div>
+                  <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                    What stood out
+                  </h2>
+                  <p className="mt-3 text-[15px] leading-7 text-primary/80">
+                    {strengthsSummary}
+                  </p>
+                </div>
+              )}
               {!isTrainingPartner && (
                 <div className="rounded-2xl border border-border bg-card p-5 text-sm text-primary/80">
                   We can help coordinate the next step if you would like to meet this candidate.

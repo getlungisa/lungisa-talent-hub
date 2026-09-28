@@ -81,4 +81,36 @@ describe("CandidateCard shortlist interactions", () => {
     expect(toggleMock).not.toHaveBeenCalled();
     expect(toastMock).toHaveBeenCalledWith("Couldn't update shortlist", { description: "Please try again." });
   });
+
+  it("shows a strengths summary preview when it is non-empty", () => {
+    render(
+      <CandidateCard
+        {...props}
+        candidate={{
+          ...candidate,
+          strengths_summary: "  Calm under pressure and consistently warm with customers.  ",
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText("Calm under pressure and consistently warm with customers."),
+    ).toBeInTheDocument();
+  });
+
+  it("omits the strengths summary preview when it is blank", () => {
+    render(
+      <CandidateCard
+        {...props}
+        candidate={{
+          ...candidate,
+          strengths_summary: "   ",
+        }}
+      />,
+    );
+
+    expect(
+      screen.queryByText(/Calm under pressure and consistently warm with customers\./),
+    ).not.toBeInTheDocument();
+  });
 });
