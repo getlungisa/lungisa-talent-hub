@@ -88,6 +88,11 @@ describe("ensureBusiness", () => {
       error: null,
     });
 
+    await expect(ensureBusiness(user)).resolves.toEqual({
+      id: "business-2",
+      name: "Business owner",
+      contact_email: "owner@example.com",
+    });
     await expect(fetchBusinessName(user)).resolves.toBe("Business owner");
 
     expect(insertMock).toHaveBeenCalledWith({
