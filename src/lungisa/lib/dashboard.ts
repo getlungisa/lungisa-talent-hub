@@ -29,6 +29,10 @@ export type Candidate = {
   name: string;
   location: string | null;
   strengths_summary: string | null;
+  training_partner_id: string | null;
+  training_partner: {
+    name: string;
+  } | null;
 };
 
 export type TrainingPartnerCandidate = {
@@ -145,7 +149,9 @@ export async function fetchNewCandidatesThisWeekCount(): Promise<number> {
 export async function fetchCandidate(id: string): Promise<Candidate | null> {
   const { data, error } = await db
     .from("candidates")
-    .select<Candidate>("id, name, location, strengths_summary")
+    .select<Candidate>(
+  "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name)",
+)
     .eq("id", id)
     .maybeSingle();
 
