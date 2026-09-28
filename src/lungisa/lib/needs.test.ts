@@ -93,7 +93,6 @@ describe("ensureBusiness", () => {
       name: "Business owner",
       contact_email: "owner@example.com",
     });
-    await expect(fetchBusinessName(user)).resolves.toBe("Business owner");
 
     expect(insertMock).toHaveBeenCalledWith({
       user_id: "user-1",
@@ -101,5 +100,14 @@ describe("ensureBusiness", () => {
       "contact email": "owner@example.com",
     });
     expect(selectAfterInsertMock).toHaveBeenCalledWith('id, name, contact_email:"contact email"');
+  });
+
+  it("returns the business name for header consumers", async () => {
+    maybeSingleMock.mockResolvedValue({
+      data: { id: "business-1", name: "Acme", contact_email: "owner@example.com" },
+      error: null,
+    });
+
+    await expect(fetchBusinessName(user)).resolves.toBe("Acme");
   });
 });
