@@ -196,7 +196,7 @@ export function CandidateDetail({
                 </dl>
               </div>
               {strengthsSummary && candidate.training_partner_id && candidate.training_partner?.name && (
-  <p className="text-xs text-muted-foreground">
+  <p className="text-sm text-accent">
     Trainer-verified by {candidate.training_partner.name}
   </p>
 )}
