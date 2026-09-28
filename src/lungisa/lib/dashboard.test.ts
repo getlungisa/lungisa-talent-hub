@@ -32,16 +32,28 @@ describe("fetchCandidates", () => {
 
   it("loads candidates from Supabase", async () => {
     orderMock.mockResolvedValue({
-      data: [{ id: "1", name: "Ayanda", location: "Langa, Cape Town" }],
+      data: [
+        {
+          id: "1",
+          name: "Ayanda",
+          location: "Langa, Cape Town",
+          strengths_summary: "Warm, thoughtful, and composed under pressure.",
+        },
+      ],
       error: null,
     });
 
     await expect(fetchCandidates()).resolves.toEqual([
-      { id: "1", name: "Ayanda", location: "Langa, Cape Town" },
+      {
+        id: "1",
+        name: "Ayanda",
+        location: "Langa, Cape Town",
+        strengths_summary: "Warm, thoughtful, and composed under pressure.",
+      },
     ]);
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
-    expect(selectMock).toHaveBeenCalledWith("id, name, location");
+    expect(selectMock).toHaveBeenCalledWith("id, name, location, strengths_summary");
     expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
 
@@ -73,7 +85,12 @@ describe("fetchCandidate", () => {
 
   it("loads a single candidate by id from Supabase", async () => {
     maybeSingleMock.mockResolvedValue({
-      data: { id: "1", name: "Ayanda", location: "Langa, Cape Town" },
+      data: {
+        id: "1",
+        name: "Ayanda",
+        location: "Langa, Cape Town",
+        strengths_summary: "Warm, thoughtful, and composed under pressure.",
+      },
       error: null,
     });
 
@@ -81,10 +98,11 @@ describe("fetchCandidate", () => {
       id: "1",
       name: "Ayanda",
       location: "Langa, Cape Town",
+      strengths_summary: "Warm, thoughtful, and composed under pressure.",
     });
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
-    expect(selectMock).toHaveBeenCalledWith("id, name, location");
+    expect(selectMock).toHaveBeenCalledWith("id, name, location, strengths_summary");
     expect(eqMock).toHaveBeenCalledWith("id", "1");
   });
 });
@@ -114,7 +132,7 @@ describe("toggleCandidateShortlist", () => {
     await expect(toggleCandidateShortlist(user, "candidate-1", false)).resolves.toBe(true);
 
     expect(fromMock).toHaveBeenCalledWith("businesses");
-    expect(selectMock).toHaveBeenCalledWith("id");
+    expect(selectMock).toHaveBeenCalledWith("id, is_training_partner");
     expect(eqMock).toHaveBeenCalledWith("user_id", "user-1");
     expect(rpcMock).toHaveBeenCalledWith("toggle_candidate_shortlist", {
       p_business_id: "business-1",

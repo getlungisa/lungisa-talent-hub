@@ -28,6 +28,7 @@ export type Candidate = {
   id: string;
   name: string;
   location: string | null;
+  strengths_summary: string | null;
 };
 
 export type TrainingPartnerCandidate = {
@@ -112,7 +113,7 @@ const db = supabase as unknown as UntypedDb;
 export async function fetchCandidates(): Promise<Candidate[]> {
   const { data, error } = await db
     .from("candidates")
-    .select<Candidate>("id, name, location")
+    .select<Candidate>("id, name, location, strengths_summary")
     .order("name", { ascending: true });
 
   if (error) {
@@ -144,7 +145,7 @@ export async function fetchNewCandidatesThisWeekCount(): Promise<number> {
 export async function fetchCandidate(id: string): Promise<Candidate | null> {
   const { data, error } = await db
     .from("candidates")
-    .select<Candidate>("id, name, location")
+    .select<Candidate>("id, name, location, strengths_summary")
     .eq("id", id)
     .maybeSingle();
 

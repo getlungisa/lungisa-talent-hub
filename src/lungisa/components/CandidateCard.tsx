@@ -42,6 +42,11 @@ export function CandidateCard({
     "role" in candidate
       ? candidate.role
       : candidate.location ?? "Location not provided";
+  const strengthsSummary =
+    "strengths_summary" in candidate &&
+    typeof candidate.strengths_summary === "string"
+      ? candidate.strengths_summary.trim()
+      : "";
   const attributes = "attributes" in candidate ? candidate.attributes : [];
   const verified = "verified" in candidate ? candidate.verified : false;
 
@@ -129,6 +134,12 @@ export function CandidateCard({
             {summary}
           </span>
         </div>
+      )}
+
+      {strengthsSummary && (
+        <p className="mt-4 line-clamp-2 text-sm leading-6 text-primary/80">
+          {strengthsSummary}
+        </p>
       )}
 
       {"rating" in candidate && (
