@@ -97,7 +97,7 @@ type UntypedSelectQuery<T> = {
   gte: (column: string, value: string) => QueryResult<T[]>;
   order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
   maybeSingle: () => QueryResult<T>;
-  then: Promise<{ data: T[] | null; error: unknown }>["then"];
+  then: Promise<{ data: T[] | null; error: unknown }>['then'];
 };
 
 type UntypedTableQuery = {
@@ -202,7 +202,7 @@ export async function fetchBusiness(user: User): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")
     .select<Business>("id, is_training_partner")
-    .eq("user_id", user.id)
+    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
     .maybeSingle();
 
   if (error) {
