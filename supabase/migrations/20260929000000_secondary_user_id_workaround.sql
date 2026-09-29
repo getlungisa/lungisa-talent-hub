@@ -30,8 +30,40 @@ GRANT EXECUTE
 ON FUNCTION public.user_can_access_business(UUID)
 TO authenticated;
 
--- Businesses: both assigned users may read/update the business. Only the
--- primary owner may create a new business row.
+-- Prevent normal authenticated app users from changing business ownership.
+-- The primary owner may assign or remove secondary_user_id. A direct SQL
+-- editor/admin execution has no auth.uid(), so it is also allowed to set it.
+CREATE OR REPLACE FUNCTION public.prevent_business_owner_change()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.user_id IS DISTINCT FROM OLD.user_id THEN
+    RAISE EXCEPTION 'business_owner_cannot_be_changed';
+  END IF;
+
+  IF NEW.secondary_user_id IS DISTINCT FROM OLD.secondary_user_id
+     AND auth.uid() IS NOT NULL
+     AND auth.uid() IS DISTINCT FROM OLD.user_id THEN
+    RAISE EXCEPTION 'secondary_business_user_can_only_be_changed_by_primary_owner';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS prevent_business_owner_change
+ON public.businesses;
+
+CREATE TRIGGER prevent_business_owner_change
+BEFORE UPDATE ON public.businesses
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_business_owner_change();
+
+-- Businesses: both assigned users may read/update ordinary business fields.
+-- Ownership columns are protected by prevent_business_owner_change().
 DROP POLICY IF EXISTS "Users can view their own business"
   ON public.businesses;
 
@@ -52,14 +84,7 @@ DROP POLICY IF EXISTS "Users can update their own business"
 CREATE POLICY "Users can update their own business"
   ON public.businesses FOR UPDATE
   USING (public.user_can_access_business(id))
-  WITH CHECK (
-    user_id = (SELECT b.user_id FROM public.businesses b WHERE b.id = businesses.id)
-    AND (
-      secondary_user_id IS NULL
-      OR secondary_user_id = (SELECT b.secondary_user_id FROM public.businesses b WHERE b.id = businesses.id)
-      OR public.user_can_access_business(id)
-    )
-  );
+  WITH CHECK (public.user_can_access_business(id));
 
 -- Needs.
 DROP POLICY IF EXISTS "Users can view needs for their businesses"
