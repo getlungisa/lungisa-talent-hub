@@ -88,17 +88,17 @@ CREATE POLICY "Users can update their own business"
 
 -- Needs.
 DROP POLICY IF EXISTS "Users can view needs for their businesses"
-  ON public.needs;
+  ON "public"."Needs";
 
 CREATE POLICY "Users can view needs for their businesses"
-  ON public.needs FOR SELECT
+  ON "public"."Needs" FOR SELECT
   USING (public.user_can_access_business(business_id));
 
 DROP POLICY IF EXISTS "Users can insert needs for their businesses"
-  ON public.needs;
+  ON "public"."Needs";
 
 CREATE POLICY "Users can insert needs for their businesses"
-  ON public.needs FOR INSERT
+  ON "public"."Needs" FOR INSERT
   WITH CHECK (public.user_can_access_business(business_id));
 
 -- Candidate visibility for employer allocations.
