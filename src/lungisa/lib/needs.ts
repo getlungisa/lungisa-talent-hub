@@ -15,7 +15,7 @@ export async function ensureBusiness(user: User): Promise<{ id: string; name: st
   const { data: existing, error: selErr } = await supabase
     .from("businesses")
     .select('id, name, contact_email:"contact email"')
-    .eq("user_id", user.id)
+    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
     .maybeSingle();
   if (selErr) {
     console.error("ensureBusiness select error", selErr);
@@ -94,7 +94,7 @@ export async function fetchOpenNeeds(user: User): Promise<Need[]> {
   const { data: biz, error: bizErr } = await supabase
     .from("businesses")
     .select("id")
-    .eq("user_id", user.id)
+    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
     .maybeSingle();
   if (bizErr) {
     console.error("fetchOpenNeeds business error", bizErr);
