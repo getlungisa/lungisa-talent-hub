@@ -150,8 +150,8 @@ export function RecommendedRow({
                   onClick={() => onOpenCandidate(candidate)}
                   className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
                 >
-                  <div className="flex items-start gap-2">
-                    <div className="flex items-center gap-2.5">
+                  <div className="flex w-full min-w-0 items-start gap-2">
+                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
                       <Avatar name={candidate.name} />
                       <div className="min-w-0">
                         <h3 className="truncate font-display text-lg leading-tight text-primary">

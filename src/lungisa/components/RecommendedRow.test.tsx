@@ -81,4 +81,13 @@ describe("RecommendedRow shortlist interactions", () => {
     expect(toggleMock).not.toHaveBeenCalled();
     expect(toastMock).toHaveBeenCalledWith("Couldn't update shortlist", { description: "Please try again." });
   });
+
+  it("applies width-constrained wrappers to the candidate header", async () => {
+    render(<RecommendedRow {...props} />);
+    const heading = await screen.findByRole("heading", { name: candidate.name });
+    const avatarWrapper = heading.closest("div")?.parentElement;
+    expect(avatarWrapper).toHaveClass("flex", "min-w-0", "flex-1", "items-center", "gap-2.5");
+    const header = avatarWrapper?.parentElement;
+    expect(header).toHaveClass("flex", "w-full", "min-w-0", "items-start", "gap-2");
+  });
 });
