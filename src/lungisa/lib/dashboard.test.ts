@@ -90,6 +90,7 @@ describe("fetchCandidate", () => {
         name: "Ayanda",
         location: "Langa, Cape Town",
         strengths_summary: "Warm, thoughtful, and composed under pressure.",
+        reference_note: null,
       },
       error: null,
     });
@@ -99,10 +100,13 @@ describe("fetchCandidate", () => {
       name: "Ayanda",
       location: "Langa, Cape Town",
       strengths_summary: "Warm, thoughtful, and composed under pressure.",
+      reference_note: null,
     });
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
-    expect(selectMock).toHaveBeenCalledWith("id, name, location, strengths_summary");
+    expect(selectMock).toHaveBeenCalledWith(
+      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note",
+    );
     expect(eqMock).toHaveBeenCalledWith("id", "1");
   });
 });

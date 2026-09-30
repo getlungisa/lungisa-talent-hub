@@ -96,4 +96,33 @@ describe("CandidateDetail", () => {
       screen.queryByRole("heading", { name: "What stood out" }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows the reference note when it is set", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      reference_note: "Referred by a previous employer.",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(
+      await screen.findByText("Reference: Referred by a previous employer."),
+    ).toBeInTheDocument();
+  });
+
+  it("omits the reference note when the value is blank", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      reference_note: "   ",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(screen.queryByText(/^Reference:/)).not.toBeInTheDocument();
+  });
 });
