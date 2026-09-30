@@ -145,6 +145,7 @@ export function CandidateDetail({
   }
 
   const strengthsSummary = candidate?.strengths_summary?.trim() ?? "";
+  const referenceNote = candidate?.reference_note?.trim() ?? "";
 
   return (
     <div className="space-y-6 pb-28">
@@ -200,6 +201,11 @@ export function CandidateDetail({
     Trainer-verified by {candidate.training_partner.name}
   </p>
 )}
+              {referenceNote && (
+                <p className="text-sm text-accent">
+                  Reference: {referenceNote}
+                </p>
+              )}
               
               {strengthsSummary && (
                 <div>

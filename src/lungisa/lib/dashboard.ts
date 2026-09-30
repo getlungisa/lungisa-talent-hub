@@ -33,6 +33,7 @@ export type Candidate = {
   training_partner: {
     name: string;
   } | null;
+  reference_note: string | null;
 };
 
 export type TrainingPartnerCandidate = {
@@ -150,7 +151,7 @@ export async function fetchCandidate(id: string): Promise<Candidate | null> {
   const { data, error } = await db
     .from("candidates")
     .select<Candidate>(
-  "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name)",
+  "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note",
 )
     .eq("id", id)
     .maybeSingle();
