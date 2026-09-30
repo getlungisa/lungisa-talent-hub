@@ -102,7 +102,7 @@ export function CandidateCard({
       aria-label={`${name} — ${summary}`}
       className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex w-full min-w-0 items-start gap-3">
         <Avatar name={name} />
 
         <div className="min-w-0 flex-1">
