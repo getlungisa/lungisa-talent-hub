@@ -15,6 +15,7 @@ import {
 import {
   fetchDashboardPlacements,
   fetchDashboardShortlisted,
+  fetchInterviewRequestedCandidateIds,
   fetchTrainingPartnerCandidates,
   toggleCandidateShortlist,
   type Candidate,
@@ -23,6 +24,7 @@ import {
   fetchNewCandidatesThisWeekCount,
   type TrainingPartnerCandidate,
 } from "../lib/dashboard";
+import { isPlaceholderBusinessName } from "../lib/businessName";
 
 function greeting() {
   const h = new Date().getHours();
@@ -50,6 +52,7 @@ export function Dashboard({
   const [newThisWeek, setNewThisWeek] = useState(0);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [placements, setPlacements] = useState<DashboardPlacement[]>([]);
+  const [isFirstTimeState, setIsFirstTimeState] = useState(false);
   const [shortlisted, setShortlisted] = useState<
     DashboardShortlistedCandidate[]
   >([]);
@@ -74,6 +77,8 @@ export function Dashboard({
     let cancelled = false;
 
     const run = async () => {
+      setIsFirstTimeState(false);
+
       try {
         if (!user) {
           setTrainingPartnerCandidates([]);
@@ -105,10 +110,12 @@ export function Dashboard({
 
         setTrainingPartnerCandidates([]);
 
-        const [placementsData, shortlistedData] = await Promise.all([
-          fetchDashboardPlacements(user),
-          fetchDashboardShortlisted(user),
-        ]);
+        const [placementsData, shortlistedData, interviewRequestedData] =
+          await Promise.all([
+            fetchDashboardPlacements(user, true),
+            fetchDashboardShortlisted(user, true),
+            fetchInterviewRequestedCandidateIds(user, true),
+          ]);
 
         if (cancelled) return;
 
@@ -116,6 +123,11 @@ export function Dashboard({
         setShortlisted(shortlistedData);
         setShortlistedIds(
           new Set(shortlistedData.map(({ candidateId }) => candidateId)),
+        );
+        setIsFirstTimeState(
+          placementsData.length === 0 &&
+            shortlistedData.length === 0 &&
+            interviewRequestedData.size === 0,
         );
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
@@ -126,6 +138,7 @@ export function Dashboard({
         setPlacements([]);
         setShortlisted([]);
         setShortlistedIds(new Set());
+        setIsFirstTimeState(false);
       }
     };
 
@@ -156,6 +169,7 @@ export function Dashboard({
 
   const handleShortlistChanged = useCallback(
     (candidateId: string, isShortlisted: boolean) => {
+      setIsFirstTimeState(false);
       setShortlistedIds((current) => {
         const next = new Set(current);
         if (isShortlisted) next.add(candidateId);
@@ -173,6 +187,10 @@ export function Dashboard({
     [],
   );
 
+  const displayBusinessName = isPlaceholderBusinessName(employerName)
+    ? null
+    : employerName;
+
   if (isTrainingPartner === null) {
     return (
       <div className="space-y-8">
@@ -180,9 +198,11 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
-            {employerName}
-          </h1>
+          {displayBusinessName && (
+            <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
+              {displayBusinessName}
+            </h1>
+          )}
           <p className="mt-4 max-w-xl text-muted-foreground">
             Loading dashboard...
           </p>
@@ -198,9 +218,11 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
-            {employerName}
-          </h1>
+          {displayBusinessName && (
+            <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
+              {displayBusinessName}
+            </h1>
+          )}
           <p className="mt-4 max-w-xl text-muted-foreground">
             Candidates connected to your training partner program.
           </p>
@@ -285,7 +307,8 @@ export function Dashboard({
         >
           <div>
             <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">
-              {greeting()}, {employerName}
+              {greeting()}
+              {displayBusinessName ? `, ${displayBusinessName}` : ""}
             </h1>
 
             {placements.length > 0 && (
@@ -375,6 +398,29 @@ export function Dashboard({
       </section>
       )}
 
+      {isFirstTimeState && (
+        <section aria-label="How it works" className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-display text-2xl font-semibold text-foreground">
+            How it works
+          </h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <p>
+              Browse. Every candidate is vouched for by the people who trained
+              them. Read what stood out, then save anyone you'd like to meet.
+            </p>
+            <p>
+              Meet. Ask for an interview and we'll arrange a time that works for
+              you both, usually within 24 hours.
+            </p>
+            <p>
+              Hire, with support. We check in with you and your new team member
+              through the first 90 days. R1,000 on hire. R3,000 at day 90, only
+              if they're still with you.
+            </p>
+          </div>
+        </section>
+      )}
+
       <RecommendedRow
         onOpenCandidate={onOpenCandidate}
         onSeeAll={onBrowse}
@@ -383,80 +429,82 @@ export function Dashboard({
         onShortlistChanged={handleShortlistChanged}
       />
 
-      <section>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl font-semibold text-foreground">Shortlist</h2>
-          <span className="text-sm text-muted-foreground">
-            {shortlisted.length} {shortlisted.length === 1 ? "candidate" : "candidates"}
-          </span>
-        </div>
-        {shortlisted.length === 0 ? (
-          <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-            You have no shortlisted candidates yet.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {shortlisted.map((candidate) => (
-              candidate.isAvailable && candidate.candidateName ? (
-                <article
-                  key={candidate.candidateId}
-                  onClick={() =>
-                    onOpenCandidate({
-                      id: candidate.candidateId,
-                      name: candidate.candidateName,
-                      location: candidate.location,
-                    })
-                  }
-                  className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
-                >
-                  <Avatar name={candidate.candidateName} />
-                  <div className="min-w-0">
-                    <h3 className="font-display text-lg text-foreground">
-                      {candidate.candidateName}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {candidate.location ?? "Location not provided"}
-                    </p>
-                  </div>
-                </article>
-              ) : (
-                <article
-                  key={candidate.candidateId}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5"
-                >
-                  <p className="text-sm text-muted-foreground">
-                    No longer available
-                  </p>
-                  <button
-                    type="button"
-                    aria-label="Remove unavailable candidate from shortlist"
-                    onClick={async () => {
-                      if (!user) return;
-
-                      try {
-                        await toggleCandidateShortlist(
-                          user,
-                          candidate.candidateId,
-                          true,
-                        );
-                        handleShortlistChanged(candidate.candidateId, false);
-                      } catch (error) {
-                        console.error(
-                          "Failed to remove unavailable candidate from shortlist:",
-                          error,
-                        );
-                      }
-                    }}
-                    className="text-sm font-medium text-primary hover:underline"
-                  >
-                    Remove
-                  </button>
-                </article>
-              )
-            ))}
+      {!isFirstTimeState && (
+        <section>
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="font-display text-2xl font-semibold text-foreground">Shortlist</h2>
+            <span className="text-sm text-muted-foreground">
+              {shortlisted.length} {shortlisted.length === 1 ? "candidate" : "candidates"}
+            </span>
           </div>
-        )}
-      </section>
+          {shortlisted.length === 0 ? (
+            <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+              You have no shortlisted candidates yet.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {shortlisted.map((candidate) => (
+                candidate.isAvailable && candidate.candidateName ? (
+                  <article
+                    key={candidate.candidateId}
+                    onClick={() =>
+                      onOpenCandidate({
+                        id: candidate.candidateId,
+                        name: candidate.candidateName,
+                        location: candidate.location,
+                      })
+                    }
+                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
+                  >
+                    <Avatar name={candidate.candidateName} />
+                    <div className="min-w-0">
+                      <h3 className="font-display text-lg text-foreground">
+                        {candidate.candidateName}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {candidate.location ?? "Location not provided"}
+                      </p>
+                    </div>
+                  </article>
+                ) : (
+                  <article
+                    key={candidate.candidateId}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5"
+                  >
+                    <p className="text-sm text-muted-foreground">
+                      No longer available
+                    </p>
+                    <button
+                      type="button"
+                      aria-label="Remove unavailable candidate from shortlist"
+                      onClick={async () => {
+                        if (!user) return;
+
+                        try {
+                          await toggleCandidateShortlist(
+                            user,
+                            candidate.candidateId,
+                            true,
+                          );
+                          handleShortlistChanged(candidate.candidateId, false);
+                        } catch (error) {
+                          console.error(
+                            "Failed to remove unavailable candidate from shortlist:",
+                            error,
+                          );
+                        }
+                      }}
+                      className="text-sm font-medium text-primary hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </article>
+                )
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <NeedSheet
         open={needSheetOpen}

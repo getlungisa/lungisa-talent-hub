@@ -45,6 +45,7 @@ describe("fetchCandidates", () => {
         {
           id: "1",
           name: "Ayanda",
+          created_at: "2026-10-01T00:00:00Z",
           location: "Langa, Cape Town",
           strengths_summary: "Warm, thoughtful, and composed under pressure.",
         },
@@ -56,13 +57,16 @@ describe("fetchCandidates", () => {
       {
         id: "1",
         name: "Ayanda",
+        created_at: "2026-10-01T00:00:00Z",
         location: "Langa, Cape Town",
         strengths_summary: "Warm, thoughtful, and composed under pressure.",
       },
     ]);
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
-    expect(selectMock).toHaveBeenCalledWith("id, name, location, strengths_summary");
+    expect(selectMock).toHaveBeenCalledWith(
+      "id, name, created_at, location, strengths_summary",
+    );
     expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
 
@@ -295,6 +299,26 @@ describe("fetchDashboardShortlisted", () => {
     );
     expect(eqMock).toHaveBeenNthCalledWith(1, "business_id", "business-a");
     expect(eqMock).toHaveBeenNthCalledWith(2, "business_id", "business-b");
+  });
+
+  it("rejects shortlist read errors when requested by the first-time dashboard check", async () => {
+    const error = new Error("offline");
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    maybeSingleMock.mockResolvedValueOnce({
+      data: { id: "business-a" },
+      error: null,
+    });
+    orderMock.mockResolvedValueOnce({ data: null, error });
+
+    await expect(
+      fetchDashboardShortlisted({ id: "user-a" } as never, true),
+    ).rejects.toBe(error);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "fetchDashboardShortlisted error",
+      error,
+    );
+    consoleErrorSpy.mockRestore();
   });
 });
 
