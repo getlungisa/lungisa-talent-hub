@@ -7,12 +7,14 @@ const {
   fetchOpenNeedsMock,
   fetchDashboardPlacementsMock,
   fetchDashboardShortlistedMock,
+  fetchNewCandidatesThisWeekCountMock,
   fetchTrainingPartnerCandidatesMock,
 } = vi.hoisted(() => ({
   authUser: { id: "business-user", email: "owner@example.com" },
   fetchOpenNeedsMock: vi.fn(),
   fetchDashboardPlacementsMock: vi.fn(),
   fetchDashboardShortlistedMock: vi.fn(),
+  fetchNewCandidatesThisWeekCountMock: vi.fn(),
   fetchTrainingPartnerCandidatesMock: vi.fn(),
 }));
 
@@ -40,6 +42,7 @@ vi.mock("../lib/needs", () => ({
 vi.mock("../lib/dashboard", () => ({
   fetchDashboardPlacements: fetchDashboardPlacementsMock,
   fetchDashboardShortlisted: fetchDashboardShortlistedMock,
+  fetchNewCandidatesThisWeekCount: fetchNewCandidatesThisWeekCountMock,
   fetchTrainingPartnerCandidates: fetchTrainingPartnerCandidatesMock,
 }));
 
@@ -72,6 +75,7 @@ describe("Dashboard", () => {
         allocatedAt: null,
       },
     ]);
+    fetchNewCandidatesThisWeekCountMock.mockResolvedValue(3);
     fetchTrainingPartnerCandidatesMock.mockResolvedValue([]);
   });
 
@@ -86,6 +90,18 @@ describe("Dashboard", () => {
       />,
     );
 
+    expect(
+      await screen.findByRole("heading", { name: /, Test Business$/ }),
+    ).toHaveClass(
+      "text-[28px]",
+      "sm:text-[32px]",
+      "font-semibold",
+      "tracking-[-0.01em]",
+    );
+    expect(screen.getByRole("heading", { name: "Shortlist" })).toHaveClass(
+      "text-2xl",
+      "font-semibold",
+    );
     const candidateName = await screen.findByRole("heading", { name: "Ayanda" });
     fireEvent.click(candidateName);
 
@@ -164,6 +180,10 @@ describe("Dashboard", () => {
       />,
     );
     expect(await screen.findByText("1 placement in progress")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Placements" })).toHaveClass(
+      "text-2xl",
+      "font-semibold",
+    );
     unmount();
 
     fetchDashboardPlacementsMock.mockResolvedValueOnce([

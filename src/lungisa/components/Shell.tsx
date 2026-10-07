@@ -61,7 +61,7 @@ export function Shell({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5 lg:flex-nowrap">
           <div className="font-display text-[24px] font-semibold leading-8 tracking-[-0.01em] text-[#1b1e33]">
             Lungisa
           </div>

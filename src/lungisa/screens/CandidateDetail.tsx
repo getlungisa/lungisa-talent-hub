@@ -213,7 +213,7 @@ export function CandidateDetail({
             <div className="flex items-center gap-3">
               <Avatar name={candidate.name} size={48} />
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                <h1 className="break-words font-display text-3xl text-foreground">
+                <h1 className="break-words font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">
                   {candidate.name}
                 </h1>
               </div>

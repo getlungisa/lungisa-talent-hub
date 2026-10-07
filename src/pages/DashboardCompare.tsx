@@ -64,7 +64,9 @@ function ProfilePreview({ candidate }: { candidate: (typeof profiles)[number] })
 function ProfileRow({ version }: { version: Version }) {
   return (
     <section aria-label="Recommended candidates">
-      <p className="mb-3 text-sm text-muted-foreground">Recommended for you</p>
+      <p className="mb-3 font-display text-2xl font-semibold text-foreground">
+        Recommended for you
+      </p>
       <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
         <div className="flex gap-4 pb-2">
           {profiles.map((candidate) => <ProfilePreview key={`${version}-${candidate.id}`} candidate={candidate} />)}
@@ -81,7 +83,7 @@ function PreviewDashboard({ version }: { version: Version }) {
       {version === "latest" ? (
         <section className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-8">
           <div>
-            <h2 className="font-display text-3xl text-foreground sm:text-4xl">Good morning</h2>
+            <h2 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">Good morning</h2>
             <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               <span><strong className="font-medium text-foreground">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
@@ -112,7 +114,7 @@ function PreviewDashboard({ version }: { version: Version }) {
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-foreground">Active placements</h2>
+          <h2 className="font-display text-2xl font-semibold text-foreground">Active placements</h2>
           <span className="text-sm text-muted-foreground">
             {samplePlacements.length} active {samplePlacements.length === 1 ? "placement" : "placements"}
           </span>
@@ -128,7 +130,7 @@ function PreviewDashboard({ version }: { version: Version }) {
         ))}
       </section>
       <section>
-        <h2 className="mb-3 font-display text-2xl text-foreground">{version === "latest" ? "Shortlist" : "Your shortlist"}</h2>
+        <h2 className="mb-3 font-display text-2xl font-semibold text-foreground">{version === "latest" ? "Shortlist" : "Your shortlist"}</h2>
         <p className="text-sm text-muted-foreground">Favourite candidates while browsing to save them here.</p>
       </section>
     </div>

@@ -76,7 +76,12 @@ describe("CandidateDetail", () => {
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
-    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toHaveClass(
+      "text-[28px]",
+      "sm:text-[32px]",
+      "font-semibold",
+      "tracking-[-0.01em]",
+    );
     expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(2);
     expect(
       screen.getByRole("heading", { name: "What stood out" }),
