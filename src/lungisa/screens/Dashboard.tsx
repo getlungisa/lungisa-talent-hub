@@ -16,6 +16,7 @@ import {
   fetchDashboardPlacements,
   fetchDashboardShortlisted,
   fetchTrainingPartnerCandidates,
+  toggleCandidateShortlist,
   type Candidate,
   type DashboardPlacement,
   type DashboardShortlistedCandidate,
@@ -223,9 +224,6 @@ export function Dashboard({
                 let statusLabel: string;
 
                 switch (candidate.status) {
-                  case "shortlisted":
-                    statusLabel = "Shortlisted";
-                    break;
                   case "placed":
                     statusLabel = candidate.businessName
                       ? `Placed with ${candidate.businessName}`
@@ -399,27 +397,62 @@ export function Dashboard({
         ) : (
           <div className="space-y-3">
             {shortlisted.map((candidate) => (
-              <article
-                key={candidate.candidateId}
-                onClick={() =>
-                  onOpenCandidate({
-                    id: candidate.candidateId,
-                    name: candidate.candidateName,
-                    location: candidate.location,
-                  })
-                }
-                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
-              >
-                <Avatar name={candidate.candidateName} />
-                <div className="min-w-0">
-                  <h3 className="font-display text-lg text-foreground">
-                    {candidate.candidateName}
-                  </h3>
+              candidate.isAvailable && candidate.candidateName ? (
+                <article
+                  key={candidate.candidateId}
+                  onClick={() =>
+                    onOpenCandidate({
+                      id: candidate.candidateId,
+                      name: candidate.candidateName,
+                      location: candidate.location,
+                    })
+                  }
+                  className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-5"
+                >
+                  <Avatar name={candidate.candidateName} />
+                  <div className="min-w-0">
+                    <h3 className="font-display text-lg text-foreground">
+                      {candidate.candidateName}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {candidate.location ?? "Location not provided"}
+                    </p>
+                  </div>
+                </article>
+              ) : (
+                <article
+                  key={candidate.candidateId}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5"
+                >
                   <p className="text-sm text-muted-foreground">
-                    {candidate.location ?? "Location not provided"}
+                    No longer available
                   </p>
-                </div>
-              </article>
+                  <button
+                    type="button"
+                    aria-label="Remove unavailable candidate from shortlist"
+                    onClick={async () => {
+                      if (!user) return;
+
+                      try {
+                        await toggleCandidateShortlist(
+                          user,
+                          candidate.candidateId,
+                          true,
+                        );
+                        handleShortlistChanged(candidate.candidateId, false);
+                      } catch (error) {
+                        console.error(
+                          "Failed to remove unavailable candidate from shortlist:",
+                          error,
+                        );
+                      }
+                    }}
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    Remove
+                  </button>
+                </article>
+              )
             ))}
           </div>
         )}

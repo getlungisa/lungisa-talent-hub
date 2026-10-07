@@ -13,7 +13,7 @@ type Candidate = MockCandidate | SupabaseCandidate;
 
 const shortlistConflictTitle = "Candidate no longer available";
 const shortlistConflictDescription =
-  "Another business shortlisted this candidate first. The candidate was not added to your shortlist.";
+  "The candidate is no longer available and was not added to your shortlist.";
 const shortlistErrorTitle = "Couldn't update shortlist";
 const shortlistErrorDescription = "Please try again.";
 

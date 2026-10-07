@@ -15,8 +15,6 @@ type Store = {
   employerName: string;
   requested: Set<string>;
   requestInterview: (id: string) => boolean;
-  shortlist: Set<string>;
-  toggleShortlist: (id: string) => void;
   stats: { browsed: number; interviews: number; placements: number };
   placements: Placement[];
 };
@@ -28,7 +26,6 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
   const [employerName, setEmployerName] = useState("Loading...");
   const [requested, setRequested] = useState<Set<string>>(new Set());
   const [interviews, setInterviews] = useState(2);
-  const [shortlist, setShortlist] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) {
@@ -68,19 +65,10 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
 
         return true;
       },
-      shortlist,
-      toggleShortlist: (id) =>
-        setShortlist((s) => {
-          const next = new Set(s);
-          if (next.has(id)) next.delete(id);
-          else next.add(id);
-          return next;
-        }),
- 
       stats: { browsed: 14, interviews, placements: 1 },
       placements: samplePlacements,
     }),
-    [employerName, requested, interviews, shortlist],
+    [employerName, requested, interviews],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
