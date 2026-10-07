@@ -54,7 +54,8 @@ export function Placements() {
           Active placements
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          A clear view of everyone you have placed through Lungisa.
+          A clear view of everyone you have placed through Lungisa, and where
+          they are in their first 90 days.
         </p>
       </div>
 
@@ -86,6 +87,10 @@ export function Placements() {
         anything needs attention.
       </div>
 
+      <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+        <span className="font-medium text-primary">A note on fees.</span>{" "}
+        R1,000 on hire. R3,000 at day 90, only if they're still with you.
+      </div>
     </div>
   );
 }
