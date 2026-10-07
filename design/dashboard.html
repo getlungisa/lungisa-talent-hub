@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lungisa dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&amp;family=Schibsted+Grotesk:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#f9f8f6}
+a{color:#2b3a8c}a:hover{color:#212d6e}
+a:focus-visible,button:focus-visible{outline:2px solid #2b3a8c;outline-offset:2px}
+</style>
+</head>
+<body>
+<div style="min-height: 100vh; background: #f9f8f6; color: #1b1e33; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-variant-numeric: lining-nums">
+
+<header style="background: #ffffff; border-bottom: 1px solid #e6e3dc">
+<div style="max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 32px; min-height: 64px">
+<a href="dashboard.html" style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.01em; color: #1b1e33; text-decoration: none">Lungisa</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 0 8px; flex: 1 1 auto">
+<a href="dashboard.html" aria-current="page" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid #2b3a8c; font-size: 14px; line-height: 20px; font-weight: 500; color: #1b1e33; text-decoration: none">Dashboard</a>
+<a href="candidates.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Candidates</a>
+<a href="activity.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Activity</a>
+<a href="placements.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Placements</a>
+<a href="about.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">About</a>
+</nav>
+<button type="button" aria-haspopup="menu" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 16px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer">Test Coffee Co<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 40px 24px 64px; display: flex; flex-direction: column; gap: 40px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 620px">
+<h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em">Good morning, Test Coffee Co</h1>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #5a5d70">2 placements in progress, and one needs a look this week.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a href="request.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 10px; background: #2b3a8c; color: #ffffff; font-size: 14px; line-height: 20px; font-weight: 500; text-decoration: none">I need someone</a>
+<a href="candidates.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-size: 14px; line-height: 20px; font-weight: 500; text-decoration: none">Browse candidates</a>
+</div>
+</div>
+
+<section aria-labelledby="placements-heading" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="placements-heading" style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600">Placements</h2>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #5a5d70">We check in with you and each hire twice a week for the first fortnight, then weekly. Each stitch is a check-in.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+
+<article aria-labelledby="placement-1-name" style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px; min-width: 0">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 20px; font-weight: 500">LS</div>
+<div style="min-width: 0">
+<h3 id="placement-1-name" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500">Lwazi Sityebi</h3>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Barista, started 23 September</p>
+</div>
+</div>
+<p style="margin: 0; flex: none; font-size: 24px; line-height: 30px; font-weight: 600; white-space: nowrap">Day 15 <span style="font-size: 14px; line-height: 20px; font-weight: 400; color: #5a5d70">of 90</span></p>
+</div>
+<div role="img" aria-label="Day 15 of 90. 6 of 16 check-ins done: 5 on track, 1 watch." style="position: relative; height: 20px; margin: 4px 8px 0 2px">
+<div style="position: absolute; left: 0; right: 0; top: 9px; height: 2px; border-radius: 1px; background: #e6e3dc"></div>
+<div style="position: absolute; left: 0; top: 9px; width: 16.667%; height: 2px; border-radius: 1px; background: #2b3a8c"></div>
+<span style="position: absolute; top: 3px; left: 0%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 1.111%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 3.333%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 6.667%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 11.111%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 14.444%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #b87610"></span>
+<span style="position: absolute; top: 3px; left: 22.222%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 30%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 37.778%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 45.556%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 53.333%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 61.111%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 68.889%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 76.667%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 84.444%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 92.222%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 2px; left: 100%; width: 16px; height: 16px; margin-left: -8px; box-sizing: border-box; border: 2px solid #cf5c7e; border-radius: 50%; background: #ffffff"></span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 16px; font-size: 13px; line-height: 18px; color: #5a5d70">
+<span>6 of 16 check-ins</span>
+<span>Next: Monday 12 October</span>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #f9f8f6">
+<span style="flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 20px; font-weight: 500; color: #1b1e33"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #b87610"></span>Watch</span>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #1b1e33">You flagged timekeeping at the week 2 check-in. We're following up with you both this week.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5a5d70">R1,000 invoiced on hire. R3,000 on 21 December, only if Lwazi is still with you.</p>
+<a href="placement-check-ins.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">View check-ins</a>
+</div>
+</article>
+
+<article aria-labelledby="placement-2-name" style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px; min-width: 0">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 20px; font-weight: 500">AN</div>
+<div style="min-width: 0">
+<h3 id="placement-2-name" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500">Asanda Ngxola</h3>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Barista, started 7 August</p>
+</div>
+</div>
+<p style="margin: 0; flex: none; font-size: 24px; line-height: 30px; font-weight: 600; white-space: nowrap">Day 62 <span style="font-size: 14px; line-height: 20px; font-weight: 400; color: #5a5d70">of 90</span></p>
+</div>
+<div role="img" aria-label="Day 62 of 90. 13 of 16 check-ins done, all on track." style="position: relative; height: 20px; margin: 4px 8px 0 2px">
+<div style="position: absolute; left: 0; right: 0; top: 9px; height: 2px; border-radius: 1px; background: #e6e3dc"></div>
+<div style="position: absolute; left: 0; top: 9px; width: 68.889%; height: 2px; border-radius: 1px; background: #2b3a8c"></div>
+<span style="position: absolute; top: 3px; left: 0%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 1.111%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 3.333%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 6.667%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 11.111%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 14.444%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 22.222%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 30%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 37.778%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 45.556%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 53.333%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 61.111%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 68.889%; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: #2f7d4f"></span>
+<span style="position: absolute; top: 3px; left: 76.667%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 84.444%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 3px; left: 92.222%; width: 4px; height: 14px; margin-left: -2px; box-sizing: border-box; border: 1.5px solid #8c8e9c; border-radius: 2px; background: #ffffff"></span>
+<span style="position: absolute; top: 2px; left: 100%; width: 16px; height: 16px; margin-left: -8px; box-sizing: border-box; border: 2px solid #cf5c7e; border-radius: 50%; background: #ffffff"></span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 16px; font-size: 13px; line-height: 18px; color: #5a5d70">
+<span>13 of 16 check-ins</span>
+<span>Next: Wednesday 14 October</span>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #f9f8f6">
+<span style="flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 20px; font-weight: 500; color: #1b1e33"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #2f7d4f"></span>On track</span>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #1b1e33">Checked in with you both today. Nothing needs you.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5a5d70">R1,000 invoiced on hire. R3,000 on 4 November, only if Asanda is still with you.</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">View check-ins</a>
+</div>
+</article>
+
+</div>
+</section>
+
+<section aria-labelledby="recommended-heading" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 4px 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="recommended-heading" style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600">Recommended for you</h2>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #5a5d70">1 new candidate verified this week</p>
+</div>
+<a href="candidates.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">See all candidates</a>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+
+<article aria-labelledby="candidate-1-name" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 20px; font-weight: 500">ND</div>
+<div style="min-width: 0">
+<h3 id="candidate-1-name" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Nomvuyiseko Dlamini-Hendricks</h3>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #1b1e33">Stands out as reliable and teachable</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="profile.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Nomvuyiseko Dlamini-Hendricks to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+<article aria-labelledby="candidate-2-name" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 20px; font-weight: 500">SN</div>
+<div style="min-width: 0">
+<h3 id="candidate-2-name" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Siphosethu Ngcukana</h3>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Gugulethu, two taxis away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #1b1e33">Stands out as personable, and follows through</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Learn to Earn</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Siphosethu Ngcukana to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+<article aria-labelledby="candidate-3-name" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 20px; font-weight: 500">YM</div>
+<div style="min-width: 0">
+<h3 id="candidate-3-name" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Yonela Mrwebi</h3>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #1b1e33">Stands out as trustworthy and reliable</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Yonela Mrwebi to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+</div>
+</section>
+
+<section aria-labelledby="shortlist-heading" style="display: flex; flex-direction: column; gap: 16px">
+<h2 id="shortlist-heading" style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600">Shortlist</h2>
+<div style="background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px 24px">
+<div aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 20px; font-weight: 500">AB</div>
+<div style="flex: 1 1 220px; min-width: 0">
+<h3 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 500">Anathi Booi</h3>
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away. Saved on 2 October.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-size: 14px; line-height: 20px; font-weight: 500; text-decoration: none">Request interview</a>
+<button type="button" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: #ffffff; color: #5a5d70; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer">Remove</button>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+</div>
+</body>
+</html>

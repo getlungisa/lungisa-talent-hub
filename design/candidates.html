@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lungisa candidates</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&amp;family=Schibsted+Grotesk:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#f9f8f6}
+a{color:#2b3a8c}a:hover{color:#212d6e}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #2b3a8c;outline-offset:2px}
+</style>
+</head>
+<body>
+<div style="min-height: 100vh; background: #f9f8f6; color: #1b1e33; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-variant-numeric: lining-nums">
+
+<header style="background: #ffffff; border-bottom: 1px solid #e6e3dc">
+<div style="max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 32px; min-height: 64px">
+<a href="dashboard.html" style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.01em; color: #1b1e33; text-decoration: none">Lungisa</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 0 8px; flex: 1 1 auto">
+<a href="dashboard.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Dashboard</a>
+<a href="candidates.html" aria-current="page" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid #2b3a8c; font-size: 14px; line-height: 20px; font-weight: 500; color: #1b1e33; text-decoration: none">Candidates</a>
+<a href="activity.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Activity</a>
+<a href="placements.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Placements</a>
+<a href="about.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">About</a>
+</nav>
+<button type="button" aria-haspopup="menu" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 16px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer">Test Coffee Co<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 40px 24px 64px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 640px">
+<h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em">Candidates</h1>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #5a5d70">Everyone here finished a training programme and is vouched for by the trainer who watched them work.</p>
+</div>
+<a href="request.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 10px; background: #2b3a8c; color: #ffffff; font-size: 14px; line-height: 20px; font-weight: 500; text-decoration: none">I need someone</a>
+</div>
+
+<form role="search" aria-label="Filter candidates" style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; padding: 16px 24px; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px">
+<label for="filter-area" style="font-size: 13px; line-height: 18px; font-weight: 500">Lives in</label>
+<select id="filter-area" style="min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px"><option>Anywhere</option><option>Langa</option><option>Gugulethu</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px">
+<label for="filter-commute" style="font-size: 13px; line-height: 18px; font-weight: 500">Commute to you</label>
+<select id="filter-commute" style="min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px"><option>Any</option><option>One taxi or less</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px">
+<label for="filter-start" style="font-size: 13px; line-height: 18px; font-weight: 500">Can start</label>
+<select id="filter-start" style="min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px"><option>Any time</option><option>This month</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px">
+<label for="filter-partner" style="font-size: 13px; line-height: 18px; font-weight: 500">Trained by</label>
+<select id="filter-partner" style="min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px"><option>Any partner</option><option>Just Grace</option><option>Learn to Earn</option></select>
+</div>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; line-height: 20px"><input type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Shortlist only</label>
+</form>
+
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #5a5d70">6 candidates</p>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+
+<article aria-labelledby="cand-1" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">ND</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-1" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Nomvuyiseko Dlamini-Hendricks</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+<span style="flex: none; padding: 2px 8px; border-radius: 4px; background: #e8eaf5; color: #2b3a8c; font-size: 12px; line-height: 18px; font-weight: 500">New</span>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as reliable and teachable</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace. Available from 12 October.</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="profile.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Nomvuyiseko Dlamini-Hendricks to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+<article aria-labelledby="cand-2" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">SN</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-2" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Siphosethu Ngcukana</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Gugulethu, two taxis away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as personable, and follows through</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Learn to Earn. Available now.</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Siphosethu Ngcukana to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+<article aria-labelledby="cand-3" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">YM</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-3" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Yonela Mrwebi</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as trustworthy and reliable</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace. Available now.</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-label="Save Yonela Mrwebi to shortlist" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-sizing: border-box; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg></button>
+</div>
+</article>
+
+<article aria-labelledby="cand-4" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">AB</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-4" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Anathi Booi</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as teachable and personable</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace. Available from 19 October.</p>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; box-sizing: border-box; border: 1px solid #2b3a8c; border-radius: 10px; background: #e8eaf5; color: #2b3a8c; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="#2b3a8c" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"></path></svg>On shortlist</button>
+</div>
+</article>
+
+<article aria-labelledby="cand-5" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">NM</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-5" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Nontsikelelo Mabandla</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Langa, one taxi away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as reliable, and follows through</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Just Grace. Available now.</p>
+<div style="display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<p style="margin: 0; font-size: 14px; line-height: 20px; font-weight: 500">Interview requested on 5 October</p>
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5a5d70">We’re arranging a time that suits you both.</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+</div>
+</article>
+
+<article aria-labelledby="cand-6" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<div aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #f7e4ea; color: #7a2440; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500">LQ</div>
+<div style="flex: 1 1 auto; min-width: 0">
+<h2 id="cand-6" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 500; text-wrap: balance">Lindokuhle Qwabe</h2>
+<p style="margin: 2px 0 0; font-size: 13px; line-height: 18px; color: #5a5d70">Gugulethu, two taxis away</p>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px">Stands out as personable and trustworthy</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: #5a5d70"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>Verified by Learn to Earn. Available now.</p>
+<div style="display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e6e3dc">
+<p style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 14px; line-height: 20px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b3a8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path></svg>Interview on Thursday 8 October at 10:00</p>
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5a5d70">At your Gardens venue. We’ve confirmed with Lindokuhle.</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none">View profile</a>
+</div>
+</article>
+
+</div>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lungisa request someone</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&amp;family=Schibsted+Grotesk:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#f9f8f6}
+a{color:#2b3a8c}a:hover{color:#212d6e}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #2b3a8c;outline-offset:2px}
+</style>
+</head>
+<body>
+<div style="min-height: 100vh; background: #f9f8f6; color: #1b1e33; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-variant-numeric: lining-nums">
+
+<header style="background: #ffffff; border-bottom: 1px solid #e6e3dc">
+<div style="max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 32px; min-height: 64px">
+<a href="dashboard.html" style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.01em; color: #1b1e33; text-decoration: none">Lungisa</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 0 8px; flex: 1 1 auto">
+<a href="dashboard.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Dashboard</a>
+<a href="candidates.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Candidates</a>
+<a href="activity.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Activity</a>
+<a href="placements.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">Placements</a>
+<a href="about.html" style="display: inline-flex; align-items: center; min-height: 62px; padding: 0 8px; border-bottom: 2px solid transparent; font-size: 14px; line-height: 20px; font-weight: 500; color: #5a5d70; text-decoration: none">About</a>
+</nav>
+<button type="button" aria-haspopup="menu" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 16px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer">Test Coffee Co<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 24px 24px 64px; display: flex; flex-direction: column; gap: 24px">
+<a href="dashboard.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 14px; font-weight: 500; color: #2b3a8c; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to dashboard</a>
+
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 640px">
+<h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em">Tell us who you need</h1>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #5a5d70">We’ll match you with verified candidates who can get to your venue easily.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 40px">
+
+<form aria-label="Request someone" style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px">
+<label for="req-role" style="font-size: 14px; line-height: 20px; font-weight: 500">Role</label>
+<select id="req-role" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 16px"><option selected="selected">Barista</option><option>Front of house</option><option>Kitchen</option><option>Something else</option></select>
+</div>
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px">
+<label for="req-venue" style="font-size: 14px; line-height: 20px; font-weight: 500">Which venue?</label>
+<input id="req-venue" type="text" value="Gardens" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 16px">
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px">
+<label for="req-start" style="font-size: 14px; line-height: 20px; font-weight: 500">When should they start?</label>
+<input id="req-start" type="date" value="2026-10-19" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 16px">
+</div>
+<fieldset style="flex: 1 1 240px; margin: 0; padding: 0; border: 0; min-width: 0">
+<legend style="padding: 0; margin-bottom: 6px; font-size: 14px; line-height: 20px; font-weight: 500">Hours</legend>
+<div style="display: flex; flex-wrap: wrap; gap: 0 20px">
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="radio" name="req-hours" checked="checked" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Full time</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="radio" name="req-hours" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Part time</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="radio" name="req-hours" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Weekends only</label>
+</div>
+</fieldset>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0">
+<legend style="padding: 0; margin-bottom: 6px; font-size: 14px; line-height: 20px; font-weight: 500">Shifts they’ll need to cover</legend>
+<div style="display: flex; flex-wrap: wrap; gap: 0 20px">
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" checked="checked" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Early starts</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Late finishes</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" checked="checked" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Weekends</label>
+</div>
+</fieldset>
+
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0">
+<legend style="padding: 0; margin-bottom: 2px; font-size: 14px; line-height: 20px; font-weight: 500">What matters most?</legend>
+<p style="margin: 0 0 6px; font-size: 13px; line-height: 18px; color: #5a5d70">Pick up to two. We’ll lead with candidates whose trainers saw these most.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 0 20px">
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" checked="checked" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Reliable</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Trustworthy</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Personable</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" checked="checked" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Teachable</label>
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 16px"><input type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: #2b3a8c">Follows through</label>
+</div>
+</fieldset>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="req-notes" style="font-size: 14px; line-height: 20px; font-weight: 500">Anything else we should know? <span style="font-weight: 400; color: #5a5d70">Optional</span></label>
+<textarea id="req-notes" rows="4" placeholder="Busy mornings, small team, lots of regulars" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #8c8e9c; border-radius: 10px; background: #ffffff; color: #1b1e33; font-family: inherit; font-size: 16px; line-height: 24px; resize: vertical"></textarea>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-top: 24px; border-top: 1px solid #e6e3dc">
+<a href="request-sent.html" style="display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 10px; background: #2b3a8c; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Send request</a>
+<a href="dashboard.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 500; color: #5a5d70; text-decoration: none">Cancel</a>
+</div>
+
+</form>
+
+<aside aria-labelledby="next-heading" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #ffffff; border: 1px solid #e6e3dc; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<h2 id="next-heading" style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">What happens next</h2>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 12px; align-items: flex-start"><span aria-hidden="true" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: #e8eaf5; color: #2b3a8c; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">1</span><p style="margin: 0; font-size: 14px; line-height: 20px">We match from verified candidates who can reach your venue in one taxi ride wherever possible.</p></li>
+<li style="display: flex; gap: 12px; align-items: flex-start"><span aria-hidden="true" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: #e8eaf5; color: #2b3a8c; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">2</span><p style="margin: 0; font-size: 14px; line-height: 20px">You choose who to interview. Interviews are free during the pilot.</p></li>
+<li style="display: flex; gap: 12px; align-items: flex-start"><span aria-hidden="true" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: #e8eaf5; color: #2b3a8c; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">3</span><p style="margin: 0; font-size: 14px; line-height: 20px">If you hire, check-ins start the day before their first shift.</p></li>
+</ol>
+<p style="margin: 0; padding-top: 16px; border-top: 1px solid #e6e3dc; font-size: 14px; line-height: 20px; color: #5a5d70">R1,000 on hire. R3,000 at day 90, only if they’re still with you.</p>
+</aside>
+
+</div>
+</main>
+</div>
+</body>
+</html>
