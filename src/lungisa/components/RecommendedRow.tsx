@@ -124,9 +124,7 @@ export function RecommendedRow({
   return (
     <section>
       <div className="mb-3 flex items-baseline justify-between">
-        <p className="text-sm text-muted-foreground">
-          Recommended for you
-        </p>
+        <p className="text-sm text-muted-foreground">Recommended for you</p>
       </div>
 
       {loading ? (
@@ -154,7 +152,7 @@ export function RecommendedRow({
                     <div className="flex min-w-0 flex-1 items-center gap-2.5">
                       <Avatar name={candidate.name} />
                       <div className="min-w-0">
-                        <h3 className="break-words font-display text-lg leading-tight text-primary">
+                        <h3 className="break-words font-display text-lg leading-tight text-foreground">
                           {candidate.name}
                         </h3>
                         <p className="break-words text-xs text-muted-foreground">
@@ -165,41 +163,41 @@ export function RecommendedRow({
                   </div>
 
                   <div className="mt-3">
-                    <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-primary/80">
+                    <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
                       {candidate.location ?? "Location not provided"}
                     </span>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-xs font-medium text-primary group-hover:underline">
-                      View profile
-                    </span>
-                  </div>
+                  <div className="mt-auto pt-4">
+                    <div className="flex items-center justify-between border-t border-border pt-3">
+                      <span className="text-xs font-medium text-primary group-hover:underline">
+                        View profile
+                      </span>
+                    </div>
 
-                  <div className="mt-3 flex justify-center">
-                    <button
-                      onClick={(event) =>
-                        handleShortlistClick(event, candidate)
-                      }
-                      disabled={isPending}
-                      aria-label={
-                        isSaved
-                          ? "Remove from shortlist"
-                          : "Save to shortlist"
-                      }
-                      className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] transition hover:opacity-70 ${
-                        isSaved ? "text-primary" : "text-muted-foreground"
-                      }`}
-                    >
-                      <Heart
-                        className="h-3.5 w-3.5"
-                        strokeWidth={2}
-                        fill={isSaved ? "currentColor" : "none"}
-                      />
-                      {isSaved
-                        ? "Saved to shortlist"
-                        : "Save to shortlist"}
-                    </button>
+                    <div className="mt-3 flex justify-center">
+                      <button
+                        onClick={(event) =>
+                          handleShortlistClick(event, candidate)
+                        }
+                        disabled={isPending}
+                        aria-label={
+                          isSaved
+                            ? "Remove from shortlist"
+                            : "Save to shortlist"
+                        }
+                        className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] transition hover:opacity-70 ${
+                          isSaved ? "text-primary" : "text-muted-foreground"
+                        }`}
+                      >
+                        <Heart
+                          className="h-3.5 w-3.5"
+                          strokeWidth={2}
+                          fill={isSaved ? "currentColor" : "none"}
+                        />
+                        {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+                      </button>
+                    </div>
                   </div>
                 </article>
               );

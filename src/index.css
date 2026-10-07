@@ -102,7 +102,7 @@
   }
 
   #root {
-    font-variant-numeric: lining-nums tabular-nums;
+    font-variant-numeric: lining-nums;
   }
 
   p {

@@ -118,7 +118,7 @@ const [interviewRequestedIds, setInterviewRequestedIds] = useState<Set<string>>(
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-4xl text-primary text-balance">
+        <h1 className="font-display text-4xl text-foreground text-balance">
           Verified candidates
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">

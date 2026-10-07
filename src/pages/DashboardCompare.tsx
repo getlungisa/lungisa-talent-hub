@@ -32,14 +32,14 @@ function ProfilePreview({ candidate }: { candidate: (typeof profiles)[number] })
       <div className="flex items-start gap-2.5">
         <Avatar name={candidate.firstName} />
         <div className="min-w-0">
-          <h3 className="break-words font-display text-lg leading-tight text-primary">{candidate.firstName}</h3>
+          <h3 className="break-words font-display text-lg leading-tight text-foreground">{candidate.firstName}</h3>
           <p className="text-xs text-muted-foreground">{candidate.role}</p>
         </div>
       </div>
       <div className="mt-3"><VerifiedBadge /></div>
       <div className="mt-3 flex min-h-6 flex-wrap gap-1">
         {candidate.attributes.slice(0, 2).map((attribute) => (
-          <span key={attribute.label} className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-primary/80">
+          <span key={attribute.label} className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
             {attribute.label}
           </span>
         ))}
@@ -81,10 +81,10 @@ function PreviewDashboard({ version }: { version: Version }) {
       {version === "latest" ? (
         <section className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-8">
           <div>
-            <h2 className="font-display text-3xl text-primary sm:text-4xl">Good morning</h2>
+            <h2 className="font-display text-3xl text-foreground sm:text-4xl">Good morning</h2>
             <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span><strong className="font-medium text-primary">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
+              <span><strong className="font-medium text-foreground">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -95,15 +95,15 @@ function PreviewDashboard({ version }: { version: Version }) {
       ) : (
         <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
           <p className="text-sm text-muted-foreground">Good morning</p>
-          <h2 className="mt-2 font-display text-4xl text-primary sm:text-5xl">Dashboard preview</h2>
-          <p className="mt-6 max-w-md font-display text-xl text-primary sm:text-2xl">Tell us who you need. We'll bring them to you.</p>
+          <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Dashboard preview</h2>
+          <p className="mt-6 max-w-md font-display text-xl text-foreground sm:text-2xl">Tell us who you need. We'll bring them to you.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
             <Button className="bg-primary px-9 py-5 text-lg text-primary-foreground hover:bg-primary-hover">I need someone</Button>
             <Button variant="outline" className="border-input px-9 py-5 text-lg text-primary hover:bg-primary-tint">Browse candidates</Button>
           </div>
           <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span><strong className="font-medium text-primary">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
+            <span><strong className="font-medium text-foreground">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
           </p>
         </section>
       )}
@@ -112,7 +112,7 @@ function PreviewDashboard({ version }: { version: Version }) {
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Active placements</h2>
+          <h2 className="font-display text-2xl text-foreground">Active placements</h2>
           <span className="text-sm text-muted-foreground">
             {samplePlacements.length} active {samplePlacements.length === 1 ? "placement" : "placements"}
           </span>
@@ -129,7 +129,7 @@ function PreviewDashboard({ version }: { version: Version }) {
         ))}
       </section>
       <section>
-        <h2 className="mb-3 font-display text-2xl text-primary">{version === "latest" ? "Shortlist" : "Your shortlist"}</h2>
+        <h2 className="mb-3 font-display text-2xl text-foreground">{version === "latest" ? "Shortlist" : "Your shortlist"}</h2>
         <p className="text-sm text-muted-foreground">Favourite candidates while browsing to save them here.</p>
       </section>
     </div>
@@ -151,7 +151,7 @@ export default function DashboardCompare() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center px-5 pb-2 pt-4">
-          <div className="font-display text-lg font-semibold text-primary">
+          <div className="font-display text-lg font-semibold text-foreground">
             Lungisa
           </div>
           <span className="ml-auto hidden text-sm text-muted-foreground sm:block">
@@ -201,7 +201,7 @@ export default function DashboardCompare() {
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8">
         <div className="border-b border-border pb-5">
           <div>
-            <h1 className="font-display text-2xl text-primary">Compare dashboard layouts</h1>
+            <h1 className="font-display text-2xl text-foreground">Compare dashboard layouts</h1>
             <p className="mt-1 text-sm text-muted-foreground">The same sample profiles appear in both versions.</p>
           </div>
           <div className="mt-6 flex w-full border-b border-border" role="tablist" aria-label="Dashboard versions">

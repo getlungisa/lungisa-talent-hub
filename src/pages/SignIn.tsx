@@ -68,7 +68,7 @@ export default function SignIn() {
             {loading ? "Sending..." : "Send magic link"}
           </Button>
           {sent && (
-            <p className="text-sm text-primary">
+            <p className="text-sm text-foreground">
               Check your email — we've sent you a link to sign in.
             </p>
           )}

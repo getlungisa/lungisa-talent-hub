@@ -166,7 +166,7 @@ export function CandidateDetail({
             <div className="flex items-center gap-3">
               <Avatar name={candidate.name} size={48} />
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                <h1 className="break-words font-display text-3xl text-primary">
+                <h1 className="break-words font-display text-3xl text-foreground">
                   {candidate.name}
                 </h1>
               </div>
@@ -185,7 +185,7 @@ export function CandidateDetail({
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
                     <div className="min-w-0">
-                      <dd className="text-[15px] text-primary">
+                      <dd className="text-[15px] text-foreground">
                         {candidate.location ?? "Location not provided"}
                       </dd>
                     </div>
@@ -193,25 +193,25 @@ export function CandidateDetail({
                 </dl>
               </div>
               {strengthsSummary && candidate.training_partner_id && candidate.training_partner?.name && (
-  <p className="text-sm text-primary">
+  <p className="text-sm text-foreground">
     Trainer-verified by {candidate.training_partner.name}
   </p>
 )}
               {referenceNote && (
-                <p className="text-sm text-primary">
+                <p className="text-sm text-foreground">
                   Reference: {referenceNote}
                 </p>
               )}
               
               {strengthsSummary && (
                 <div>
-                  <p className="text-[15px] leading-7 text-primary/80">
+                  <p className="text-[15px] leading-7 text-muted-foreground">
                     {strengthsSummary}
                   </p>
                 </div>
               )}
               {!isTrainingPartner && (
-                <div className="rounded-2xl border border-border bg-card p-5 text-sm text-primary/80">
+                <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
                   We can help coordinate the next step if you would like to meet this candidate.
                 </div>
               )}
@@ -220,7 +220,7 @@ export function CandidateDetail({
             {!isTrainingPartner && (
               <aside className="lg:sticky lg:top-32 lg:self-start">
                 <div className="rounded-2xl border border-border bg-card p-5">
-                  <p className="text-sm text-primary/80">
+                  <p className="text-sm text-muted-foreground">
   {isInterviewRequested
     ? "Interview requested, we'll be in touch within 24 hours."
     : "We will arrange a time that works for you both - usually within 24 hours."}

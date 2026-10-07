@@ -50,7 +50,7 @@ export function Placements() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-4xl text-primary text-balance">
+        <h1 className="font-display text-4xl text-foreground text-balance">
           Active placements
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
@@ -82,13 +82,13 @@ export function Placements() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-primary-tint p-5 text-sm text-primary/80">
+      <div className="rounded-2xl border border-border bg-primary-tint p-5 text-sm text-muted-foreground">
         Lungisa stays close to every placed candidate. You will hear from us if
         anything needs attention.
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-        <span className="font-medium text-primary">A note on fees.</span>{" "}
+        <span className="font-medium text-foreground">A note on fees.</span>{" "}
         R1,000 on hire. R3,000 at day 90, only if they're still with you.
       </div>
     </div>

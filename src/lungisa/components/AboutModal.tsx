@@ -43,12 +43,12 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
         <div className="pr-10">
           <h2
             id="about-lungisa-title"
-            className="font-display text-3xl text-primary"
+            className="font-display text-3xl text-foreground"
           >
             About Lungisa
           </h2>
 
-          <div className="mt-6 space-y-6 text-sm leading-relaxed text-primary/80">
+          <div className="mt-6 space-y-6 text-sm leading-relaxed text-muted-foreground">
             <p>
               Lungisa connects Cape Town coffee and hospitality businesses with
               people who've completed real training but often get overlooked
@@ -70,7 +70,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
             </p>
 
             <section>
-              <h3 className="font-display text-xl text-primary">Contact</h3>
+              <h3 className="font-display text-xl text-foreground">Contact</h3>
               <p className="mt-2">
                 Questions, feedback, or anything else, email{" "}
 
@@ -85,7 +85,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
             </section>
 
             <section>
-              <h3 className="font-display text-xl text-primary">Privacy</h3>
+              <h3 className="font-display text-xl text-foreground">Privacy</h3>
               <p className="mt-2">
                 Lungisa is a UK-registered company. We collect and process
                 personal information about candidates and businesses in order to
@@ -107,7 +107,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
             </section>
 
             <section>
-              <h3 className="font-display text-xl text-primary">
+              <h3 className="font-display text-xl text-foreground">
                 Company details
               </h3>
               <p className="mt-2">

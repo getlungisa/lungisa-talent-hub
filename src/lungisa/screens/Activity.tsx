@@ -67,7 +67,7 @@ export function Activity() {
   return (
     <div className="space-y-10">
       <div className="min-w-0">
-        <h1 className="font-display text-4xl text-primary text-balance">Activity</h1>
+        <h1 className="font-display text-4xl text-foreground text-balance">Activity</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
           A quiet record of what you have done on Lungisa.
         </p>
@@ -80,7 +80,7 @@ export function Activity() {
       </section>
 
       <section>
-        <h2 className="mb-3 font-display text-2xl text-primary">
+        <h2 className="mb-3 font-display text-2xl text-foreground">
           Interviews requested
         </h2>
 
@@ -103,7 +103,7 @@ export function Activity() {
                   <Avatar name={item.candidateName} />
 
                   <div>
-                    <div className="break-words font-display text-lg text-primary">
+                    <div className="break-words font-display text-lg text-foreground">
                       {item.candidateName}
                     </div>
 
@@ -144,7 +144,7 @@ function Stat({
       </div>
 
       <div className="mt-2 flex items-baseline gap-2">
-        <span className="font-display text-4xl text-primary">{value}</span>
+        <span className="font-display text-4xl text-foreground">{value}</span>
         <span className="text-sm text-muted-foreground">{note}</span>
       </div>
     </div>
