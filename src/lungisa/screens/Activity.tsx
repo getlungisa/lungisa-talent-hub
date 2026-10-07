@@ -67,7 +67,7 @@ export function Activity() {
   return (
     <div className="space-y-10">
       <div className="min-w-0">
-        <h1 className="font-display text-4xl text-foreground text-balance">Activity</h1>
+        <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">Activity</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
           A quiet record of what you have done on Lungisa.
         </p>

@@ -179,7 +179,7 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-4xl text-foreground text-balance sm:text-5xl">
+          <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
             {employerName}
           </h1>
           <p className="mt-4 max-w-xl text-muted-foreground">
@@ -197,7 +197,7 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-4xl text-foreground text-balance sm:text-5xl">
+          <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
             {employerName}
           </h1>
           <p className="mt-4 max-w-xl text-muted-foreground">
@@ -286,7 +286,7 @@ export function Dashboard({
           className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h1 className="font-display text-3xl text-foreground sm:text-4xl">
+            <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">
               {greeting()}, {employerName}
             </h1>
 
@@ -357,7 +357,7 @@ export function Dashboard({
       {placements.length > 0 && (
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-foreground">Placements</h2>
+          <h2 className="font-display text-2xl font-semibold text-foreground">Placements</h2>
           <span className="text-sm text-muted-foreground">
             {placements.length} {placements.length === 1 ? "placement" : "placements"}
           </span>
@@ -387,7 +387,7 @@ export function Dashboard({
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-foreground">Shortlist</h2>
+          <h2 className="font-display text-2xl font-semibold text-foreground">Shortlist</h2>
           <span className="text-sm text-muted-foreground">
             {shortlisted.length} {shortlisted.length === 1 ? "candidate" : "candidates"}
           </span>

@@ -127,7 +127,7 @@ export function RecommendedRow({
   return (
     <section>
       <div className="mb-3">
-        <p className="text-sm text-muted-foreground">Recommended for you</p>
+        <p className="font-display text-2xl font-semibold text-foreground">Recommended for you</p>
         {newThisWeek > 0 && (
           <p className="mt-0.5 text-sm text-foreground">
             {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}{" "}
