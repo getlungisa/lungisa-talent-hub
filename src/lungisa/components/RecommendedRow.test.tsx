@@ -28,6 +28,10 @@ describe("RecommendedRow shortlist interactions", () => {
 
   it("shows a pluralised new-candidates subtitle only when the count is positive", async () => {
     const { rerender } = render(<RecommendedRow {...props} newThisWeek={1} />);
+    expect(screen.getByText("Recommended for you")).toHaveClass(
+      "text-2xl",
+      "font-semibold",
+    );
     expect(await screen.findByText(/1 new candidate verified this week/)).toBeInTheDocument();
     rerender(<RecommendedRow {...props} newThisWeek={3} />);
     expect(screen.getByText(/3 new candidates verified this week/)).toBeInTheDocument();

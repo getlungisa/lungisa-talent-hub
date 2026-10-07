@@ -46,6 +46,12 @@ describe("Activity", () => {
   it("shows an interview count that matches the listed requests", async () => {
     render(<Activity />);
 
+    expect(screen.getByRole("heading", { name: "Activity" })).toHaveClass(
+      "text-[28px]",
+      "sm:text-[32px]",
+      "font-semibold",
+      "tracking-[-0.01em]",
+    );
     expect(
       await screen.findByText("Kagiso Example", { selector: ".font-display" }),
     ).toBeInTheDocument();

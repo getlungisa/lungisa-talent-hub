@@ -108,4 +108,33 @@ describe("Shell", () => {
     expect(primaryGroup).not.toContainElement(aboutButton);
     expect(aboutButton).toHaveClass("ml-auto");
   });
+
+  it("keeps the desktop header on one row with the requested brand and account styling", () => {
+    render(
+      <MemoryRouter>
+        <Shell
+          active="dashboard"
+          isTrainingPartner={false}
+          onNavigate={vi.fn()}
+        >
+          <div>content</div>
+        </Shell>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("banner").firstElementChild).toHaveClass(
+      "lg:flex-nowrap",
+    );
+    expect(screen.getByText("Lungisa")).toHaveClass(
+      "text-[24px]",
+      "font-semibold",
+      "tracking-[-0.01em]",
+      "text-[#1b1e33]",
+    );
+    expect(screen.getByRole("button", { name: "Test Business" })).toHaveClass(
+      "min-h-[44px]",
+      "border-0",
+      "text-[#5a5d70]",
+    );
+  });
 });
