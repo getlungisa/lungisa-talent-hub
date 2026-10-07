@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { orderMock, selectMock, fromMock, eqMock, maybeSingleMock, rpcMock } = vi.hoisted(() => {
+const { orderMock, selectMock, fromMock, eqMock, orMock, maybeSingleMock, rpcMock } = vi.hoisted(() => {
   const orderMock = vi.fn();
   const maybeSingleMock = vi.fn();
   const eqMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
-  const selectMock = vi.fn(() => ({ order: orderMock, eq: eqMock, maybeSingle: maybeSingleMock }));
+  const orMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
+  const selectMock = vi.fn(() => ({ order: orderMock, eq: eqMock, or: orMock, maybeSingle: maybeSingleMock }));
   const fromMock = vi.fn(() => ({ select: selectMock }));
   const rpcMock = vi.fn();
 
-  return { orderMock, selectMock, fromMock, eqMock, maybeSingleMock, rpcMock };
+  return { orderMock, selectMock, fromMock, eqMock, orMock, maybeSingleMock, rpcMock };
 });
 
 vi.mock("@/integrations/supabase/client", () => ({
@@ -26,6 +27,7 @@ describe("fetchCandidates", () => {
     selectMock.mockClear();
     orderMock.mockReset();
     eqMock.mockReset();
+    orMock.mockReset();
     maybeSingleMock.mockReset();
     rpcMock.mockReset();
   });
@@ -79,6 +81,7 @@ describe("fetchCandidate", () => {
     selectMock.mockClear();
     orderMock.mockReset();
     eqMock.mockReset();
+    orMock.mockReset();
     maybeSingleMock.mockReset();
     rpcMock.mockReset();
   });
@@ -119,6 +122,7 @@ describe("toggleCandidateShortlist", () => {
     selectMock.mockClear();
     orderMock.mockReset();
     eqMock.mockReset();
+    orMock.mockReset();
     maybeSingleMock.mockReset();
     rpcMock.mockReset();
   });
@@ -137,7 +141,7 @@ describe("toggleCandidateShortlist", () => {
 
     expect(fromMock).toHaveBeenCalledWith("businesses");
     expect(selectMock).toHaveBeenCalledWith("id, is_training_partner");
-    expect(eqMock).toHaveBeenCalledWith("user_id", "user-1");
+    expect(orMock).toHaveBeenCalledWith("user_id.eq.user-1,secondary_user_id.eq.user-1");
     expect(rpcMock).toHaveBeenCalledWith("toggle_candidate_shortlist", {
       p_business_id: "business-1",
       p_candidate_id: "candidate-1",
