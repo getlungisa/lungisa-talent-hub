@@ -8,14 +8,12 @@ const {
   fetchDashboardPlacementsMock,
   fetchDashboardShortlistedMock,
   fetchTrainingPartnerCandidatesMock,
-  fetchNewCandidatesThisWeekCountMock,
 } = vi.hoisted(() => ({
   authUser: { id: "business-user", email: "owner@example.com" },
   fetchOpenNeedsMock: vi.fn(),
   fetchDashboardPlacementsMock: vi.fn(),
   fetchDashboardShortlistedMock: vi.fn(),
   fetchTrainingPartnerCandidatesMock: vi.fn(),
-  fetchNewCandidatesThisWeekCountMock: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -43,7 +41,6 @@ vi.mock("../lib/dashboard", () => ({
   fetchDashboardPlacements: fetchDashboardPlacementsMock,
   fetchDashboardShortlisted: fetchDashboardShortlistedMock,
   fetchTrainingPartnerCandidates: fetchTrainingPartnerCandidatesMock,
-  fetchNewCandidatesThisWeekCount: fetchNewCandidatesThisWeekCountMock,
 }));
 
 vi.mock("../components/RecommendedRow", () => ({
@@ -76,7 +73,6 @@ describe("Dashboard", () => {
       },
     ]);
     fetchTrainingPartnerCandidatesMock.mockResolvedValue([]);
-    fetchNewCandidatesThisWeekCountMock.mockResolvedValue(3);
   });
 
   it("opens a shortlisted candidate with the Candidate payload", async () => {
@@ -142,17 +138,49 @@ describe("Dashboard", () => {
       />,
     );
 
-    await screen.findByText(/verified this week/i);
-
-    const heroLayout = screen.getByTestId("dashboard-hero");
+    const heroLayout = await screen.findByTestId("dashboard-hero");
 
     expect(heroLayout).toHaveClass("sm:justify-between");
     expect(heroLayout).not.toHaveClass("max-w-4xl");
   });
 
-  it("pluralises the new-candidate count", async () => {
-    fetchNewCandidatesThisWeekCountMock.mockResolvedValueOnce(1);
+  it("pluralises the placements in progress line", async () => {
+    const placement = (candidateId: string) => ({
+      candidateId,
+      candidateName: "Name",
+      location: null,
+      startedDaysAgo: 3,
+      totalDays: 90,
+      startedAt: "2026-01-01",
+      status: "active",
+    });
 
+    fetchDashboardPlacementsMock.mockResolvedValueOnce([placement("a")]);
+    const { unmount } = render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+    expect(await screen.findByText("1 placement in progress")).toBeInTheDocument();
+    unmount();
+
+    fetchDashboardPlacementsMock.mockResolvedValueOnce([
+      placement("a"),
+      placement("b"),
+    ]);
+    render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+    expect(await screen.findByText("2 placements in progress")).toBeInTheDocument();
+  });
+
+  it("omits the placements line and section when there are none", async () => {
     render(
       <Dashboard
         isTrainingPartner={false}
@@ -161,7 +189,10 @@ describe("Dashboard", () => {
       />,
     );
 
-    expect(await screen.findByText(/1 new candidate/)).toBeInTheDocument();
-    expect(screen.queryByText(/1 new candidates/)).not.toBeInTheDocument();
+    await screen.findByRole("heading", { name: "Ayanda" });
+    expect(screen.queryByText(/in progress/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Placements" }),
+    ).not.toBeInTheDocument();
   });
 });

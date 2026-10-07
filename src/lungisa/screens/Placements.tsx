@@ -74,8 +74,8 @@ export function Placements() {
               key={p.candidateId}
               name={p.candidateName}
               role={p.location ?? "Location not provided"}
-              day={p.startedDaysAgo}
-              total={p.totalDays}
+              startedDaysAgo={p.startedDaysAgo}
+              startedAt={p.startedAt}
               startDate={`${p.startedDaysAgo} days ago`}
             />
           ))}

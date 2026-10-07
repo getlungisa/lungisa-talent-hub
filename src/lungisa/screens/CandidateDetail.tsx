@@ -3,14 +3,17 @@ import { Avatar } from "../components/Avatar";
 import { createPortal } from "react-dom";
 import {
   fetchCandidate,
+  fetchDashboardShortlisted,
   fetchInterviewRequestedCandidateIds,
   insertBusinessActivity,
+  toggleCandidateShortlist,
   type Candidate,
 } from "../lib/dashboard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   ArrowLeft,
   Check,
+  Heart,
   MapPin,
 } from "lucide-react";
 
@@ -19,16 +22,20 @@ export function CandidateDetail({
   onBack,
   onCandidateStatusChange,
   onInterviewRequestedChange,
+  onInterviewRequested,
   isTrainingPartner = false
 }: {
   id: string;
   onBack: () => void;
   onCandidateStatusChange?: (exists: boolean | null) => void;
   onInterviewRequestedChange?: (requested: boolean) => void;
+  onInterviewRequested?: (candidateId: string) => Promise<boolean>;
   isTrainingPartner?: boolean;
 }) {
 
   const { user } = useAuth();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isUpdatingSave, setIsUpdatingSave] = useState(false);
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -78,6 +85,46 @@ export function CandidateDetail({
       cancelled = true;
     };
   }, [user, id, onInterviewRequestedChange]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSaved = async () => {
+      if (!user || !id || isTrainingPartner) {
+        setIsSaved(false);
+        return;
+      }
+
+      try {
+        const shortlisted = await fetchDashboardShortlisted(user);
+        if (!cancelled) {
+          setIsSaved(shortlisted.some(({ candidateId }) => candidateId === id));
+        }
+      } catch (error) {
+        console.error("Failed to load shortlist state:", error);
+      }
+    };
+
+    void loadSaved();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, id, isTrainingPartner]);
+
+  const handleSaveClick = async () => {
+    if (!user || isUpdatingSave) return;
+
+    setIsUpdatingSave(true);
+
+    try {
+      setIsSaved(await toggleCandidateShortlist(user, id, isSaved));
+    } catch (error) {
+      console.error("Failed to update shortlist:", error);
+    } finally {
+      setIsUpdatingSave(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -192,11 +239,6 @@ export function CandidateDetail({
                   </div>
                 </dl>
               </div>
-              {strengthsSummary && candidate.training_partner_id && candidate.training_partner?.name && (
-  <p className="text-sm text-foreground">
-    Trainer-verified by {candidate.training_partner.name}
-  </p>
-)}
               {referenceNote && (
                 <p className="text-sm text-foreground">
                   Reference: {referenceNote}
@@ -205,26 +247,79 @@ export function CandidateDetail({
               
               {strengthsSummary && (
                 <div>
-                  <p className="text-[15px] leading-7 text-muted-foreground">
+                  <h2 className="font-display text-xl text-foreground">
+                    What stood out
+                  </h2>
+                  <p className="mt-2 text-[15px] leading-7 text-foreground">
                     {strengthsSummary}
                   </p>
-                </div>
-              )}
-              {!isTrainingPartner && (
-                <div className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-                  We can help coordinate the next step if you would like to meet this candidate.
+                  {candidate.training_partner?.name && (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Based on {candidate.training_partner.name}'s trainer
+                      assessment
+                    </p>
+                  )}
                 </div>
               )}
             </div>
 
             {!isTrainingPartner && (
               <aside className="lg:sticky lg:top-32 lg:self-start">
-                <div className="rounded-2xl border border-border bg-card p-5">
-                  <p className="text-sm text-muted-foreground">
-  {isInterviewRequested
-    ? "Interview requested, we'll be in touch within 24 hours."
-    : "We will arrange a time that works for you both - usually within 24 hours."}
- </p>
+                <div className="space-y-5 rounded-2xl border border-border bg-card p-5">
+                  <div className="space-y-2">
+                    <button
+                      onClick={async () => {
+                        if (!isInterviewRequested) {
+                          await onInterviewRequested?.(id);
+                        }
+                      }}
+                      disabled={isInterviewRequested || !onInterviewRequested}
+                      className={`inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
+                        isInterviewRequested
+                          ? "bg-primary-tint text-primary"
+                          : "bg-primary text-primary-foreground hover:bg-primary-hover"
+                      }`}
+                    >
+                      {isInterviewRequested ? (
+                        <>
+                          <Check className="h-4 w-4" strokeWidth={3} />
+                          Interview requested
+                        </>
+                      ) : (
+                        "Request interview"
+                      )}
+                    </button>
+                    <button
+                      onClick={handleSaveClick}
+                      disabled={isUpdatingSave}
+                      className={`inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 text-sm transition hover:opacity-70 ${
+                        isSaved ? "text-primary" : "text-foreground"
+                      }`}
+                    >
+                      <Heart
+                        className="h-4 w-4"
+                        strokeWidth={2}
+                        fill={isSaved ? "currentColor" : "none"}
+                      />
+                      {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+                    </button>
+                  </div>
+
+                  <div>
+                    <h2 className="font-display text-base text-foreground">
+                      What happens next
+                    </h2>
+                    <p className="mt-1 text-sm text-foreground">
+                      {isInterviewRequested
+                        ? "Interview requested, we'll be in touch within 24 hours."
+                        : "We'll arrange a time that suits you both, usually within 24 hours. Interviews are free during the pilot."}
+                    </p>
+                  </div>
+
+                  <p className="text-sm text-foreground">
+                    R1,000 on hire. R3,000 at day 90, only if they're still with
+                    you.
+                  </p>
                 </div>
               </aside>
             )}
@@ -258,7 +353,7 @@ export function CandidateInterviewBar({
 
   return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background"
+      className="fixed inset-x-0 bottom-0 z-[100] border-t lg:hidden border-border bg-background"
       style={{
         position: "fixed",
         left: 0,

@@ -7,6 +7,7 @@ import {
   type Candidate,
 } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
+import { VerifiedBadge } from "./VerifiedBadge";
 import { Heart } from "lucide-react";
 
 const shortlistConflictTitle = "Candidate no longer available";
@@ -18,11 +19,13 @@ const shortlistErrorDescription = "Please try again.";
 export function RecommendedRow({
   onOpenCandidate,
   onSeeAll,
+  newThisWeek = 0,
   shortlistedIds,
   onShortlistChanged,
 }: {
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
+  newThisWeek?: number;
   shortlistedIds: Set<string>;
   onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
 }) {
@@ -123,8 +126,14 @@ export function RecommendedRow({
 
   return (
     <section>
-      <div className="mb-3 flex items-baseline justify-between">
+      <div className="mb-3">
         <p className="text-sm text-muted-foreground">Recommended for you</p>
+        {newThisWeek > 0 && (
+          <p className="mt-0.5 text-sm text-foreground">
+            {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}{" "}
+            verified this week
+          </p>
+        )}
       </div>
 
       {loading ? (
@@ -162,11 +171,13 @@ export function RecommendedRow({
                     </div>
                   </div>
 
-                  <div className="mt-3">
-                    <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {candidate.location ?? "Location not provided"}
-                    </span>
-                  </div>
+                  {candidate.training_partner?.name?.trim() && (
+                    <div className="mt-3">
+                      <VerifiedBadge
+                        partner={candidate.training_partner.name.trim()}
+                      />
+                    </div>
+                  )}
 
                   <div className="mt-auto pt-4">
                     <div className="flex items-center justify-between border-t border-border pt-3">

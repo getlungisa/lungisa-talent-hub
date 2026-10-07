@@ -48,6 +48,10 @@ export function CandidateCard({
       ? candidate.strengths_summary.trim()
       : "";
   const attributes = "attributes" in candidate ? candidate.attributes : [];
+  const partnerName =
+    "training_partner" in candidate
+      ? (candidate.training_partner?.name?.trim() ?? "")
+      : "";
   const verified = "verified" in candidate ? candidate.verified : false;
 
   const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -109,15 +113,21 @@ export function CandidateCard({
           </h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
 
-          {verified && (
+          {partnerName ? (
             <div className="mt-1.5">
-              <VerifiedBadge />
+              <VerifiedBadge partner={partnerName} />
             </div>
+          ) : (
+            verified && (
+              <div className="mt-1.5">
+                <VerifiedBadge />
+              </div>
+            )
           )}
         </div>
       </div>
 
-      {attributes.length > 0 ? (
+      {attributes.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-1.5">
           {attributes.map((attribute) => (
             <span
@@ -127,12 +137,6 @@ export function CandidateCard({
               {attribute.label}
             </span>
           ))}
-        </div>
-      ) : (
-        <div className="mt-4">
-          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
-            {summary}
-          </span>
         </div>
       )}
 
@@ -160,7 +164,7 @@ export function CandidateCard({
           className={`mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
             isRequested
               ? "bg-primary-tint text-primary"
-              : "bg-primary text-primary-foreground hover:bg-primary-hover"
+              : "border border-input bg-transparent text-primary hover:bg-primary-tint"
           }`}
         >
           {isRequested ? (

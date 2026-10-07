@@ -50,14 +50,45 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
           <div className="mt-6 space-y-6 text-sm leading-relaxed text-muted-foreground">
             <p>
-              Lungisa connects Cape Town coffee and hospitality businesses with
-              people who've completed real training but often get overlooked
-              because they lack a formal CV or industry contacts. Each
-              candidate's trainer personally vouches for the things an
-              interview can't show, reliability, attitude, and how someone
-              handles a hard shift. We stay involved after a hire to support a
-              successful placement.
+              We introduce you to capable young people from Cape Town's
+              townships, vouched for by the trainers who know them. Then we
+              stay close to you both for the first 90 days.
             </p>
+
+            <ol className="space-y-4">
+              <li>
+                <h3 className="font-display text-xl text-foreground">
+                  1. Vouched for by their trainer
+                </h3>
+                <p className="mt-1">
+                  Every candidate has finished a programme with one of our
+                  training partners. Their trainer watched them work every day
+                  and tells you what they saw. We never pay trainers per hire,
+                  so they have no reason to oversell anyone.
+                </p>
+              </li>
+              <li>
+                <h3 className="font-display text-xl text-foreground">
+                  2. You interview, you decide
+                </h3>
+                <p className="mt-1">
+                  Interviews are free during the pilot. If you hire, they work
+                  for you directly, on your terms.
+                </p>
+              </li>
+              <li>
+                <h3 className="font-display text-xl text-foreground">
+                  3. We stay close for 90 days
+                </h3>
+                <p className="mt-1">
+                  We check in with you and your new starter twice a week for the
+                  first fortnight, then weekly. Placements usually break early,
+                  over things like transport or a rough first week, so that's
+                  where we put the most effort. You can pause your own
+                  check-ins; theirs carry on.
+                </p>
+              </li>
+            </ol>
 
             <p>
               Lungisa is currently running a pilot in Cape Town.

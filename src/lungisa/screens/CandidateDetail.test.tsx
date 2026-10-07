@@ -11,6 +11,8 @@ const { fetchCandidateMock, fetchInterviewRequestedCandidateIdsMock, insertBusin
 
 vi.mock("../lib/dashboard", () => ({
   fetchCandidate: fetchCandidateMock,
+  fetchDashboardShortlisted: vi.fn().mockResolvedValue([]),
+  toggleCandidateShortlist: vi.fn(),
   fetchInterviewRequestedCandidateIds: fetchInterviewRequestedCandidateIdsMock,
   insertBusinessActivity: insertBusinessActivityMock,
 }));
@@ -63,12 +65,13 @@ describe("CandidateDetail", () => {
     expect(await screen.findByText("Candidate not found.")).toBeInTheDocument();
   });
 
-  it("renders fetched details without a label above the strengths summary", async () => {
+  it("renders fetched details under What stood out with partner attribution", async () => {
     fetchCandidateMock.mockResolvedValue({
       id: "real-1",
       name: "Sipho",
       location: "Khayelitsha, Cape Town",
       strengths_summary: "Excellent follow-through and calm communication.",
+      training_partner: { name: "Partner Org" },
     });
 
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
@@ -76,8 +79,16 @@ describe("CandidateDetail", () => {
     expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
     expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(2);
     expect(
-      screen.queryByRole("heading", { name: "What stood out" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("heading", { name: "What stood out" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Based on Partner Org's trainer assessment"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "R1,000 on hire. R3,000 at day 90, only if they're still with you.",
+      ),
+    ).toBeInTheDocument();
     expect(
       screen.getByText("Excellent follow-through and calm communication."),
     ).toBeInTheDocument();

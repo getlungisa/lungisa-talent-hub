@@ -122,8 +122,7 @@ function PreviewDashboard({ version }: { version: Version }) {
             key={placement.candidateId}
             name={placement.candidateName}
             role={placement.role}
-            day={placement.startedDaysAgo}
-            total={placement.totalDays}
+            startedDaysAgo={placement.startedDaysAgo}
             startDate={`${placement.startedDaysAgo} ${placement.startedDaysAgo === 1 ? "day" : "days"} ago`}
           />
         ))}
