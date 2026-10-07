@@ -21,12 +21,14 @@ export function RecommendedRow({
   onSeeAll,
   newThisWeek = 0,
   shortlistedIds,
+  placedCandidateIds = new Set<string>(),
   onShortlistChanged,
 }: {
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
   newThisWeek?: number;
   shortlistedIds: Set<string>;
+  placedCandidateIds?: Set<string>;
   onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
 }) {
   const { user } = useAuth();
@@ -67,7 +69,8 @@ export function RecommendedRow({
     };
   }, []);
 
-  const recommended = [...candidates]
+  const recommended = candidates
+    .filter((candidate) => !placedCandidateIds.has(candidate.id))
     .sort((a, b) => {
       const aCreatedAt = Date.parse(a.created_at ?? "");
       const bCreatedAt = Date.parse(b.created_at ?? "");

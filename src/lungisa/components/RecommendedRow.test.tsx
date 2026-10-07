@@ -130,4 +130,22 @@ describe("RecommendedRow shortlist interactions", () => {
     ]);
     expect(screen.queryByRole("heading", { name: "Oldest" })).not.toBeInTheDocument();
   });
+
+  it("excludes placed candidates and keeps created_at desc, name asc order, max six", async () => {
+    const mk = (id: string, name: string, created_at: string) => ({ id, name, created_at, location: "Cape Town" });
+    fetchMock.mockResolvedValue([
+      mk("p", "Placed", "2026-01-09T00:00:00Z"),
+      mk("b", "Bea", "2026-01-05T00:00:00Z"),
+      mk("a", "Abe", "2026-01-05T00:00:00Z"),
+      mk("c", "Cy", "2026-01-08T00:00:00Z"),
+      mk("d", "Dee", "2026-01-01T00:00:00Z"),
+      mk("e", "Eve", "2026-01-02T00:00:00Z"),
+      mk("f", "Fay", "2026-01-03T00:00:00Z"),
+      mk("g", "Gus", "2025-12-01T00:00:00Z"),
+    ]);
+    render(<RecommendedRow {...props} placedCandidateIds={new Set(["p"])} />);
+    await screen.findByRole("heading", { name: "Cy" });
+    const names = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
+    expect(names).toEqual(["Cy", "Abe", "Bea", "Fay", "Eve", "Dee"]);
+  });
 });
