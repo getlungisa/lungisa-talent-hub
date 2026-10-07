@@ -73,7 +73,7 @@ export function NeedSheet({
   };
 
   const selectClass =
-    "w-full rounded-[10px] border border-input bg-background px-3 py-2.5 text-sm text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30";
+    "w-full rounded-[10px] border border-input bg-background px-3 py-2.5 text-sm text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30";
 
   return (
     <Sheet
@@ -93,7 +93,7 @@ export function NeedSheet({
               <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-full bg-primary-tint">
                 <Check className="h-6 w-6 text-primary" strokeWidth={2.5} />
               </div>
-              <h2 className="font-display text-3xl text-primary sm:text-4xl">
+              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
                 We're on it.
               </h2>
               <p className="mt-4 max-w-md text-base text-muted-foreground">
@@ -110,7 +110,7 @@ export function NeedSheet({
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-1 flex-col">
-              <h2 className="font-display text-3xl text-primary sm:text-4xl">
+              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
                 Tell us who you need.
               </h2>
               <p className="mt-3 max-w-md text-base text-muted-foreground">
@@ -119,8 +119,8 @@ export function NeedSheet({
 
               <div className="mt-8 space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="role" className="text-sm font-medium text-primary">
-                    Role <span className="text-primary">*</span>
+                  <label htmlFor="role" className="text-sm font-medium text-foreground">
+                    Role <span className="text-foreground">*</span>
                   </label>
                   <select
                     id="role"
@@ -137,8 +137,8 @@ export function NeedSheet({
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="timing" className="text-sm font-medium text-primary">
-                    Timing <span className="text-primary">*</span>
+                  <label htmlFor="timing" className="text-sm font-medium text-foreground">
+                    Timing <span className="text-foreground">*</span>
                   </label>
                   <select
                     id="timing"
@@ -155,7 +155,7 @@ export function NeedSheet({
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="must_haves" className="text-sm font-medium text-primary">
+                  <label htmlFor="must_haves" className="text-sm font-medium text-foreground">
                     Must-haves
                   </label>
                   <textarea

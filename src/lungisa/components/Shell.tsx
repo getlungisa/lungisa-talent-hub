@@ -62,7 +62,7 @@ export function Shell({
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center px-5 pt-4 pb-2">
-          <div className="font-display text-lg font-semibold text-primary">
+          <div className="font-display text-lg font-semibold text-foreground">
             Lungisa
           </div>
 

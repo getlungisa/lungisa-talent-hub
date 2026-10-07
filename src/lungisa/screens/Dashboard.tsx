@@ -179,7 +179,7 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
+          <h1 className="mt-2 font-display text-4xl text-foreground text-balance sm:text-5xl">
             {employerName}
           </h1>
           <p className="mt-4 max-w-xl text-muted-foreground">
@@ -197,7 +197,7 @@ export function Dashboard({
           <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
-          <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
+          <h1 className="mt-2 font-display text-4xl text-foreground text-balance sm:text-5xl">
             {employerName}
           </h1>
           <p className="mt-4 max-w-xl text-muted-foreground">
@@ -207,7 +207,7 @@ export function Dashboard({
 
         <section>
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-display text-2xl text-primary">Candidates</h2>
+            <h2 className="font-display text-2xl text-foreground">Candidates</h2>
             <span className="text-sm text-muted-foreground">
               {trainingPartnerCandidates.length} {trainingPartnerCandidates.length === 1 ? "candidate" : "candidates"}
             </span>
@@ -258,7 +258,7 @@ export function Dashboard({
                     <Avatar name={candidate.name} />
 
                     <div className="min-w-0">
-                      <h3 className="break-words font-display text-lg text-primary">
+                      <h3 className="break-words font-display text-lg text-foreground">
                         {candidate.name}
                       </h3>
                       <p className="text-sm text-muted-foreground">
@@ -286,14 +286,14 @@ export function Dashboard({
           className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h1 className="font-display text-3xl text-primary sm:text-4xl">
+            <h1 className="font-display text-3xl text-foreground sm:text-4xl">
               {greeting()}, {employerName}
             </h1>
 
             <div className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
               <span>
-                <span className="font-medium text-primary">
+                <span className="font-medium text-foreground">
                   {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}
                 </span>{" "}
                 verified this week
@@ -322,7 +322,7 @@ export function Dashboard({
       {needs.length > 0 && (
         <section>
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-display text-2xl text-primary">Open needs</h2>
+            <h2 className="font-display text-2xl text-foreground">Open needs</h2>
             <span className="text-sm text-muted-foreground">
               {needs.length} open {needs.length === 1 ? "need" : "needs"}
             </span>
@@ -335,7 +335,7 @@ export function Dashboard({
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="break-words font-display text-lg text-primary">
+                    <h3 className="break-words font-display text-lg text-foreground">
                       {need.role}
                     </h3>
                     <span className="inline-flex items-center gap-1 rounded-full bg-primary-tint px-2.5 py-0.5 text-xs font-medium text-primary">
@@ -365,7 +365,7 @@ export function Dashboard({
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Active placements</h2>
+          <h2 className="font-display text-2xl text-foreground">Active placements</h2>
           <span className="text-sm text-muted-foreground">
             {placements.length} {placements.length === 1 ? "active placement" : "active placements"}
           </span>
@@ -386,7 +386,7 @@ export function Dashboard({
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-primary">Shortlist</h2>
+          <h2 className="font-display text-2xl text-foreground">Shortlist</h2>
           <span className="text-sm text-muted-foreground">
             {shortlisted.length} {shortlisted.length === 1 ? "candidate" : "candidates"}
           </span>
@@ -411,7 +411,7 @@ export function Dashboard({
               >
                 <Avatar name={candidate.candidateName} />
                 <div className="min-w-0">
-                  <h3 className="font-display text-lg text-primary">
+                  <h3 className="font-display text-lg text-foreground">
                     {candidate.candidateName}
                   </h3>
                   <p className="text-sm text-muted-foreground">

@@ -41,7 +41,7 @@ export function CandidateCard({
   const summary =
     "role" in candidate
       ? candidate.role
-      : candidate.location ?? "Location not provided";
+      : (candidate.location ?? "Location not provided");
   const strengthsSummary =
     "strengths_summary" in candidate &&
     typeof candidate.strengths_summary === "string"
@@ -50,9 +50,7 @@ export function CandidateCard({
   const attributes = "attributes" in candidate ? candidate.attributes : [];
   const verified = "verified" in candidate ? candidate.verified : false;
 
-  const handleShortlistClick = async (
-    event: MouseEvent<HTMLButtonElement>,
-  ) => {
+  const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
 
     if (shortlistRequestInFlight.current) {
@@ -100,13 +98,15 @@ export function CandidateCard({
     <article
       onClick={() => onOpen(candidate.id)}
       aria-label={`${name} — ${summary}`}
-      className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:border-primary"
+      className="group flex cursor-pointer flex-col rounded-2xl border border-border bg-card p-5 transition hover:border-primary"
     >
       <div className="flex w-full min-w-0 items-start gap-3">
         <Avatar name={name} />
 
         <div className="min-w-0 flex-1">
-          <h3 className="break-words font-display text-xl leading-tight text-primary">{name}</h3>
+          <h3 className="break-words font-display text-xl leading-tight text-foreground">
+            {name}
+          </h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
 
           {verified && (
@@ -122,7 +122,7 @@ export function CandidateCard({
           {attributes.map((attribute) => (
             <span
               key={attribute.label}
-              className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80"
+              className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
             >
               {attribute.label}
             </span>
@@ -130,14 +130,14 @@ export function CandidateCard({
         </div>
       ) : (
         <div className="mt-4">
-          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-primary/80">
+          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
             {summary}
           </span>
         </div>
       )}
 
       {strengthsSummary && (
-        <p className="mt-4 text-sm leading-6 text-primary/80">
+        <p className="mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
           {strengthsSummary}
         </p>
       )}
@@ -148,54 +148,54 @@ export function CandidateCard({
         </div>
       )}
 
-      <button
-        onClick={async (event) => {
-          event.stopPropagation();
-          if (!isRequested) {
-            await onInterviewRequested(candidate.id);
-          }
-        }}
-        disabled={isRequested}
-        className={`mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
-          isRequested
-          ? "bg-primary-tint text-primary"
-          : "bg-primary text-primary-foreground hover:bg-primary-hover"
-        }`}
-      >
-        {isRequested ? (
-          <>
-            <Check className="h-4 w-4" strokeWidth={3} />
-            Interview requested
-          </>
-        ) : (
-          "Request interview"
-        )}
-      </button>
-
-      {isRequested && (
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          We'll be in touch within 24 hours.
-        </p>
-      )}
-
-      <div className="mt-3 flex justify-center">
+      <div className="mt-auto">
         <button
-          onClick={handleShortlistClick}
-          disabled={isUpdatingShortlist}
-          aria-label={
-            isSaved ? "Remove from shortlist" : "Save to shortlist"
-          }
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition hover:opacity-70 ${
-            isSaved ? "text-primary" : "text-muted-foreground"
+          onClick={async (event) => {
+            event.stopPropagation();
+            if (!isRequested) {
+              await onInterviewRequested(candidate.id);
+            }
+          }}
+          disabled={isRequested}
+          className={`mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
+            isRequested
+              ? "bg-primary-tint text-primary"
+              : "bg-primary text-primary-foreground hover:bg-primary-hover"
           }`}
         >
-          <Heart
-            className="h-4 w-4"
-            strokeWidth={2}
-            fill={isSaved ? "currentColor" : "none"}
-          />
-          {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+          {isRequested ? (
+            <>
+              <Check className="h-4 w-4" strokeWidth={3} />
+              Interview requested
+            </>
+          ) : (
+            "Request interview"
+          )}
         </button>
+
+        {isRequested && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            We'll be in touch within 24 hours.
+          </p>
+        )}
+
+        <div className="mt-3 flex justify-center">
+          <button
+            onClick={handleShortlistClick}
+            disabled={isUpdatingShortlist}
+            aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition hover:opacity-70 ${
+              isSaved ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Heart
+              className="h-4 w-4"
+              strokeWidth={2}
+              fill={isSaved ? "currentColor" : "none"}
+            />
+            {isSaved ? "Saved to shortlist" : "Save to shortlist"}
+          </button>
+        </div>
       </div>
     </article>
   );
