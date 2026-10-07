@@ -67,7 +67,18 @@ export function RecommendedRow({
     };
   }, []);
 
-  const recommended = candidates.slice(0, 3);
+  const recommended = [...candidates]
+    .sort((a, b) => {
+      const aCreatedAt = Date.parse(a.created_at ?? "");
+      const bCreatedAt = Date.parse(b.created_at ?? "");
+      const dateDifference =
+        (Number.isNaN(bCreatedAt) ? 0 : bCreatedAt) -
+        (Number.isNaN(aCreatedAt) ? 0 : aCreatedAt);
+      return (
+        dateDifference || a.name.localeCompare(b.name)
+      );
+    })
+    .slice(0, 6);
 
   const handleShortlistClick = async (
     event: MouseEvent<HTMLButtonElement>,

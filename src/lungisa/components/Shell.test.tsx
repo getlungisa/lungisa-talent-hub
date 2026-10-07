@@ -1,15 +1,16 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Shell } from "./Shell";
 
-const { signOutMock } = vi.hoisted(() => ({
+const { signOutMock, employerNameMock } = vi.hoisted(() => ({
   signOutMock: vi.fn(async () => undefined),
+  employerNameMock: vi.fn(() => "Test Business"),
 }));
 
 vi.mock("../store", () => ({
   useLungisa: () => ({
-    employerName: "Test Business",
+    employerName: employerNameMock(),
   }),
 }));
 
@@ -20,6 +21,10 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 describe("Shell", () => {
+  beforeEach(() => {
+    employerNameMock.mockReturnValue("Test Business");
+  });
+
   it("shows the business account menu with sign out", async () => {
     render(
       <MemoryRouter>
@@ -137,4 +142,28 @@ describe("Shell", () => {
       "text-[#5a5d70]",
     );
   });
+
+  it.each(["Business", "Loading...", "Business owner", "  Business   owner  ", "", "   "])(
+    "does not show placeholder business name %j in the account menu",
+    (name) => {
+      employerNameMock.mockReturnValue(name);
+
+      render(
+        <MemoryRouter>
+          <Shell
+            active="dashboard"
+            isTrainingPartner={false}
+            onNavigate={vi.fn()}
+          >
+            <div>content</div>
+          </Shell>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
+      if (name.trim()) {
+        expect(screen.queryByText(name.trim())).not.toBeInTheDocument();
+      }
+    },
+  );
 });

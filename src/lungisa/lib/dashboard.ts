@@ -27,6 +27,7 @@ type Business = {
 export type Candidate = {
   id: string;
   name: string;
+  created_at?: string;
   location: string | null;
   strengths_summary: string | null;
   training_partner_id: string | null;
@@ -119,7 +120,7 @@ const db = supabase as unknown as UntypedDb;
 export async function fetchCandidates(): Promise<Candidate[]> {
   const { data, error } = await db
     .from("candidates")
-    .select<Candidate>("id, name, location, strengths_summary")
+    .select<Candidate>("id, name, created_at, location, strengths_summary")
     .order("name", { ascending: true });
 
   if (error) {
@@ -200,7 +201,10 @@ export async function toggleCandidateShortlist(
   return data;
 }
 
-export async function fetchBusiness(user: User): Promise<Business | null> {
+export async function fetchBusiness(
+  user: User,
+  throwOnError = false,
+): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")
     .select<Business>("id, is_training_partner")
@@ -209,6 +213,7 @@ export async function fetchBusiness(user: User): Promise<Business | null> {
 
   if (error) {
     console.error("fetchDashboard business error", error);
+    if (throwOnError) throw error;
     return null;
   }
 
@@ -276,9 +281,15 @@ function daysSince(iso: string): number {
   return Math.max(0, Math.floor((Date.now() - startedAt) / 86_400_000));
 }
 
-export async function fetchDashboardPlacements(user: User): Promise<DashboardPlacement[]> {
-  const business = await fetchBusiness(user);
-  if (!business) return [];
+export async function fetchDashboardPlacements(
+  user: User,
+  throwOnError = false,
+): Promise<DashboardPlacement[]> {
+  const business = await fetchBusiness(user, throwOnError);
+  if (!business) {
+    if (throwOnError) throw new Error("business_not_found");
+    return [];
+  }
 
   const { data, error } = await db
     .from("placements")
@@ -291,6 +302,7 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
 
   if (error) {
     console.error("fetchDashboardPlacements error", error);
+    if (throwOnError) throw error;
     return [];
   }
 
@@ -314,9 +326,13 @@ export async function fetchDashboardPlacements(user: User): Promise<DashboardPla
 
 export async function fetchDashboardShortlisted(
   user: User,
+  throwOnError = false,
 ): Promise<DashboardShortlistedCandidate[]> {
-  const business = await fetchBusiness(user);
-  if (!business) return [];
+  const business = await fetchBusiness(user, throwOnError);
+  if (!business) {
+    if (throwOnError) throw new Error("business_not_found");
+    return [];
+  }
 
   const { data, error } = await db
     .from("shortlists")
@@ -328,6 +344,7 @@ export async function fetchDashboardShortlisted(
 
   if (error) {
     console.error("fetchDashboardShortlisted error", error);
+    if (throwOnError) throw error;
     return [];
   }
 
@@ -345,9 +362,13 @@ export async function fetchDashboardShortlisted(
 
 export async function fetchInterviewRequestedCandidateIds(
   user: User,
+  throwOnError = false,
 ): Promise<Set<string>> {
-  const business = await fetchBusiness(user);
-  if (!business) return new Set();
+  const business = await fetchBusiness(user, throwOnError);
+  if (!business) {
+    if (throwOnError) throw new Error("business_not_found");
+    return new Set();
+  }
 
   const { data, error } = await db
     .from("business_activity")
@@ -357,6 +378,7 @@ export async function fetchInterviewRequestedCandidateIds(
 
   if (error) {
     console.error("fetchInterviewRequestedCandidateIds error", error);
+    if (throwOnError) throw error;
     return new Set();
   }
 

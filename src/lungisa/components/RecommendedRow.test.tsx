@@ -103,4 +103,31 @@ describe("RecommendedRow shortlist interactions", () => {
     const header = avatarWrapper?.parentElement;
     expect(header).toHaveClass("flex", "w-full", "min-w-0", "items-start", "gap-2");
   });
+
+  it("sorts a copy newest-first, breaks date ties by name, and shows at most six", async () => {
+    fetchMock.mockResolvedValueOnce([
+      { ...candidate, id: "oldest", name: "Oldest", created_at: "2026-01-01" },
+      { ...candidate, id: "tie-z", name: "Zulu tie", created_at: "2026-05-01" },
+      { ...candidate, id: "newest", name: "Newest", created_at: "2026-06-01" },
+      { ...candidate, id: "old", name: "Older", created_at: "2026-04-01" },
+      { ...candidate, id: "tie-a", name: "Alpha tie", created_at: "2026-05-01" },
+      { ...candidate, id: "second-oldest", name: "Second oldest", created_at: "2026-02-01" },
+      { ...candidate, id: "seventh", name: "Seventh", created_at: "2026-01-15" },
+    ]);
+
+    render(<RecommendedRow {...props} />);
+
+    await screen.findByRole("heading", { name: "Second oldest" });
+    expect(
+      screen.getAllByRole("heading").map((heading) => heading.textContent),
+    ).toEqual([
+      "Newest",
+      "Alpha tie",
+      "Zulu tie",
+      "Older",
+      "Second oldest",
+      "Seventh",
+    ]);
+    expect(screen.queryByRole("heading", { name: "Oldest" })).not.toBeInTheDocument();
+  });
 });

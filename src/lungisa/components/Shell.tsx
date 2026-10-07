@@ -11,6 +11,7 @@ import {
 import { AboutModal } from "./AboutModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { isPlaceholderBusinessName } from "../lib/businessName";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,7 +108,9 @@ export function Shell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="inline-flex min-h-[44px] items-center gap-2 border-0 bg-transparent px-3 text-sm font-medium text-[#5a5d70] transition hover:bg-primary-tint">
-                {employerName}
+                {isPlaceholderBusinessName(employerName)
+                  ? "Account"
+                  : employerName}
                 <ChevronDown className="h-4 w-4 text-[#5a5d70]" />
               </button>
             </DropdownMenuTrigger>
