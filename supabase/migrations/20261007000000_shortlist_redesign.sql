@@ -10,7 +10,7 @@ CREATE TABLE public.shortlists (
 
 ALTER TABLE public.shortlists ENABLE ROW LEVEL SECURITY;
 
-REVOKE ALL ON TABLE public.shortlists FROM PUBLIC, anon;
+REVOKE ALL ON TABLE public.shortlists FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON TABLE public.shortlists TO authenticated;
 
 CREATE POLICY "Businesses can view their shortlists"
