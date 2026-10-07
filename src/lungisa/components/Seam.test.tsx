@@ -16,7 +16,7 @@ describe("Seam", () => {
       expect.stringContaining("Day 5 of 90"),
     );
     expect(screen.getByText("Day 5 of 90")).toBeInTheDocument();
-    expect(screen.getByText(/Next check-in: /)).toBeInTheDocument();
+    expect(screen.getByText(/Next check-in around /)).toBeInTheDocument();
     expect(
       screen.getByText(/R3,000 at day 90 \(.+\), only if Sipho is still with you\./),
     ).toBeInTheDocument();
@@ -34,6 +34,7 @@ describe("Seam", () => {
     render(<Seam startedDaysAgo={200} startedAt="2026-01-01" firstName="A" />);
 
     expect(screen.getByTestId("seam-day-90")).toHaveAttribute("data-reached", "true");
-    expect(screen.getByText("Day 90 of 90")).toBeInTheDocument();
+    expect(screen.getByText("Day 90 reached")).toBeInTheDocument();
+    expect(screen.queryByText(/Day \d+ of 90/)).not.toBeInTheDocument();
   });
 });

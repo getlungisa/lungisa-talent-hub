@@ -19,11 +19,13 @@ const shortlistErrorDescription = "Please try again.";
 export function RecommendedRow({
   onOpenCandidate,
   onSeeAll,
+  newThisWeek = 0,
   shortlistedIds,
   onShortlistChanged,
 }: {
   onOpenCandidate: (candidate: Candidate) => void;
   onSeeAll: () => void;
+  newThisWeek?: number;
   shortlistedIds: Set<string>;
   onShortlistChanged: (candidateId: string, shortlisted: boolean) => void;
 }) {
@@ -124,8 +126,14 @@ export function RecommendedRow({
 
   return (
     <section>
-      <div className="mb-3 flex items-baseline justify-between">
+      <div className="mb-3">
         <p className="text-sm text-muted-foreground">Recommended for you</p>
+        {newThisWeek > 0 && (
+          <p className="mt-0.5 text-sm text-foreground">
+            {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}{" "}
+            verified this week
+          </p>
+        )}
       </div>
 
       {loading ? (

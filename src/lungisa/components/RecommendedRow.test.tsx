@@ -26,6 +26,15 @@ describe("RecommendedRow shortlist interactions", () => {
     authMock.mockReturnValue({ user: { id: "user-1" } });
   });
 
+  it("shows a pluralised new-candidates subtitle only when the count is positive", async () => {
+    const { rerender } = render(<RecommendedRow {...props} newThisWeek={1} />);
+    expect(await screen.findByText(/1 new candidate verified this week/)).toBeInTheDocument();
+    rerender(<RecommendedRow {...props} newThisWeek={3} />);
+    expect(screen.getByText(/3 new candidates verified this week/)).toBeInTheDocument();
+    rerender(<RecommendedRow {...props} newThisWeek={0} />);
+    expect(screen.queryByText(/verified this week/)).not.toBeInTheDocument();
+  });
+
   it("updates the parent only after the shortlist request succeeds", async () => {
     const pending = deferred<boolean>();
     toggleMock.mockReturnValue(pending.promise);

@@ -52,11 +52,10 @@ export function Seam({
 
   const passedCount = SEAM_CHECK_IN_DAYS.filter((d) => d <= day).length;
   const labelParts = [
-    `Day ${day} of ${SEAM_TOTAL_DAYS}`,
+    reached ? `Day ${SEAM_TOTAL_DAYS} reached` : `Day ${day} of ${SEAM_TOTAL_DAYS}`,
     `${passedCount} of ${SEAM_CHECK_IN_DAYS.length} check-ins passed`,
   ];
-  if (nextCheckIn) labelParts.push(`next check-in ${nextCheckIn}`);
-  if (reached) labelParts.push("day 90 reached");
+  if (nextCheckIn) labelParts.push(`next check-in around ${nextCheckIn}`);
   const ariaLabel = `${labelParts.join(", ")}.`;
 
   return (
@@ -106,10 +105,8 @@ export function Seam({
       </div>
 
       <div className="mt-3 space-y-1 text-sm text-foreground">
-        <p>
-          Day {day} of {SEAM_TOTAL_DAYS}
-        </p>
-        {nextCheckIn && <p>Next check-in: {nextCheckIn}</p>}
+        <p>{reached ? `Day ${SEAM_TOTAL_DAYS} reached` : `Day ${day} of ${SEAM_TOTAL_DAYS}`}</p>
+        {nextCheckIn && <p>Next check-in around {nextCheckIn}</p>}
         {day90Date && name && (
           <p>
             R3,000 at day 90 ({day90Date}), only if {name} is still with you.
