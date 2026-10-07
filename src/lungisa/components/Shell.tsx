@@ -61,66 +61,64 @@ export function Shell({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center px-5 pt-4 pb-2">
-          <div className="font-display text-lg font-semibold text-foreground">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5">
+          <div className="font-display text-[24px] font-semibold leading-8 tracking-[-0.01em] text-[#1b1e33]">
             Lungisa
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-2 border border-input bg-card px-3 text-sm font-medium text-primary transition hover:bg-primary-tint">
-                  {employerName}
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => void handleSignOut()}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <nav className="flex flex-1 flex-wrap items-center gap-1">
+            <div
+              data-testid="primary-nav-group"
+              className={primaryNavGroupClassName}
+            >
+              {visibleNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = active === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onNavigate(item.id)}
+                    className={`relative flex items-center gap-2 whitespace-nowrap px-3 py-2.5 text-sm transition ${
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+
+                    {isActive && (
+                      <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setAboutOpen(true)}
+              className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
+            >
+              About
+            </button>
+          </nav>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="inline-flex min-h-[44px] items-center gap-2 border-0 bg-transparent px-3 text-sm font-medium text-[#5a5d70] transition hover:bg-primary-tint">
+                {employerName}
+                <ChevronDown className="h-4 w-4 text-[#5a5d70]" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => void handleSignOut()}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-       <nav className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 pb-1 sm:px-5">
-         <div
-           data-testid="primary-nav-group"
-           className={primaryNavGroupClassName}
-         >
-           {visibleNavItems.map((item) => {
-             const Icon = item.icon;
-             const isActive = active === item.id;
-
-             return (
-               <button
-                 key={item.id}
-                 onClick={() => onNavigate(item.id)}
-                 className={`relative flex items-center gap-2 whitespace-nowrap px-3 py-2.5 text-sm transition ${
-                   isActive
-                     ? "text-primary"
-                     : "text-muted-foreground hover:text-primary"
-                 }`}
-               >
-                 <Icon className="h-4 w-4" />
-                 <span>{item.label}</span>
-
-                 {isActive && (
-                   <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
-                 )}
-               </button>
-             );
-           })}
-         </div>
-
-         <button
-           onClick={() => setAboutOpen(true)}
-           className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
-         >
-           About
-         </button>
-       </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10">
