@@ -3,7 +3,7 @@ import { useLungisa } from "../store";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { Sparkles, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { NeedSheet } from "../components/NeedSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -19,7 +19,6 @@ import {
   type Candidate,
   type DashboardPlacement,
   type DashboardShortlistedCandidate,
-  fetchNewCandidatesThisWeekCount,
   type TrainingPartnerCandidate,
 } from "../lib/dashboard";
 
@@ -46,7 +45,6 @@ export function Dashboard({
     useLungisa();
   const { user } = useAuth();
   const [needSheetOpen, setNeedSheetOpen] = useState(false);
-  const [newThisWeek, setNewThisWeek] = useState(0);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [placements, setPlacements] = useState<DashboardPlacement[]>([]);
   const [shortlisted, setShortlisted] = useState<
@@ -134,24 +132,6 @@ export function Dashboard({
       cancelled = true;
     };
   }, [isTrainingPartner, user]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadNewCandidatesCount = async () => {
-      const count = await fetchNewCandidatesThisWeekCount();
-
-      if (!cancelled) {
-        setNewThisWeek(count);
-      }
-    };
-
-    void loadNewCandidatesCount();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const handleShortlistChanged = useCallback(
     (candidateId: string, isShortlisted: boolean) => {
@@ -290,15 +270,13 @@ export function Dashboard({
               {greeting()}, {employerName}
             </h1>
 
-            <div className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-              <span>
-                <span className="font-medium text-foreground">
-                  {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}
-                </span>{" "}
-                verified this week
-              </span>
-            </div>
+            {placements.length > 0 && (
+              <p className="mt-2 text-sm text-foreground">
+                {placements.length}{" "}
+                {placements.length === 1 ? "placement" : "placements"} in
+                progress
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -356,18 +334,12 @@ export function Dashboard({
         </section>
       )}
 
-      <RecommendedRow
-        onOpenCandidate={onOpenCandidate}
-        onSeeAll={onBrowse}
-        shortlistedIds={shortlistedIds}
-        onShortlistChanged={handleShortlistChanged}
-      />
-
+      {placements.length > 0 && (
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl text-foreground">Active placements</h2>
+          <h2 className="font-display text-2xl text-foreground">Placements</h2>
           <span className="text-sm text-muted-foreground">
-            {placements.length} {placements.length === 1 ? "active placement" : "active placements"}
+            {placements.length} {placements.length === 1 ? "placement" : "placements"}
           </span>
         </div>
         <div className="space-y-3">
@@ -376,13 +348,21 @@ export function Dashboard({
               key={placement.candidateId}
               name={placement.candidateName}
               role={placement.location ?? "Location not provided"}
-              day={placement.startedDaysAgo}
-              total={placement.totalDays}
+              startedDaysAgo={placement.startedDaysAgo}
+              startedAt={placement.startedAt}
               startDate={`${placement.startedDaysAgo} days ago`}
             />
           ))}
         </div>
       </section>
+      )}
+
+      <RecommendedRow
+        onOpenCandidate={onOpenCandidate}
+        onSeeAll={onBrowse}
+        shortlistedIds={shortlistedIds}
+        onShortlistChanged={handleShortlistChanged}
+      />
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">

@@ -108,6 +108,7 @@ const Index = () => {
             id={openCandidate}
             isTrainingPartner={openCandidateIsTrainingPartner}
             onInterviewRequestedChange={setIsInterviewRequested}
+            onInterviewRequested={handleInterviewRequested}
             onBack={() => {
               setOpenCandidate(null);
               setOpenCandidateExists(null);

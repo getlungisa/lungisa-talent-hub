@@ -7,6 +7,7 @@ import {
   type Candidate,
 } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
+import { VerifiedBadge } from "./VerifiedBadge";
 import { Heart } from "lucide-react";
 
 const shortlistConflictTitle = "Candidate no longer available";
@@ -162,11 +163,13 @@ export function RecommendedRow({
                     </div>
                   </div>
 
-                  <div className="mt-3">
-                    <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {candidate.location ?? "Location not provided"}
-                    </span>
-                  </div>
+                  {candidate.training_partner?.name?.trim() && (
+                    <div className="mt-3">
+                      <VerifiedBadge
+                        partner={candidate.training_partner.name.trim()}
+                      />
+                    </div>
+                  )}
 
                   <div className="mt-auto pt-4">
                     <div className="flex items-center justify-between border-t border-border pt-3">
