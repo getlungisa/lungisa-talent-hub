@@ -1,13 +1,37 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { Browse } from "./Browse";
 
-const { fetchCandidatesMock } = vi.hoisted(() => ({
+const {
+  fetchCandidatesMock,
+  fetchDashboardShortlistedMock,
+  fetchInterviewRequestedCandidateIdsMock,
+  authMock,
+} = vi.hoisted(() => ({
   fetchCandidatesMock: vi.fn(),
+  fetchDashboardShortlistedMock: vi.fn(),
+  fetchInterviewRequestedCandidateIdsMock: vi.fn(),
+  authMock: {
+    onAuthStateChange: vi.fn(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    })),
+    getSession: vi.fn(() =>
+      Promise.resolve({ data: { session: { user: { id: "test-user" } } } }),
+    ),
+    signOut: vi.fn(),
+  },
 }));
 
 vi.mock("../lib/dashboard", () => ({
   fetchCandidates: fetchCandidatesMock,
+  fetchDashboardShortlisted: fetchDashboardShortlistedMock,
+  fetchInterviewRequestedCandidateIds: fetchInterviewRequestedCandidateIdsMock,
+  requestCandidateInterview: vi.fn(),
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: { auth: authMock },
 }));
 
 vi.mock("../components/CandidateCard", () => ({
@@ -26,6 +50,8 @@ vi.mock("../data", () => ({
 describe("Browse", () => {
   beforeEach(() => {
     fetchCandidatesMock.mockReset();
+    fetchDashboardShortlistedMock.mockReset().mockResolvedValue([]);
+    fetchInterviewRequestedCandidateIdsMock.mockReset().mockResolvedValue(new Set());
     vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
@@ -33,18 +59,27 @@ describe("Browse", () => {
     vi.restoreAllMocks();
   });
 
-  it("shows a loading state while candidates are loading", () => {
+  it("shows a loading state while candidates are loading", async () => {
     fetchCandidatesMock.mockReturnValue(new Promise(() => {}));
 
-    render(<Browse onOpenCandidate={vi.fn()} />);
+    render(
+      <AuthProvider>
+        <Browse onOpenCandidate={vi.fn()} />
+      </AuthProvider>,
+    );
 
-    expect(screen.getByText("Loading candidates...")).toBeInTheDocument();
+    await waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalled());
+    expect(await screen.findByText("Loading candidates...")).toBeInTheDocument();
   });
 
   it("shows an error state when candidates fail to load", async () => {
     fetchCandidatesMock.mockRejectedValue(new Error("boom"));
 
-    render(<Browse onOpenCandidate={vi.fn()} />);
+    render(
+      <AuthProvider>
+        <Browse onOpenCandidate={vi.fn()} />
+      </AuthProvider>,
+    );
 
     expect(
       await screen.findByText("We could not load candidates right now. Please try again shortly."),
@@ -58,8 +93,13 @@ describe("Browse", () => {
   it("shows an empty state when no candidates are returned", async () => {
     fetchCandidatesMock.mockResolvedValue([]);
 
-    render(<Browse onOpenCandidate={vi.fn()} />);
+    render(
+      <AuthProvider>
+        <Browse onOpenCandidate={vi.fn()} />
+      </AuthProvider>,
+    );
 
+    await waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalled());
     expect(
       await screen.findByText("No candidates available yet - we are vetting more this week."),
     ).toBeInTheDocument();
@@ -70,7 +110,11 @@ describe("Browse", () => {
       { id: "cand-1", name: "Ayanda", location: "Langa, Cape Town" },
     ]);
 
-    render(<Browse onOpenCandidate={vi.fn()} />);
+    render(
+      <AuthProvider>
+        <Browse onOpenCandidate={vi.fn()} />
+      </AuthProvider>,
+    );
 
     expect(await screen.findByText("Ayanda")).toBeInTheDocument();
   });

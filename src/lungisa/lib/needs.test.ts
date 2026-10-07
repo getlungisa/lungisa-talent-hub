@@ -5,13 +5,15 @@ const {
   fromMock,
   insertMock,
   maybeSingleMock,
+  orMock,
   selectAfterInsertMock,
   selectMock,
   singleMock,
 } = vi.hoisted(() => {
   const maybeSingleMock = vi.fn();
   const eqMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
-  const selectMock = vi.fn(() => ({ eq: eqMock }));
+  const orMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
+  const selectMock = vi.fn(() => ({ eq: eqMock, or: orMock }));
 
   const singleMock = vi.fn();
   const selectAfterInsertMock = vi.fn(() => ({ single: singleMock }));
@@ -33,6 +35,7 @@ const {
     fromMock,
     insertMock,
     maybeSingleMock,
+    orMock,
     selectAfterInsertMock,
     selectMock,
     singleMock,
@@ -54,6 +57,7 @@ describe("ensureBusiness", () => {
     fromMock.mockClear();
     selectMock.mockClear();
     eqMock.mockReset();
+    orMock.mockReset();
     maybeSingleMock.mockReset();
     insertMock.mockReset();
     selectAfterInsertMock.mockReset();
@@ -74,7 +78,7 @@ describe("ensureBusiness", () => {
 
     expect(fromMock).toHaveBeenCalledWith("businesses");
     expect(selectMock).toHaveBeenCalledWith('id, name, contact_email:"contact email"');
-    expect(eqMock).toHaveBeenCalledWith("user_id", "user-1");
+    expect(orMock).toHaveBeenCalledWith("user_id.eq.user-1,secondary_user_id.eq.user-1");
     expect(insertMock).not.toHaveBeenCalled();
   });
 
