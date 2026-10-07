@@ -315,7 +315,7 @@ describe("shortlist SQL contract", () => {
     expect(migration).toMatch(/ENABLE ROW LEVEL SECURITY/);
     expect(migration).toMatch(/FOR SELECT TO authenticated/);
     expect(migration).toMatch(/USING \(public\.user_can_access_business\(business_id\)\)/);
-    expect(migration).toMatch(/REVOKE ALL ON TABLE public\.shortlists FROM PUBLIC, anon/);
+    expect(migration).toMatch(/REVOKE ALL ON TABLE public\.shortlists FROM PUBLIC, anon, authenticated/);
     expect(migration).not.toMatch(/GRANT (INSERT|UPDATE|DELETE|ALL).*shortlists/i);
     expect(migration.match(/CREATE POLICY/gi)).toHaveLength(1);
     expect(migration).not.toMatch(/(?:ALTER|DROP) POLICY/i);
