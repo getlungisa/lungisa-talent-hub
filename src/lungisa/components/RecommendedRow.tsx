@@ -7,7 +7,7 @@ import {
   type Candidate,
 } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
-import { Heart, ArrowRight } from "lucide-react";
+import { Heart } from "lucide-react";
 
 const shortlistConflictTitle = "Candidate no longer available";
 const shortlistConflictDescription =
@@ -124,7 +124,7 @@ export function RecommendedRow({
   return (
     <section>
       <div className="mb-3 flex items-baseline justify-between">
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Recommended for you
         </p>
       </div>
@@ -148,16 +148,16 @@ export function RecommendedRow({
                 <article
                   key={candidate.id}
                   onClick={() => onOpenCandidate(candidate)}
-                  className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
+                  className="group flex w-[220px] shrink-0 cursor-pointer flex-col rounded-2xl border border-border bg-card p-4 transition hover:border-primary"
                 >
                   <div className="flex w-full min-w-0 items-start gap-2">
                     <div className="flex min-w-0 flex-1 items-center gap-2.5">
                       <Avatar name={candidate.name} />
                       <div className="min-w-0">
-                        <h3 className="truncate font-display text-lg leading-tight text-primary">
+                        <h3 className="break-words font-display text-lg leading-tight text-primary">
                           {candidate.name}
                         </h3>
-                        <p className="truncate text-xs text-muted-foreground">
+                        <p className="break-words text-xs text-muted-foreground">
                           {candidate.location ?? "Location not provided"}
                         </p>
                       </div>
@@ -171,10 +171,9 @@ export function RecommendedRow({
                   </div>
 
                   <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-xs font-medium text-accent group-hover:underline">
+                    <span className="text-xs font-medium text-primary group-hover:underline">
                       View profile
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5 text-accent transition group-hover:translate-x-0.5" />
                   </div>
 
                   <div className="mt-3 flex justify-center">
@@ -188,8 +187,8 @@ export function RecommendedRow({
                           ? "Remove from shortlist"
                           : "Save to shortlist"
                       }
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] transition hover:opacity-70 ${
-                        isSaved ? "text-accent" : "text-muted-foreground"
+                      className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] transition hover:opacity-70 ${
+                        isSaved ? "text-primary" : "text-muted-foreground"
                       }`}
                     >
                       <Heart
@@ -212,9 +211,9 @@ export function RecommendedRow({
       <div className="mt-2 flex justify-end">
         <button
           onClick={onSeeAll}
-          className="text-xs text-muted-foreground transition hover:text-accent"
+          className="text-xs text-muted-foreground transition hover:text-primary"
         >
-          See all candidates →
+          See all candidates
         </button>
       </div>
     </section>

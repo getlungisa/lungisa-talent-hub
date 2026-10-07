@@ -117,7 +117,7 @@ export function CandidateDetail({
       <div className="space-y-6 pb-28">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-accent"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
         </button>
@@ -133,7 +133,7 @@ export function CandidateDetail({
       <div className="space-y-6 pb-28">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-accent"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
         </button>
@@ -151,7 +151,7 @@ export function CandidateDetail({
     <div className="space-y-6 pb-28">
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-accent"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
       </button>
@@ -166,7 +166,9 @@ export function CandidateDetail({
             <div className="flex items-center gap-3">
               <Avatar name={candidate.name} size={48} />
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                <h1 className="font-display text-3xl text-primary">{candidate.name}</h1>
+                <h1 className="break-words font-display text-3xl text-primary">
+                  {candidate.name}
+                </h1>
               </div>
             </div>
             <div className="pl-[60px]">
@@ -179,17 +181,11 @@ export function CandidateDetail({
           <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div className="space-y-8">
               <div>
-                <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                  At a glance
-                </h2>
-                <dl className="mt-3 grid gap-4">
+                <dl className="grid gap-4">
                   <div className="flex items-start gap-3">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
                     <div className="min-w-0">
-                      <dt className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                        Location
-                      </dt>
-                      <dd className="mt-1 text-[15px] text-primary">
+                      <dd className="text-[15px] text-primary">
                         {candidate.location ?? "Location not provided"}
                       </dd>
                     </div>
@@ -197,22 +193,19 @@ export function CandidateDetail({
                 </dl>
               </div>
               {strengthsSummary && candidate.training_partner_id && candidate.training_partner?.name && (
-  <p className="text-sm text-accent">
+  <p className="text-sm text-primary">
     Trainer-verified by {candidate.training_partner.name}
   </p>
 )}
               {referenceNote && (
-                <p className="text-sm text-accent">
+                <p className="text-sm text-primary">
                   Reference: {referenceNote}
                 </p>
               )}
               
               {strengthsSummary && (
                 <div>
-                  <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                    What stood out
-                  </h2>
-                  <p className="mt-3 text-[15px] leading-7 text-primary/80">
+                  <p className="text-[15px] leading-7 text-primary/80">
                     {strengthsSummary}
                   </p>
                 </div>
@@ -227,10 +220,7 @@ export function CandidateDetail({
             {!isTrainingPartner && (
               <aside className="lg:sticky lg:top-32 lg:self-start">
                 <div className="rounded-2xl border border-border bg-card p-5">
-                  <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                    Next step
-                  </div>
-                  <p className="mt-2 text-sm text-primary/80">
+                  <p className="text-sm text-primary/80">
   {isInterviewRequested
     ? "Interview requested, we'll be in touch within 24 hours."
     : "We will arrange a time that works for you both - usually within 24 hours."}
@@ -268,7 +258,7 @@ export function CandidateInterviewBar({
 
   return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.12)]"
+      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-background"
       style={{
         position: "fixed",
         left: 0,
@@ -288,8 +278,8 @@ export function CandidateInterviewBar({
             }
           }}
           disabled={isRequested}
-          className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-            isRequested ? "bg-success-soft text-success" : "bg-accent text-accent-foreground hover:brightness-95"
+          className={`inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition ${
+            isRequested ? "bg-primary-tint text-primary" : "bg-primary text-primary-foreground hover:bg-primary-hover"
           }`}
         >
           {isRequested ? (

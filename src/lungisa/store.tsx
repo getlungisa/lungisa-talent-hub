@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { samplePlacements } from "./data";
 import { fetchBusinessName } from "./lib/needs";
 
 type Placement = {
@@ -77,15 +78,7 @@ export function LungisaProvider({ children }: { children: ReactNode }) {
         }),
  
       stats: { browsed: 14, interviews, placements: 1 },
-      placements: [
-        {
-          candidateId: "sipho",
-          candidateName: "Sipho",
-          role: "Barista",
-          startedDaysAgo: 12,
-          totalDays: 30,
-        },
-      ],
+      placements: samplePlacements,
     }),
     [employerName, requested, interviews, shortlist],
   );

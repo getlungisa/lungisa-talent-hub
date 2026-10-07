@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { ArrowRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { submitNeed } from "../lib/needs";
 
@@ -73,7 +73,7 @@ export function NeedSheet({
   };
 
   const selectClass =
-    "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
+    "w-full rounded-[10px] border border-input bg-background px-3 py-2.5 text-sm text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30";
 
   return (
     <Sheet
@@ -90,8 +90,8 @@ export function NeedSheet({
         <div className="flex min-h-full flex-col px-6 py-8 sm:px-10 sm:py-12">
           {done ? (
             <div className="flex flex-1 flex-col">
-              <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-full bg-success-soft">
-                <Check className="h-6 w-6 text-success" strokeWidth={2.5} />
+              <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-full bg-primary-tint">
+                <Check className="h-6 w-6 text-primary" strokeWidth={2.5} />
               </div>
               <h2 className="font-display text-3xl text-primary sm:text-4xl">
                 We're on it.
@@ -102,7 +102,7 @@ export function NeedSheet({
               <div className="mt-auto pt-10">
                 <button
                   onClick={handleClose}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-9 py-4 text-base font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover sm:w-auto"
                 >
                   Done
                 </button>
@@ -120,7 +120,7 @@ export function NeedSheet({
               <div className="mt-8 space-y-6">
                 <div className="space-y-2">
                   <label htmlFor="role" className="text-sm font-medium text-primary">
-                    Role <span className="text-accent">*</span>
+                    Role <span className="text-primary">*</span>
                   </label>
                   <select
                     id="role"
@@ -138,7 +138,7 @@ export function NeedSheet({
 
                 <div className="space-y-2">
                   <label htmlFor="timing" className="text-sm font-medium text-primary">
-                    Timing <span className="text-accent">*</span>
+                    Timing <span className="text-primary">*</span>
                   </label>
                   <select
                     id="timing"
@@ -180,12 +180,9 @@ export function NeedSheet({
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-9 py-4 text-base font-medium text-accent-foreground shadow-[0_14px_36px_-12px_hsl(19_63%_44%/0.55)] transition hover:brightness-95 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground sm:w-auto"
                 >
                   {submitting ? "Sending..." : "Tell us who you need"}
-                  {!submitting && (
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                  )}
                 </button>
               </div>
             </form>

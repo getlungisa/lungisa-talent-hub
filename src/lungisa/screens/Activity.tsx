@@ -1,4 +1,3 @@
-import { useLungisa } from "../store";
 import { Avatar } from "../components/Avatar";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +10,6 @@ import {
 } from "../lib/dashboard";
 
 export function Activity() {
-  const { stats } = useLungisa();
   const { user } = useAuth();
   const [activity, setActivity] = useState<ActivityRecord[]>([]);
   const [browsedCount, setBrowsedCount] = useState(0);
@@ -68,17 +66,17 @@ export function Activity() {
 
   return (
     <div className="space-y-10">
-      <div>
+      <div className="min-w-0">
         <h1 className="font-display text-4xl text-primary text-balance">Activity</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          A quiet record of what you have done on Lungisa this month.
+          A quiet record of what you have done on Lungisa.
         </p>
       </div>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Candidates browsed" value={browsedCount} note="this month" />
-        <Stat label="Interviews requested" value={stats.interviews} note="this month" />
-        <Stat label="Active placements" value={placementsCount} note="ongoing" />
+        <Stat label="Candidates browsed" singularLabel="Candidate browsed" value={browsedCount} note="in total" />
+        <Stat label="Interviews requested" singularLabel="Interview requested" value={activity.length} note="in total" />
+        <Stat label="Active placements" singularLabel="Active placement" value={placementsCount} note="ongoing" />
       </section>
 
       <section>
@@ -105,7 +103,7 @@ export function Activity() {
                   <Avatar name={item.candidateName} />
 
                   <div>
-                    <div className="font-display text-lg text-primary">
+                    <div className="break-words font-display text-lg text-primary">
                       {item.candidateName}
                     </div>
 
@@ -115,7 +113,7 @@ export function Activity() {
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1 text-xs font-medium text-success">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-tint px-3 py-1 text-xs font-medium text-primary">
                   <Check className="h-3 w-3" strokeWidth={3} />
                   Requested
                 </span>
@@ -130,17 +128,19 @@ export function Activity() {
 
 function Stat({
   label,
+  singularLabel,
   value,
   note,
 }: {
   label: string;
+  singularLabel: string;
   value: number;
   note: string;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-        {label}
+      <div className="text-sm text-muted-foreground">
+        {value === 1 ? singularLabel : label}
       </div>
 
       <div className="mt-2 flex items-baseline gap-2">

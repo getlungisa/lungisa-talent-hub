@@ -63,7 +63,7 @@ describe("CandidateDetail", () => {
     expect(await screen.findByText("Candidate not found.")).toBeInTheDocument();
   });
 
-  it("renders fetched candidate details when the candidate exists", async () => {
+  it("renders fetched details without a label above the strengths summary", async () => {
     fetchCandidateMock.mockResolvedValue({
       id: "real-1",
       name: "Sipho",
@@ -75,7 +75,9 @@ describe("CandidateDetail", () => {
 
     expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
     expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(2);
-    expect(screen.getByRole("heading", { name: "What stood out" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "What stood out" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByText("Excellent follow-through and calm communication."),
     ).toBeInTheDocument();

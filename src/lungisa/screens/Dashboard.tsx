@@ -3,7 +3,7 @@ import { useLungisa } from "../store";
 import { PlacementRow } from "../components/PlacementRow";
 import { Avatar } from "../components/Avatar";
 import { RecommendedRow } from "../components/RecommendedRow";
-import { ArrowRight, Sparkles, Clock } from "lucide-react";
+import { Sparkles, Clock } from "lucide-react";
 import { NeedSheet } from "../components/NeedSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -176,7 +176,7 @@ export function Dashboard({
     return (
       <div className="space-y-8">
         <section className="pt-4 sm:pt-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
           <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
@@ -194,7 +194,7 @@ export function Dashboard({
     return (
       <div className="space-y-8">
         <section className="pt-4 sm:pt-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {greeting()}
           </p>
           <h1 className="mt-2 font-display text-4xl text-primary text-balance sm:text-5xl">
@@ -208,8 +208,8 @@ export function Dashboard({
         <section>
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="font-display text-2xl text-primary">Candidates</h2>
-            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              {trainingPartnerCandidates.length} total
+            <span className="text-sm text-muted-foreground">
+              {trainingPartnerCandidates.length} {trainingPartnerCandidates.length === 1 ? "candidate" : "candidates"}
             </span>
           </div>
 
@@ -258,7 +258,7 @@ export function Dashboard({
                     <Avatar name={candidate.name} />
 
                     <div className="min-w-0">
-                      <h3 className="font-display text-lg text-primary">
+                      <h3 className="break-words font-display text-lg text-primary">
                         {candidate.name}
                       </h3>
                       <p className="text-sm text-muted-foreground">
@@ -291,10 +291,10 @@ export function Dashboard({
             </h1>
 
             <div className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
+              <Sparkles className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
               <span>
                 <span className="font-medium text-primary">
-                  {newThisWeek} new candidates
+                  {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}
                 </span>{" "}
                 verified this week
               </span>
@@ -304,15 +304,14 @@ export function Dashboard({
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               onClick={() => setNeedSheetOpen(true)}
-              className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground shadow-sm transition hover:brightness-95"
+              className="inline-flex items-center justify-center gap-1.5 bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover"
             >
               I need someone
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </button>
 
             <button
               onClick={onBrowse}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-transparent px-4 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
+              className="inline-flex items-center justify-center gap-1.5 border border-input bg-transparent px-4 py-2.5 text-sm font-medium text-primary transition hover:bg-primary-tint"
             >
               Browse candidates
             </button>
@@ -324,8 +323,8 @@ export function Dashboard({
         <section>
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="font-display text-2xl text-primary">Open needs</h2>
-            <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              {needs.length} open
+            <span className="text-sm text-muted-foreground">
+              {needs.length} open {needs.length === 1 ? "need" : "needs"}
             </span>
           </div>
           <div className="space-y-3">
@@ -336,10 +335,10 @@ export function Dashboard({
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-display text-lg text-primary">
+                    <h3 className="break-words font-display text-lg text-primary">
                       {need.role}
                     </h3>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-tint px-2.5 py-0.5 text-xs font-medium text-primary">
                       {formatStatus(need.status)}
                     </span>
                   </div>
@@ -348,7 +347,7 @@ export function Dashboard({
                     {need.timing}
                   </p>
                 </div>
-                <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {relativeTime(need.created_at)}
                 </span>
               </article>
@@ -367,8 +366,8 @@ export function Dashboard({
       <section>
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-2xl text-primary">Active placements</h2>
-          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {placements.length} active
+          <span className="text-sm text-muted-foreground">
+            {placements.length} {placements.length === 1 ? "active placement" : "active placements"}
           </span>
         </div>
         <div className="space-y-3">
@@ -388,8 +387,8 @@ export function Dashboard({
       <section>
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-2xl text-primary">Shortlist</h2>
-          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {shortlisted.length} saved
+          <span className="text-sm text-muted-foreground">
+            {shortlisted.length} {shortlisted.length === 1 ? "candidate" : "candidates"}
           </span>
         </div>
         {shortlisted.length === 0 ? (

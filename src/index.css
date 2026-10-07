@@ -2,62 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Lungisa design system - warm, considered, human. All colors HSL. */
-
 @layer base {
   :root {
-    /* Core palette - warm off-white #f9f8f6, deep brown #2C1A0E, burnt orange #B85C2A, warm border #e5e2db */
-    --background: 42 27% 97%;
-    --foreground: 22 47% 11%;
+    --background: 40 20% 97.06%;
+    --foreground: 232.5 30.77% 15.29%;
 
-    --card: 40 33% 98%;
-    --card-foreground: 22 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 232.5 30.77% 15.29%;
 
-    --popover: 40 33% 98%;
-    --popover-foreground: 22 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 232.5 30.77% 15.29%;
 
-    --primary: 22 47% 11%;
-    --primary-foreground: 42 27% 97%;
+    --primary: 230.72 53.01% 35.88%;
+    --primary-hover: 230.65 53.85% 28.04%;
+    --primary-tint: 230.77 39.39% 93.53%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 20% 93%;
-    --secondary-foreground: 22 47% 11%;
+    --secondary: 230.77 39.39% 93.53%;
+    --secondary-foreground: 230.72 53.01% 35.88%;
 
-    --muted: 40 18% 94%;
-    --muted-foreground: 25 15% 38%;
+    --muted: 40 20% 97.06%;
+    --muted-foreground: 231.82 10.89% 39.61%;
 
-    --accent: 19 63% 44%;
-    --accent-foreground: 42 27% 97%;
+    --accent: 342.26 54.5% 58.63%;
+    --accent-foreground: 340.47 54.43% 30.98%;
+    --accent-soft: 341.05 54.29% 93.14%;
 
-    --accent-soft: 19 63% 95%;
-
-    --success: 140 38% 38%;
-    --success-foreground: 42 27% 97%;
-    --success-soft: 140 30% 92%;
-
+    --success: 144.62 45.35% 33.73%;
+    --success-foreground: 0 0% 100%;
+    --success-soft: 144.62 45.35% 95%;
+    --warning: 36.43 84% 39.22%;
+    --status-error: 4.23 76.47% 40%;
     --destructive: 0 70% 45%;
-    --destructive-foreground: 42 27% 97%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 40 16% 87%;
-    --input: 40 16% 87%;
-    --ring: 19 63% 44%;
+    --border: 42 16.67% 88.24%;
+    --input: 232.5 7.48% 58.04%;
+    --ring: 230.72 53.01% 35.88%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 232.5 30.77% 15.29%;
+    --sidebar-primary: 230.72 53.01% 35.88%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 230.77 39.39% 93.53%;
+    --sidebar-accent-foreground: 230.72 53.01% 35.88%;
+    --sidebar-border: 42 16.67% 88.24%;
+    --sidebar-ring: 230.72 53.01% 35.88%;
   }
 
   .dark {
@@ -106,13 +98,15 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
+    font-family: "Schibsted Grotesk", system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, .font-display {
-    font-family: 'Playfair Display', Georgia, serif;
-    letter-spacing: -0.01em;
+  #root {
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  p {
+    max-width: 65ch;
   }
 }
 
@@ -121,4 +115,9 @@
   .bg-accent-soft { background-color: hsl(var(--accent-soft)); }
   .bg-success-soft { background-color: hsl(var(--success-soft)); }
   .text-success { color: hsl(var(--success)); }
+}
+
+button {
+  min-height: 44px;
+  border-radius: 10px;
 }

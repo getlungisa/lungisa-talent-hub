@@ -149,4 +149,19 @@ describe("Dashboard", () => {
     expect(heroLayout).toHaveClass("sm:justify-between");
     expect(heroLayout).not.toHaveClass("max-w-4xl");
   });
+
+  it("pluralises the new-candidate count", async () => {
+    fetchNewCandidatesThisWeekCountMock.mockResolvedValueOnce(1);
+
+    render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText(/1 new candidate/)).toBeInTheDocument();
+    expect(screen.queryByText(/1 new candidates/)).not.toBeInTheDocument();
+  });
 });
