@@ -6,7 +6,7 @@ export function RatingDots({ value, label = true }: { value: number; label?: boo
           <span
             key={i}
             className={`h-1.5 w-1.5 rounded-full ${
-              i <= value ? "bg-accent" : "bg-border"
+              i <= value ? "bg-primary" : "bg-border"
             }`}
           />
         ))}

@@ -30,7 +30,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="about-lungisa-title"
-        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-background p-6 shadow-xl sm:p-8"
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-background p-6 sm:p-8"
       >
         <button
           onClick={onClose}
@@ -60,8 +60,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
             </p>
 
             <p>
-              Free to browse and interview. A small fee only if you hire, with a
-              further fee once the placement's held for 90 days.
+              R1,000 on hire. R3,000 at day 90, only if they're still with you.
             </p>
 
             <p>
@@ -81,7 +80,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
                   <a
                   href="mailto:hi@lungisa.co"
-                  className="text-accent underline-offset-2 hover:underline"
+                  className="text-primary underline-offset-2 hover:underline"
                 >
                   hi@lungisa.co
                 </a>{" "}
@@ -103,7 +102,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
                   <a
                   href="mailto:hi@lungisa.co"
-                  className="text-accent underline-offset-2 hover:underline"
+                  className="text-primary underline-offset-2 hover:underline"
                 >
                   hi@lungisa.co
                 </a>{" "}

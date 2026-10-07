@@ -100,13 +100,13 @@ export function CandidateCard({
     <article
       onClick={() => onOpen(candidate.id)}
       aria-label={`${name} — ${summary}`}
-      className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_hsl(22_47%_11%/0.12)]"
+      className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition hover:border-primary"
     >
       <div className="flex w-full min-w-0 items-start gap-3">
         <Avatar name={name} />
 
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-display text-xl text-primary">{name}</h3>
+          <h3 className="break-words font-display text-xl leading-tight text-primary">{name}</h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
 
           {verified && (
@@ -137,7 +137,7 @@ export function CandidateCard({
       )}
 
       {strengthsSummary && (
-        <p className="mt-4 line-clamp-2 text-sm leading-6 text-primary/80">
+        <p className="mt-4 text-sm leading-6 text-primary/80">
           {strengthsSummary}
         </p>
       )}
@@ -156,10 +156,10 @@ export function CandidateCard({
           }
         }}
         disabled={isRequested}
-        className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition ${
+        className={`mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
           isRequested
-            ? "bg-success-soft text-success"
-            : "bg-accent text-accent-foreground hover:brightness-95"
+          ? "bg-primary-tint text-primary"
+          : "bg-primary text-primary-foreground hover:bg-primary-hover"
         }`}
       >
         {isRequested ? (
@@ -185,8 +185,8 @@ export function CandidateCard({
           aria-label={
             isSaved ? "Remove from shortlist" : "Save to shortlist"
           }
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition hover:opacity-70 ${
-            isSaved ? "text-accent" : "text-muted-foreground"
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition hover:opacity-70 ${
+            isSaved ? "text-primary" : "text-muted-foreground"
           }`}
         >
           <Heart

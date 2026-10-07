@@ -1,7 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { Shell } from "./Shell";
+
+const { signOutMock } = vi.hoisted(() => ({
+  signOutMock: vi.fn(async () => undefined),
+}));
 
 vi.mock("../store", () => ({
   useLungisa: () => ({
@@ -11,11 +15,32 @@ vi.mock("../store", () => ({
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({
-    signOut: vi.fn(),
+    signOut: signOutMock,
   }),
 }));
 
 describe("Shell", () => {
+  it("shows the business account menu with sign out", async () => {
+    render(
+      <MemoryRouter>
+        <Shell
+          active="dashboard"
+          isTrainingPartner={false}
+          onNavigate={vi.fn()}
+        >
+          <div>content</div>
+        </Shell>
+      </MemoryRouter>,
+    );
+
+    fireEvent.keyDown(screen.getByRole("button", { name: "Test Business" }), {
+      key: "Enter",
+    });
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Sign out" }));
+
+    await waitFor(() => expect(signOutMock).toHaveBeenCalledOnce());
+  });
+
   it("shows only the dashboard tab for training partners", () => {
     render(
       <MemoryRouter>

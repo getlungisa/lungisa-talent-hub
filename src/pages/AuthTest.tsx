@@ -45,7 +45,7 @@ export default function AuthTest() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md bg-card border border-border rounded-lg p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8">
         {checkingSession ? (
           <p className="text-muted-foreground text-sm">Loading...</p>
         ) : session ? (
@@ -54,7 +54,7 @@ export default function AuthTest() {
             <p className="text-muted-foreground">{session.user.email}</p>
             <Button
               onClick={handleSignOut}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               Sign out
             </Button>
@@ -81,12 +81,12 @@ export default function AuthTest() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               {loading ? "Sending..." : "Send magic link"}
             </Button>
             {sent && (
-              <p className="text-sm text-success">
+              <p className="text-sm text-primary">
                 Check your email — we've sent you a link to sign in.
               </p>
             )}
