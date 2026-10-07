@@ -426,6 +426,7 @@ export function Dashboard({
         onSeeAll={onBrowse}
         newThisWeek={newThisWeek}
         shortlistedIds={shortlistedIds}
+        placedCandidateIds={new Set(placements.map((p) => p.candidateId))}
         onShortlistChanged={handleShortlistChanged}
       />
 
