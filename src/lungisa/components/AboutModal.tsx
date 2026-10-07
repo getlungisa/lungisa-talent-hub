@@ -55,12 +55,8 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
               because they lack a formal CV or industry contacts. Each
               candidate's trainer personally vouches for the things an
               interview can't show, reliability, attitude, and how someone
-              handles a hard shift. We stay involved for the candidate's first
-              three months, so a hire actually sticks.
-            </p>
-
-            <p>
-              R1,000 on hire. R3,000 at day 90, only if they're still with you.
+              handles a hard shift. We stay involved after a hire to support a
+              successful placement.
             </p>
 
             <p>

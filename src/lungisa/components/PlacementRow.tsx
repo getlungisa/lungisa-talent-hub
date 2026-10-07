@@ -29,7 +29,7 @@ export function PlacementRow({
             Day <span className="font-display text-lg">{day}</span> of {total}
           </div>
           <div className={`text-xs ${isDay90Milestone ? "text-accent" : "text-muted-foreground"}`}>
-            {dueAtEnd ? "Placement complete" : isDay90Milestone ? "Day 90 milestone" : "In progress"}
+            {dueAtEnd ? "Placement complete" : isDay90Milestone ? `Day ${total} milestone` : "In progress"}
           </div>
         </div>
       </div>

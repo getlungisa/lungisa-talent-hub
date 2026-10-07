@@ -163,3 +163,13 @@ export const roleFilters: ("All roles" | Role)[] = [
   "Kitchen",
   "Delivery",
 ];
+
+export const samplePlacements = [
+  {
+    candidateId: "sipho",
+    candidateName: "Sipho",
+    role: "Barista",
+    startedDaysAgo: 12,
+    totalDays: 30,
+  },
+];

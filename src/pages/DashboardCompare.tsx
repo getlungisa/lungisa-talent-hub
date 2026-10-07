@@ -14,7 +14,7 @@ import { Avatar } from "@/lungisa/components/Avatar";
 import { RatingDots } from "@/lungisa/components/RatingDots";
 import { VerifiedBadge } from "@/lungisa/components/VerifiedBadge";
 import { PlacementRow } from "@/lungisa/components/PlacementRow";
-import { candidates } from "@/lungisa/data";
+import { candidates, samplePlacements } from "@/lungisa/data";
 
 type Version = "latest" | "previous";
 
@@ -81,10 +81,10 @@ function PreviewDashboard({ version }: { version: Version }) {
       {version === "latest" ? (
         <section className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-8">
           <div>
-            <h2 className="font-display text-3xl text-primary sm:text-4xl">Good morning, Rosetta Roastery</h2>
+            <h2 className="font-display text-3xl text-primary sm:text-4xl">Good morning</h2>
             <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span><strong className="font-medium text-primary">12 new candidates</strong> verified this week</span>
+              <span><strong className="font-medium text-primary">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -95,7 +95,7 @@ function PreviewDashboard({ version }: { version: Version }) {
       ) : (
         <section className="flex flex-col items-center pt-4 text-center sm:pt-8">
           <p className="text-sm text-muted-foreground">Good morning</p>
-          <h2 className="mt-2 font-display text-4xl text-primary sm:text-5xl">Rosetta Roastery</h2>
+          <h2 className="mt-2 font-display text-4xl text-primary sm:text-5xl">Dashboard preview</h2>
           <p className="mt-6 max-w-md font-display text-xl text-primary sm:text-2xl">Tell us who you need. We'll bring them to you.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
             <Button className="bg-primary px-9 py-5 text-lg text-primary-foreground hover:bg-primary-hover">I need someone</Button>
@@ -103,7 +103,7 @@ function PreviewDashboard({ version }: { version: Version }) {
           </div>
           <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span><strong className="font-medium text-primary">12 new candidates</strong> verified this week</span>
+            <span><strong className="font-medium text-primary">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
           </p>
         </section>
       )}
@@ -113,9 +113,20 @@ function PreviewDashboard({ version }: { version: Version }) {
       <section>
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-2xl text-primary">Active placements</h2>
-          <span className="text-sm text-muted-foreground">1 active placement</span>
+          <span className="text-sm text-muted-foreground">
+            {samplePlacements.length} active {samplePlacements.length === 1 ? "placement" : "placements"}
+          </span>
         </div>
-        <PlacementRow name="Sipho" role="Barista" day={12} total={30} startDate="12 days ago" />
+        {samplePlacements.map((placement) => (
+          <PlacementRow
+            key={placement.candidateId}
+            name={placement.candidateName}
+            role={placement.role}
+            day={placement.startedDaysAgo}
+            total={placement.totalDays}
+            startDate={`${placement.startedDaysAgo} ${placement.startedDaysAgo === 1 ? "day" : "days"} ago`}
+          />
+        ))}
       </section>
       <section>
         <h2 className="mb-3 font-display text-2xl text-primary">{version === "latest" ? "Shortlist" : "Your shortlist"}</h2>
@@ -191,7 +202,7 @@ export default function DashboardCompare() {
         <div className="border-b border-border pb-5">
           <div>
             <h1 className="font-display text-2xl text-primary">Compare dashboard layouts</h1>
-            <p className="mt-1 text-sm text-muted-foreground">The same four profiles appear in both versions.</p>
+            <p className="mt-1 text-sm text-muted-foreground">The same sample profiles appear in both versions.</p>
           </div>
           <div className="mt-6 flex w-full border-b border-border" role="tablist" aria-label="Dashboard versions">
             {(["latest", "previous"] as const).map((item) => (
