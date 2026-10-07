@@ -9,6 +9,7 @@ const {
   fetchDashboardShortlistedMock,
   fetchNewCandidatesThisWeekCountMock,
   fetchTrainingPartnerCandidatesMock,
+  toggleCandidateShortlistMock,
 } = vi.hoisted(() => ({
   authUser: { id: "business-user", email: "owner@example.com" },
   fetchOpenNeedsMock: vi.fn(),
@@ -16,6 +17,7 @@ const {
   fetchDashboardShortlistedMock: vi.fn(),
   fetchNewCandidatesThisWeekCountMock: vi.fn(),
   fetchTrainingPartnerCandidatesMock: vi.fn(),
+  toggleCandidateShortlistMock: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -44,6 +46,7 @@ vi.mock("../lib/dashboard", () => ({
   fetchDashboardShortlisted: fetchDashboardShortlistedMock,
   fetchNewCandidatesThisWeekCount: fetchNewCandidatesThisWeekCountMock,
   fetchTrainingPartnerCandidates: fetchTrainingPartnerCandidatesMock,
+  toggleCandidateShortlist: toggleCandidateShortlistMock,
 }));
 
 vi.mock("../components/RecommendedRow", () => ({
@@ -71,8 +74,8 @@ describe("Dashboard", () => {
         candidateId: "candidate-1",
         candidateName: "Ayanda",
         location: "Langa, Cape Town",
-        status: "shortlisted",
-        allocatedAt: null,
+        isAvailable: true,
+        createdAt: null,
       },
     ]);
     fetchNewCandidatesThisWeekCountMock.mockResolvedValue(3);
@@ -110,6 +113,66 @@ describe("Dashboard", () => {
       name: "Ayanda",
       location: "Langa, Cape Town",
     });
+  });
+
+  it("hides unavailable candidate details and allows removal", async () => {
+    fetchDashboardShortlistedMock.mockResolvedValueOnce([
+      {
+        candidateId: "candidate-placed",
+        candidateName: null,
+        location: null,
+        isAvailable: false,
+        createdAt: null,
+      },
+    ]);
+    toggleCandidateShortlistMock.mockResolvedValue(false);
+
+    render(
+      <Dashboard
+        isTrainingPartner={false}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText("No longer available")).toBeInTheDocument();
+    expect(screen.queryByText("Ayanda")).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Remove unavailable candidate from shortlist",
+      }),
+    );
+
+    expect(toggleCandidateShortlistMock).toHaveBeenCalledWith(
+      authUser,
+      "candidate-placed",
+      true,
+    );
+    expect(await screen.findByText("You have no shortlisted candidates yet.")).toBeInTheDocument();
+  });
+
+  it("shows Available for a trainer candidate with a legacy shortlisted status", async () => {
+    fetchTrainingPartnerCandidatesMock.mockResolvedValue([
+      {
+        id: "candidate-legacy",
+        name: "Lindiwe",
+        location: "Khayelitsha, Cape Town",
+        status: "shortlisted",
+        businessName: null,
+      },
+    ]);
+
+    render(
+      <Dashboard
+        isTrainingPartner={true}
+        onOpenCandidate={vi.fn()}
+        onBrowse={vi.fn()}
+      />,
+    );
+
+    await screen.findByRole("heading", { name: "Lindiwe" });
+    expect(screen.getByText("Available")).toBeInTheDocument();
+    expect(screen.queryByText("Shortlisted")).not.toBeInTheDocument();
   });
 
   it("opens a training-partner candidate with the training-partner context", async () => {

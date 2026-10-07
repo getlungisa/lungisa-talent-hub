@@ -13,10 +13,10 @@ export type DashboardPlacement = {
 
 export type DashboardShortlistedCandidate = {
   candidateId: string;
-  candidateName: string;
+  candidateName: string | null;
   location: string | null;
-  status: string;
-  allocatedAt: string | null;
+  isAvailable: boolean;
+  createdAt: string | null;
 };
 
 type Business = {
@@ -40,7 +40,7 @@ export type TrainingPartnerCandidate = {
   id: string;
   name: string;
   location: string | null;
-  status: "available" | "shortlisted" | "placed" | "confirmed";
+  status: "available" | "placed" | "confirmed";
   businessName: string | null;
 };
 
@@ -65,11 +65,12 @@ type PlacementRecord = {
   candidates: Candidate | Candidate[] | null;
 };
 
-type AllocationRecord = {
+type ShortlistCandidateRecord = Pick<Candidate, "id" | "name" | "location">;
+
+type ShortlistRecord = {
   candidate_id: string;
-  status: string;
-  allocated_at: string | null;
-  candidates: Candidate | Candidate[] | null;
+  created_at: string | null;
+  candidates: ShortlistCandidateRecord | ShortlistCandidateRecord[] | null;
 };
 
 type ActivityRow = {
@@ -247,7 +248,10 @@ export async function fetchTrainingPartnerCandidates(
 
   return (data ?? []).map((candidate) => {
     const allocation = oneAllocation(candidate.candidate_allocations);
-    const status = allocation?.status ?? "available";
+    const status =
+      allocation?.status === "placed" || allocation?.status === "confirmed"
+        ? allocation.status
+        : "available";
     const showBusinessName = status === "placed" || status === "confirmed";
 
     return {
@@ -262,7 +266,7 @@ export async function fetchTrainingPartnerCandidates(
   });
 }
 
-function oneCandidate(candidate: Candidate | Candidate[] | null): Candidate | null {
+function oneCandidate<T>(candidate: T | T[] | null): T | null {
   return Array.isArray(candidate) ? candidate[0] ?? null : candidate;
 }
 
@@ -315,13 +319,12 @@ export async function fetchDashboardShortlisted(
   if (!business) return [];
 
   const { data, error } = await db
-    .from("candidate_allocations")
-    .select<AllocationRecord>(
-      "candidate_id, status, allocated_at, candidates!candidate_allocations_candidate_id_fkey(id, name, location)",
+    .from("shortlists")
+    .select<ShortlistRecord>(
+      "candidate_id, created_at, candidates!shortlists_candidate_id_fkey(id, name, location)",
     )
     .eq("business_id", business.id)
-    .eq("status", "shortlisted")
-    .order("allocated_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("fetchDashboardShortlisted error", error);
@@ -330,17 +333,13 @@ export async function fetchDashboardShortlisted(
 
   return (data ?? []).flatMap((allocation) => {
     const candidate = oneCandidate(allocation.candidates);
-    if (!candidate) return [];
-
-    return [
-      {
-        candidateId: allocation.candidate_id,
-        candidateName: candidate.name,
-        location: candidate.location,
-        status: allocation.status,
-        allocatedAt: allocation.allocated_at,
-      },
-    ];
+    return [{
+      candidateId: allocation.candidate_id,
+      candidateName: candidate?.name ?? null,
+      location: candidate?.location ?? null,
+      isAvailable: candidate !== null,
+      createdAt: allocation.created_at,
+    }];
   });
 }
 

@@ -74,7 +74,7 @@ describe("RecommendedRow shortlist interactions", () => {
     render(<RecommendedRow {...props} />);
     fireEvent.click(await screen.findByRole("button", { name: "Save to shortlist" }));
     await waitFor(() => expect(toastMock).toHaveBeenCalledWith("Candidate no longer available", {
-      description: "Another business shortlisted this candidate first. The candidate was not added to your shortlist.",
+      description: "The candidate is no longer available and was not added to your shortlist.",
     }));
     expect(onChanged).not.toHaveBeenCalled();
   });
