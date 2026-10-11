@@ -84,7 +84,17 @@ export async function registerBusiness(values: RegistrationDraft): Promise<strin
   if (error) {
     throw new Error(error.message ?? "register_business_failed");
   }
-  return data as string;
+  const businessId = data as string;
+
+  // Fire-and-forget email alert — never block the sign-up.
+  void supabase.functions
+    .invoke("notify-new-business", { body: { businessId } })
+    .then(({ error: fnErr }) => {
+      if (fnErr) console.error("notify-new-business invoke error", fnErr);
+    })
+    .catch((e) => console.error("notify-new-business unexpected error", e));
+
+  return businessId;
 }
 
 export async function fetchIsAdmin(): Promise<boolean> {
