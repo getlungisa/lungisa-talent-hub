@@ -3,14 +3,20 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Join from "./Join";
 
-const { signInWithOtpMock, registerBusinessMock, authState } = vi.hoisted(() => ({
+const { signInWithOtpMock, registerBusinessMock, invokeMock, rpcMock, authState } = vi.hoisted(() => ({
   signInWithOtpMock: vi.fn(),
   registerBusinessMock: vi.fn(),
+  invokeMock: vi.fn(),
+  rpcMock: vi.fn(),
   authState: { session: null as unknown, loading: false },
 }));
 
 vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { auth: { signInWithOtp: signInWithOtpMock } },
+  supabase: {
+    auth: { signInWithOtp: signInWithOtpMock },
+    functions: { invoke: invokeMock },
+    rpc: rpcMock,
+  },
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
@@ -54,9 +60,13 @@ function fillValid() {
 }
 
 describe("Join page", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     signInWithOtpMock.mockReset().mockResolvedValue({ error: null });
-    registerBusinessMock.mockReset().mockResolvedValue("business-1");
+    // Exercise the real registerBusiness helper; only the Supabase client is faked.
+    const actual = await vi.importActual<typeof import("@/lungisa/lib/business")>("@/lungisa/lib/business");
+    registerBusinessMock.mockReset().mockImplementation(actual.registerBusiness);
+    rpcMock.mockReset().mockResolvedValue({ data: "business-1", error: null });
+    invokeMock.mockReset().mockResolvedValue({ data: null, error: null });
     authState.session = null;
     window.localStorage.clear();
   });
@@ -132,6 +142,12 @@ describe("Join page", () => {
     fireEvent.click(screen.getByRole("button", { name: "Join Lungisa" }));
     await waitFor(() => expect(registerBusinessMock).toHaveBeenCalledTimes(1));
     expect(window.localStorage.getItem("lungisa:pending-registration")).toBeNull();
+    expect(rpcMock).toHaveBeenCalledWith("register_business", expect.any(Object));
+    await waitFor(() =>
+      expect(invokeMock).toHaveBeenCalledWith("notify-new-business", {
+        body: { businessId: "business-1" },
+      }),
+    );
   });
 
   it("shows the complete blank form after sign-in when there is no draft", async () => {

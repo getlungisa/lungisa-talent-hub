@@ -3,15 +3,21 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BusinessGate } from "./BusinessGate";
 
-const { fetchOwnBusinessMock, registerBusinessMock, childRender, auth } = vi.hoisted(() => ({
+const { fetchOwnBusinessMock, registerBusinessMock, invokeMock, rpcMock, childRender, auth } = vi.hoisted(() => ({
   auth: { user: { id: "u1", email: "o@example.com" }, signOut: () => Promise.resolve() },
   fetchOwnBusinessMock: vi.fn(),
   registerBusinessMock: vi.fn(),
+  invokeMock: vi.fn(),
+  rpcMock: vi.fn(),
   childRender: vi.fn(),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => auth,
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: { functions: { invoke: invokeMock }, rpc: rpcMock },
 }));
 
 vi.mock("@/lungisa/lib/needs", () => ({ fetchOwnBusiness: fetchOwnBusinessMock }));
@@ -37,9 +43,13 @@ function renderGate() {
 }
 
 describe("BusinessGate", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     fetchOwnBusinessMock.mockReset();
-    registerBusinessMock.mockReset();
+    // Exercise the real registerBusiness helper; only the Supabase client is faked.
+    const actual = await vi.importActual<typeof import("@/lungisa/lib/business")>("@/lungisa/lib/business");
+    registerBusinessMock.mockReset().mockImplementation(actual.registerBusiness);
+    rpcMock.mockReset().mockResolvedValue({ data: "b", error: null });
+    invokeMock.mockReset().mockResolvedValue({ data: null, error: null });
     childRender.mockReset();
     window.localStorage.clear();
   });
@@ -83,14 +93,30 @@ describe("BusinessGate", () => {
   it("finishes a saved /join registration when the user lands on the dashboard", async () => {
     window.localStorage.setItem(
       "lungisa:pending-registration",
-      JSON.stringify({ savedAt: Date.now(), draft: { businessName: "Acme", email: "o@example.com" } }),
+      JSON.stringify({
+        savedAt: Date.now(),
+        draft: {
+          businessName: "Acme",
+          contactName: "Owner",
+          email: "o@example.com",
+          whatsapp: "0821234567",
+          area: "Sea Point",
+          numberOfSites: "1",
+          rolesHired: "Cashier",
+          websiteOrSocial: "",
+          acceptTerms: true,
+          acceptFee: true,
+        },
+      }),
     );
     fetchOwnBusinessMock
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce({ id: "b", name: "Acme", contact_email: "", status: "pending" });
-    registerBusinessMock.mockResolvedValue("b");
     renderGate();
     await waitFor(() => expect(registerBusinessMock).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(invokeMock).toHaveBeenCalledWith("notify-new-business", { body: { businessId: "b" } }),
+    );
     expect(await screen.findByText("We're reviewing your details")).toBeInTheDocument();
   });
 });

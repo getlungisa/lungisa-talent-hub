@@ -68,6 +68,26 @@ export function clearRegistrationDraft(): void {
   }
 }
 
+// Fire-and-forget owner alert; every failure (returned error, rejection or
+// synchronous throw) is logged and never blocks registration.
+// Registration paths: Join.tsx (signed-in submit) and BusinessGate.tsx (saved
+// draft auto-register) both go through registerBusiness(), the only client
+// caller of register_business. admin_create_business is admin-only database
+// tooling and is never called from the client.
+function notifyNewBusiness(businessId: string): void {
+  try {
+    void Promise.resolve(
+      supabase.functions.invoke("notify-new-business", { body: { businessId } }),
+    )
+      .then((res) => {
+        if (res?.error) console.error("notify-new-business invoke error", res.error);
+      })
+      .catch((e) => console.error("notify-new-business unexpected error", e));
+  } catch (e) {
+    console.error("notify-new-business unexpected error", e);
+  }
+}
+
 export async function registerBusiness(values: RegistrationDraft): Promise<string> {
   const { data, error } = await rpc.rpc<string>("register_business", {
     p_business_name: values.businessName.trim(),
@@ -86,13 +106,7 @@ export async function registerBusiness(values: RegistrationDraft): Promise<strin
   }
   const businessId = data as string;
 
-  // Fire-and-forget owner alert — failures are only logged.
-  void supabase.functions
-    .invoke("notify-new-business", { body: { businessId } })
-    .then(({ error: fnErr }) => {
-      if (fnErr) console.error("notify-new-business invoke error", fnErr);
-    })
-    .catch((e) => console.error("notify-new-business unexpected error", e));
+  notifyNewBusiness(businessId);
 
   return businessId;
 }
