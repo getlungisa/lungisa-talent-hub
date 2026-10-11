@@ -310,10 +310,17 @@ BEGIN
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 
+  -- Pending/rejected users must still be able to read their own business row
+  -- (BusinessGate relies on it to show the review/rejected screens).
+  SELECT count(*) INTO n FROM public.businesses WHERE id = pending_biz AND status = 'pending';
+  IF n <> 1 THEN
+    RAISE EXCEPTION 'FAIL: pending owner cannot read their own business row';
+  END IF;
+
   UPDATE public.businesses SET name = 'Gate Pending Renamed' WHERE id = pending_biz;
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n <> 1 THEN
-    RAISE EXCEPTION 'FAIL: owner can no longer update ordinary business fields';
+    RAISE EXCEPTION 'FAIL: owner can no longer update ordinary business fields (check businesses UPDATE policy)';
   END IF;
   RESET ROLE;
 

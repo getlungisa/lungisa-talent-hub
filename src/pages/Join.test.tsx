@@ -122,7 +122,7 @@ describe("Join page", () => {
         },
       }),
     );
-    authState.session = { user: { id: "u1" } };
+    authState.session = { user: { id: "u1", email: "thandi@example.com" } };
 
     renderJoin();
 

@@ -36,6 +36,7 @@ export default function AdminBusinesses() {
   const [businesses, setBusinesses] = useState<PendingBusiness[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checkFailed, setCheckFailed] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -51,10 +52,15 @@ export default function AdminBusinesses() {
     if (!user) return;
     let cancelled = false;
     void (async () => {
-      const admin = await fetchIsAdmin();
-      if (cancelled) return;
-      setIsAdmin(admin);
-      if (admin) await load();
+      try {
+        const admin = await fetchIsAdmin();
+        if (cancelled) return;
+        setIsAdmin(admin);
+        if (admin) await load();
+      } catch (e) {
+        console.error("fetchIsAdmin error", e);
+        if (!cancelled) setCheckFailed(true);
+      }
     })();
     return () => {
       cancelled = true;
@@ -74,6 +80,14 @@ export default function AdminBusinesses() {
       setBusyId(null);
     }
   };
+
+  if (checkFailed) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-background px-4">
+        <p className="text-sm text-destructive">We couldn't check your access. Please refresh and try again.</p>
+      </main>
+    );
+  }
 
   if (isAdmin === null) {
     return (

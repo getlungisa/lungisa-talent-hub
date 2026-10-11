@@ -47,14 +47,17 @@ export function BusinessGate({ children }: { children: ReactNode }) {
         // Magic link opened on the sign-up device but redirected to "/": finish
         // the registration the user already submitted on /join.
         if (!business) {
-          const draft = loadRegistrationDraft();
+          const draft = loadRegistrationDraft(user.email);
           if (draft) {
             try {
               await registerBusiness(draft);
+              clearRegistrationDraft();
             } catch (e) {
               console.error("draft registration failed", e);
+              if (e instanceof Error && e.message === "business_already_exists") {
+                clearRegistrationDraft();
+              }
             }
-            clearRegistrationDraft();
             business = await fetchOwnBusiness(user);
           }
         }

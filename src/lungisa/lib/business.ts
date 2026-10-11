@@ -36,7 +36,9 @@ export function saveRegistrationDraft(values: JoinFormValues): void {
   }
 }
 
-export function loadRegistrationDraft(): RegistrationDraft | null {
+// Only returns a draft saved for the given (signed-in) email so a shared device
+// can never submit someone else's sign-up.
+export function loadRegistrationDraft(expectedEmail?: string | null): RegistrationDraft | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
@@ -44,6 +46,12 @@ export function loadRegistrationDraft(): RegistrationDraft | null {
     if (!parsed.draft || typeof parsed.savedAt !== "number") return null;
     if (Date.now() - parsed.savedAt > DRAFT_MAX_AGE_MS) {
       clearRegistrationDraft();
+      return null;
+    }
+    if (
+      expectedEmail &&
+      parsed.draft.email?.trim().toLowerCase() !== expectedEmail.trim().toLowerCase()
+    ) {
       return null;
     }
     return parsed.draft;
@@ -81,7 +89,7 @@ export async function registerBusiness(values: RegistrationDraft): Promise<strin
 
 export async function fetchIsAdmin(): Promise<boolean> {
   const { data, error } = await rpc.rpc<boolean>("current_user_is_admin");
-  if (error) return false;
+  if (error) throw new Error(error.message ?? "admin_check_failed");
   return data === true;
 }
 

@@ -82,8 +82,7 @@ describe("business approval gate migration", () => {
     expect(migration).toContain("'pending'");
   });
 
-  it("never grants candidates.whatsapp_number", () => {
-    expect(migration).not.toMatch(/whatsapp_number[^;]*candidates|candidates[^;]*whatsapp_number/i);
+  it("verification script checks the whatsapp_number grant behaviourally", () => {
     expect(verification).toContain("candidates', 'whatsapp_number'");
   });
 });

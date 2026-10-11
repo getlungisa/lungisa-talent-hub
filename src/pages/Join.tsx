@@ -58,7 +58,7 @@ export default function Join() {
   // Back from the magic link with a saved sign-up: create the pending business.
   useEffect(() => {
     if (!session) return;
-    const draft = loadRegistrationDraft();
+    const draft = loadRegistrationDraft(session.user?.email);
     if (!draft) return;
     let cancelled = false;
 
@@ -123,7 +123,9 @@ export default function Join() {
         },
       });
       if (error) {
-        setFormError(error.message);
+        console.error("signInWithOtp error", error);
+        clearRegistrationDraft();
+        setFormError("We couldn't send your email link. Please check your email address and try again.");
       } else {
         setSent(true);
       }

@@ -83,7 +83,7 @@ describe("BusinessGate", () => {
   it("finishes a saved /join registration when the user lands on the dashboard", async () => {
     window.localStorage.setItem(
       "lungisa:pending-registration",
-      JSON.stringify({ savedAt: Date.now(), draft: { businessName: "Acme" } }),
+      JSON.stringify({ savedAt: Date.now(), draft: { businessName: "Acme", email: "o@example.com" } }),
     );
     fetchOwnBusinessMock
       .mockResolvedValueOnce(null)
