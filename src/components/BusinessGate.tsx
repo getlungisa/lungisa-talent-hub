@@ -112,7 +112,7 @@ export function BusinessGate({ children }: { children: ReactNode }) {
     return (
       <Notice title="We're reviewing your details">
         <p className="text-sm text-muted-foreground">
-          Thanks for joining Lungisa. We'll email you as soon as your business is approved, usually within a day.
+          Thanks for joining Lungisa. We review new businesses within a day. We'll be in touch on the email or WhatsApp number you gave us.
         </p>
         <Button variant="outline" onClick={() => void signOut()}>
           Sign out
