@@ -11,47 +11,43 @@ export type Need = {
   created_at: string;
 };
 
-export async function ensureBusiness(user: User): Promise<{ id: string; name: string; contact_email: string }> {
-  const { data: existing, error: selErr } = await supabase
+export type BusinessStatus = "pending" | "approved" | "rejected";
+
+export type OwnBusiness = {
+  id: string;
+  name: string;
+  contact_email: string;
+  status: BusinessStatus;
+};
+
+// Read-only: business rows are created only through the register_business /
+// admin_create_business database functions, never from the client.
+export async function fetchOwnBusiness(user: User): Promise<OwnBusiness | null> {
+  const { data, error } = await supabase
     .from("businesses")
-    .select('id, name, contact_email:"contact email"')
+    .select('id, name, status, contact_email:"contact email"')
     .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
     .maybeSingle();
-  if (selErr) {
-    console.error("ensureBusiness select error", selErr);
-    throw selErr;
+  if (error) {
+    console.error("fetchOwnBusiness error", error);
+    throw error;
   }
-  if (existing) return existing;
-
-  const email = user.email ?? "";
-  const placeholderName = `Business ${email.split("@")[0] || "Owner"}`;
-  const businessInsert = {
-    user_id: user.id,
-    name: placeholderName,
-    "contact email": email,
-  };
-  const { data: inserted, error: insErr } = await supabase
-    .from("businesses")
-    .insert(businessInsert)
-    .select('id, name, contact_email:"contact email"')
-    .single();
-  if (insErr) {
-    console.error("ensureBusiness insert error", insErr);
-    throw insErr;
-  }
-  return inserted;
+  return (data as unknown as OwnBusiness | null) ?? null;
 }
 
 export async function fetchBusinessName(user: User): Promise<string> {
-  const business = await ensureBusiness(user);
-  return business.name;
+  const business = await fetchOwnBusiness(user);
+  return business?.name ?? "Business";
 }
 
 export async function submitNeed(
   user: User,
   values: { role: string; timing: string; must_haves: string },
 ): Promise<Need> {
-  const business = await ensureBusiness(user);
+  const business = await fetchOwnBusiness(user);
+  if (!business || business.status !== "approved") {
+    throw new Error("business_not_approved");
+  }
   const { data, error } = await supabase
     .from("needs")
     .insert({
