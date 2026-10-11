@@ -48,9 +48,9 @@ vi.mock("@/integrations/supabase/client", () => ({
   },
 }));
 
-import { ensureBusiness, fetchBusinessName } from "./needs";
+import { fetchBusinessName, fetchOwnBusiness } from "./needs";
 
-describe("ensureBusiness", () => {
+describe("fetchOwnBusiness", () => {
   const user = { id: "user-1", email: "owner@example.com" } as never;
 
   beforeEach(() => {
@@ -64,54 +64,43 @@ describe("ensureBusiness", () => {
     singleMock.mockReset();
   });
 
-  it("loads an existing business using the quoted contact-email column alias", async () => {
+  it("loads an existing business using the quoted contact-email column alias and status", async () => {
     maybeSingleMock.mockResolvedValue({
-      data: { id: "business-1", name: "Acme", contact_email: "owner@example.com" },
+      data: { id: "business-1", name: "Acme", status: "approved", contact_email: "owner@example.com" },
       error: null,
     });
 
-    await expect(ensureBusiness(user)).resolves.toEqual({
+    await expect(fetchOwnBusiness(user)).resolves.toEqual({
       id: "business-1",
       name: "Acme",
+      status: "approved",
       contact_email: "owner@example.com",
     });
 
     expect(fromMock).toHaveBeenCalledWith("businesses");
-    expect(selectMock).toHaveBeenCalledWith('id, name, contact_email:"contact email"');
+    expect(selectMock).toHaveBeenCalledWith('id, name, status, contact_email:"contact email"');
     expect(orMock).toHaveBeenCalledWith("user_id.eq.user-1,secondary_user_id.eq.user-1");
+  });
+
+  it("returns null and never inserts a business when none exists", async () => {
+    maybeSingleMock.mockResolvedValue({ data: null, error: null });
+
+    await expect(fetchOwnBusiness(user)).resolves.toBeNull();
     expect(insertMock).not.toHaveBeenCalled();
   });
 
-  it("creates a business with the quoted contact-email column when one does not exist", async () => {
-    maybeSingleMock.mockResolvedValue({
-      data: null,
-      error: null,
-    });
-    singleMock.mockResolvedValue({
-      data: { id: "business-2", name: "Business owner", contact_email: "owner@example.com" },
-      error: null,
-    });
-
-    await expect(ensureBusiness(user)).resolves.toEqual({
-      id: "business-2",
-      name: "Business owner",
-      contact_email: "owner@example.com",
-    });
-
-    expect(insertMock).toHaveBeenCalledWith({
-      user_id: "user-1",
-      name: "Business owner",
-      "contact email": "owner@example.com",
-    });
-    expect(selectAfterInsertMock).toHaveBeenCalledWith('id, name, contact_email:"contact email"');
+  it("throws on query errors", async () => {
+    maybeSingleMock.mockResolvedValue({ data: null, error: new Error("boom") });
+    await expect(fetchOwnBusiness(user)).rejects.toThrow("boom");
   });
 
   it("returns the business name for header consumers", async () => {
     maybeSingleMock.mockResolvedValue({
-      data: { id: "business-1", name: "Acme", contact_email: "owner@example.com" },
+      data: { id: "business-1", name: "Acme", status: "approved", contact_email: "owner@example.com" },
       error: null,
     });
 
     await expect(fetchBusinessName(user)).resolves.toBe("Acme");
+    expect(insertMock).not.toHaveBeenCalled();
   });
 });

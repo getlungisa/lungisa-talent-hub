@@ -10,6 +10,9 @@ import SignIn from "./pages/SignIn.tsx";
 import DashboardCompare from "./pages/DashboardCompare.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { RequireAuth } from "./components/RequireAuth";
+import { BusinessGate } from "./components/BusinessGate";
+import Join from "./pages/Join.tsx";
+import AdminBusinesses from "./pages/AdminBusinesses.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +28,18 @@ const App = () => (
               path="/"
               element={
                 <RequireAuth>
-                  <Index />
+                  <BusinessGate>
+                    <Index />
+                  </BusinessGate>
+                </RequireAuth>
+              }
+            />
+            <Route path="/join" element={<Join />} />
+            <Route
+              path="/admin/businesses"
+              element={
+                <RequireAuth>
+                  <AdminBusinesses />
                 </RequireAuth>
               }
             />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,20 @@ export default function SignIn() {
     setSent(false);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: "https://lungisa.netlify.app" },
+      options: {
+        emailRedirectTo: "https://lungisa.netlify.app",
+        // Sign-in must never create accounts; new businesses use /join.
+        shouldCreateUser: false,
+      },
     });
     setLoading(false);
-    if (error) setError(error.message);
-    else setSent(true);
+    // Unknown emails are answered like known ones so the form can't be used
+    // to discover which addresses have accounts.
+    if (error && error.code !== "otp_disabled" && !/signups not allowed/i.test(error.message)) {
+      setError(error.message);
+    } else {
+      setSent(true);
+    }
   };
 
   if (authLoading) {
@@ -73,6 +82,12 @@ export default function SignIn() {
             </p>
           )}
           {error && <p className="text-sm text-destructive">{error}</p>}
+          <p className="text-sm text-muted-foreground">
+            New business?{" "}
+            <Link className="underline" to="/join">
+              Join Lungisa
+            </Link>
+          </p>
         </form>
       </div>
     </main>
