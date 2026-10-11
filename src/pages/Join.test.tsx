@@ -103,7 +103,7 @@ describe("Join page", () => {
     expect(registerBusinessMock).not.toHaveBeenCalled();
   });
 
-  it("registers the saved draft once the user is signed in", async () => {
+  it("prefills the form from the saved draft after sign-in without auto-submitting", async () => {
     window.localStorage.setItem(
       "lungisa:pending-registration",
       JSON.stringify({
@@ -126,7 +126,37 @@ describe("Join page", () => {
 
     renderJoin();
 
+    await waitFor(() => expect(screen.getByLabelText("Business name")).toHaveValue("Corner Cafe"));
+    expect(registerBusinessMock).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Join Lungisa" }));
     await waitFor(() => expect(registerBusinessMock).toHaveBeenCalledTimes(1));
     expect(window.localStorage.getItem("lungisa:pending-registration")).toBeNull();
+  });
+
+  it("shows the complete blank form after sign-in when there is no draft", async () => {
+    authState.session = { user: { id: "u1", email: "thandi@example.com" } };
+
+    renderJoin();
+
+    for (const label of [
+      "Business name",
+      "Your name",
+      "Email",
+      "WhatsApp number",
+      "Area",
+      "Roles you hire for",
+      "Website or Instagram (optional)",
+    ]) {
+      expect(screen.getByLabelText(label)).toHaveValue("");
+    }
+    expect(screen.getByLabelText("Number of sites")).toBeInTheDocument();
+    expect(
+      screen.getByText("R1,000 on hire. R3,000 at day 90, only if they're still with you."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/agree to the terms/i)).toBeInTheDocument();
+    expect(document.getElementById("company_website")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Join Lungisa" })).toBeEnabled();
+    expect(registerBusinessMock).not.toHaveBeenCalled();
   });
 });

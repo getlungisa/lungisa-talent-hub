@@ -55,37 +55,13 @@ export default function Join() {
   const [sent, setSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Back from the magic link with a saved sign-up: create the pending business.
+  // Back from the magic link: prefill from the saved sign-up if there is one,
+  // otherwise leave a blank form. The user reviews and submits it themselves.
   useEffect(() => {
     if (!session) return;
     const draft = loadRegistrationDraft(session.user?.email);
-    if (!draft) return;
-    let cancelled = false;
-
-    const finish = async () => {
-      setSubmitting(true);
-      try {
-        await registerBusiness(draft);
-        clearRegistrationDraft();
-        if (!cancelled) navigate("/", { replace: true });
-      } catch (e) {
-        if (cancelled) return;
-        if (e instanceof Error && e.message === "business_already_exists") {
-          clearRegistrationDraft();
-          navigate("/", { replace: true });
-          return;
-        }
-        console.error("registerBusiness error", e);
-        setFormError("We couldn't save your details. Please try again.");
-        setSubmitting(false);
-      }
-    };
-
-    void finish();
-    return () => {
-      cancelled = true;
-    };
-  }, [session, navigate]);
+    if (draft) setValues({ ...emptyJoinForm, ...draft, honeypot: "" });
+  }, [session]);
 
   const update = <K extends keyof JoinFormValues>(key: K, value: JoinFormValues[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -110,6 +86,7 @@ export default function Join() {
     try {
       if (session) {
         await registerBusiness(values);
+        clearRegistrationDraft();
         navigate("/", { replace: true });
         return;
       }
@@ -131,6 +108,7 @@ export default function Join() {
       }
     } catch (err) {
       if (err instanceof Error && err.message === "business_already_exists") {
+        clearRegistrationDraft();
         navigate("/", { replace: true });
         return;
       }
@@ -183,7 +161,7 @@ export default function Join() {
           <div className="space-y-2">
             <h1 className="font-display text-3xl text-foreground">Join Lungisa</h1>
             <p className="text-muted-foreground text-sm">
-              Tell us about your business. We'll check your details and email you once you're approved.
+              Tell us about your business. We review new businesses within a day. We'll be in touch on the email or WhatsApp number you gave us.
             </p>
           </div>
 
