@@ -113,4 +113,42 @@ describe("CandidateCard shortlist interactions", () => {
       screen.queryByText(/Calm under pressure and consistently warm with customers\./),
     ).not.toBeInTheDocument();
   });
+
+  it("shows only non-empty employer-facing fields with their labels", () => {
+    render(
+      <CandidateCard
+        {...props}
+        candidate={{
+          ...candidate,
+          trained_on: "  Intermediate Barista course  ",
+          work_history: null,
+          proud_of: "  I kept learning.  ",
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Trained on")).toBeInTheDocument();
+    expect(screen.getByText("Intermediate Barista course")).toBeInTheDocument();
+    expect(screen.getByText("Proud of")).toBeInTheDocument();
+    expect(screen.getByText("I kept learning.")).toBeInTheDocument();
+    expect(screen.queryByText("Work history")).not.toBeInTheDocument();
+  });
+
+  it("does not render employer field labels for null or blank values", () => {
+    render(
+      <CandidateCard
+        {...props}
+        candidate={{
+          ...candidate,
+          trained_on: null,
+          work_history: "   ",
+          proud_of: "",
+        }}
+      />,
+    );
+
+    expect(screen.queryByText("Trained on")).not.toBeInTheDocument();
+    expect(screen.queryByText("Work history")).not.toBeInTheDocument();
+    expect(screen.queryByText("Proud of")).not.toBeInTheDocument();
+  });
 });

@@ -27,6 +27,7 @@ import {
   fetchDashboardShortlisted,
   toggleCandidateShortlist,
 } from "./dashboard";
+import type { Candidate } from "./dashboard";
 
 describe("fetchCandidates", () => {
   beforeEach(() => {
@@ -48,6 +49,9 @@ describe("fetchCandidates", () => {
           created_at: "2026-10-01T00:00:00Z",
           location: "Langa, Cape Town",
           strengths_summary: "Warm, thoughtful, and composed under pressure.",
+          trained_on: null,
+          work_history: "2 yrs, Café X, barista",
+          proud_of: "I kept learning",
         },
       ],
       error: null,
@@ -60,12 +64,15 @@ describe("fetchCandidates", () => {
         created_at: "2026-10-01T00:00:00Z",
         location: "Langa, Cape Town",
         strengths_summary: "Warm, thoughtful, and composed under pressure.",
+        trained_on: null,
+        work_history: "2 yrs, Café X, barista",
+        proud_of: "I kept learning",
       },
     ]);
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, name, created_at, location, strengths_summary",
+      "id, name, created_at, location, strengths_summary, trained_on, work_history, proud_of",
     );
     expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
@@ -105,6 +112,9 @@ describe("fetchCandidate", () => {
         location: "Langa, Cape Town",
         strengths_summary: "Warm, thoughtful, and composed under pressure.",
         reference_note: null,
+        trained_on: null,
+        work_history: null,
+        proud_of: null,
       },
       error: null,
     });
@@ -115,13 +125,29 @@ describe("fetchCandidate", () => {
       location: "Langa, Cape Town",
       strengths_summary: "Warm, thoughtful, and composed under pressure.",
       reference_note: null,
+      trained_on: null,
+      work_history: null,
+      proud_of: null,
     });
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note",
+      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note, trained_on, work_history, proud_of",
     );
     expect(eqMock).toHaveBeenCalledWith("id", "1");
+  });
+
+  describe("candidate employer-facing field types", () => {
+    it("accepts nullable and omitted employer fields", () => {
+      const fields: Pick<Candidate, "trained_on" | "work_history" | "proud_of"> = {
+        trained_on: null,
+        work_history: "2 yrs, Café X, barista",
+      };
+
+      expect(fields.trained_on).toBeNull();
+      expect(fields.work_history).toBe("2 yrs, Café X, barista");
+      expect(fields.proud_of).toBeUndefined();
+    });
   });
 });
 

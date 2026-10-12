@@ -85,6 +85,37 @@ BEGIN
     RAISE EXCEPTION 'FAIL: anon/authenticated can SELECT candidates.whatsapp_number';
   END IF;
 
+  IF NOT has_column_privilege('authenticated', 'public.candidates', 'trained_on', 'SELECT')
+     OR NOT has_column_privilege('authenticated', 'public.candidates', 'work_history', 'SELECT')
+     OR NOT has_column_privilege('authenticated', 'public.candidates', 'proud_of', 'SELECT') THEN
+    RAISE EXCEPTION 'FAIL: authenticated cannot SELECT all employer-facing candidate fields';
+  END IF;
+
+  IF has_column_privilege('anon', 'public.candidates', 'trained_on', 'SELECT')
+     OR has_column_privilege('anon', 'public.candidates', 'work_history', 'SELECT')
+     OR has_column_privilege('anon', 'public.candidates', 'proud_of', 'SELECT') THEN
+    RAISE EXCEPTION 'FAIL: anon can SELECT employer-facing candidate fields';
+  END IF;
+
+  FOR p IN
+    SELECT attname
+    FROM pg_attribute
+    WHERE attrelid = 'public.candidates'::regclass
+      AND attnum > 0
+      AND NOT attisdropped
+      AND (
+        attname ILIKE '%trainer%'
+        OR attname ILIKE '%training%note%'
+        OR attname ILIKE '%private%note%'
+        OR attname ILIKE '%internal%note%'
+      )
+  LOOP
+    IF has_column_privilege('anon', 'public.candidates', p.attname, 'SELECT')
+       OR has_column_privilege('authenticated', 'public.candidates', p.attname, 'SELECT') THEN
+      RAISE EXCEPTION 'FAIL: anon/authenticated can SELECT trainer/internal candidate field %', p.attname;
+    END IF;
+  END LOOP;
+
   IF has_any_column_privilege('anon', 'public.user_flags', 'SELECT,UPDATE,INSERT')
      OR has_any_column_privilege('authenticated', 'public.user_flags', 'SELECT,UPDATE,INSERT') THEN
     RAISE EXCEPTION 'FAIL: normal roles have privileges on public.user_flags (is_admin)';
@@ -224,10 +255,27 @@ BEGIN
       RAISE EXCEPTION 'FAIL: % should satisfy user_has_approved_business()', p.persona;
     END IF;
 
-    EXECUTE 'SELECT count(*) FROM public.candidates' INTO n;
+    EXECUTE 'SELECT count(id) FROM public.candidates' INTO n;
     IF available_exists AND n = 0 THEN
       RAISE EXCEPTION 'FAIL: % cannot see available candidates', p.persona;
     END IF;
+
+    BEGIN
+      EXECUTE 'SELECT trained_on, work_history, proud_of FROM public.candidates LIMIT 1';
+    EXCEPTION WHEN insufficient_privilege THEN
+      RAISE EXCEPTION 'FAIL: % cannot read the employer-facing candidate fields', p.persona;
+    END;
+
+    msg := NULL;
+    BEGIN
+      EXECUTE 'SELECT whatsapp_number FROM public.candidates LIMIT 0';
+    EXCEPTION WHEN insufficient_privilege THEN
+      msg := SQLSTATE;
+    END;
+    IF msg IS NULL THEN
+      RAISE EXCEPTION 'FAIL: % can read candidates.whatsapp_number', p.persona;
+    END IF;
+
     RAISE NOTICE '% sees % candidates', p.persona, n;
 
     RESET ROLE;

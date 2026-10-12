@@ -143,4 +143,44 @@ describe("CandidateDetail", () => {
     expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
     expect(screen.queryByText(/^Reference:/)).not.toBeInTheDocument();
   });
+
+  it("shows non-empty employer fields on the candidate profile", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      trained_on: "Espresso and milk steaming",
+      work_history: "2 yrs, Café X, barista",
+      proud_of: "I helped my team through a busy season.",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByText("Trained on")).toBeInTheDocument();
+    expect(screen.getByText("Espresso and milk steaming")).toBeInTheDocument();
+    expect(screen.getByText("Work history")).toBeInTheDocument();
+    expect(screen.getByText("2 yrs, Café X, barista")).toBeInTheDocument();
+    expect(screen.getByText("Proud of")).toBeInTheDocument();
+    expect(
+      screen.getByText("I helped my team through a busy season."),
+    ).toBeInTheDocument();
+  });
+
+  it("omits employer field labels when values are null or blank", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      trained_on: null,
+      work_history: "  ",
+      proud_of: "",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(screen.queryByText("Trained on")).not.toBeInTheDocument();
+    expect(screen.queryByText("Work history")).not.toBeInTheDocument();
+    expect(screen.queryByText("Proud of")).not.toBeInTheDocument();
+  });
 });

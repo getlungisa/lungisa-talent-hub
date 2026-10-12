@@ -9,6 +9,8 @@ const root = path.resolve(__dirname, "../../supabase");
 const migration = readFileSync(path.join(root, "migrations/20261011000000_business_approval_gate.sql"), "utf8");
 const rollback = readFileSync(path.join(root, "rollback/20261011_business_approval_gate_rollback.sql"), "utf8");
 const verification = readFileSync(path.join(root, "tests/business_approval_gate_verification.sql"), "utf8");
+const employerFieldsMigration = readFileSync(path.join(root, "migrations/20261012000000_employer_candidate_fields.sql"), "utf8");
+const employerFieldsRollback = readFileSync(path.join(root, "rollback/20261012_employer_candidate_fields_rollback.sql"), "utf8");
 
 const candidateTables = [
   "candidates",
@@ -84,5 +86,28 @@ describe("business approval gate migration", () => {
 
   it("verification script checks the whatsapp_number grant behaviourally", () => {
     expect(verification).toContain("candidates', 'whatsapp_number'");
+  });
+
+  it("adds bounded nullable employer fields and grants only their SELECT columns", () => {
+    for (const [column, length] of [
+      ["trained_on", 300],
+      ["work_history", 400],
+      ["proud_of", 200],
+    ] as const) {
+      expect(employerFieldsMigration).toMatch(new RegExp(`ADD COLUMN ${column} TEXT NULL`));
+      expect(employerFieldsMigration).toMatch(
+        new RegExp(`char_length\\(${column}\\) <= ${length}`),
+      );
+      expect(employerFieldsRollback).toContain(`DROP COLUMN IF EXISTS ${column}`);
+      expect(verification).toContain(`'${column}'`);
+    }
+
+    expect(employerFieldsMigration).toMatch(
+      /GRANT SELECT \(trained_on, work_history, proud_of\)\s+ON public\.candidates\s+TO authenticated/,
+    );
+    expect(employerFieldsMigration).not.toMatch(/GRANT SELECT ON TABLE public\.candidates/);
+    expect(verification).toContain("authenticated', 'public.candidates', 'whatsapp_number', 'SELECT'");
+    expect(verification).toContain("attname ILIKE '%trainer%'");
+    expect(employerFieldsMigration).not.toMatch(/CREATE POLICY|DROP POLICY|register_business/);
   });
 });

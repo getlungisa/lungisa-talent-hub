@@ -5,6 +5,7 @@ import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { toggleCandidateShortlist } from "../lib/dashboard";
+import { CandidateEmployerFields } from "./CandidateEmployerFields";
 import { Check, Heart } from "lucide-react";
 import type { Candidate as MockCandidate } from "../data";
 import type { Candidate as SupabaseCandidate } from "../lib/dashboard";
@@ -145,6 +146,8 @@ export function CandidateCard({
           {strengthsSummary}
         </p>
       )}
+
+      <CandidateEmployerFields candidate={candidate} />
 
       {"rating" in candidate && (
         <div className="mt-4">
