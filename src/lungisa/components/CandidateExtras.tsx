@@ -4,22 +4,29 @@ type Extras = {
   proud_of?: string | null;
 };
 
+type ExtraField = keyof Extras;
+
 const clean = (value: unknown) =>
   typeof value === "string" ? value.trim() : "";
 
 export function CandidateExtras({
   candidate,
   className = "",
+  fields,
 }: {
   candidate: object;
   className?: string;
+  fields?: ExtraField[];
 }) {
   const c = candidate as Extras;
-  const rows = [
-    { label: "Trained on", value: clean(c.trained_on) },
-    { label: "Work history", value: clean(c.work_history) },
-    { label: "Proud of", value: clean(c.proud_of) },
-  ].filter((row) => row.value);
+  const allRows: { field: ExtraField; label: string; value: string }[] = [
+    { field: "trained_on", label: "Trained on", value: clean(c.trained_on) },
+    { field: "work_history", label: "Work history", value: clean(c.work_history) },
+    { field: "proud_of", label: "Proud of", value: clean(c.proud_of) },
+  ];
+  const rows = allRows.filter(
+    (row) => row.value && (!fields || fields.includes(row.field)),
+  );
 
   if (rows.length === 0) return null;
 

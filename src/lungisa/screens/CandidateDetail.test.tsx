@@ -82,7 +82,7 @@ describe("CandidateDetail", () => {
       "font-semibold",
       "tracking-[-0.01em]",
     );
-    expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(2);
+    expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(1);
     expect(
       screen.getByRole("heading", { name: "What stood out" }),
     ).toBeInTheDocument();
@@ -160,6 +160,41 @@ describe("CandidateDetail", () => {
     expect(screen.getByText("Barista course")).toBeInTheDocument();
     expect(screen.getByText("Work history")).toBeInTheDocument();
     expect(screen.getByText("Proud of")).toBeInTheDocument();
+  });
+
+  it("renders profile sections in the requested order, omitting blank optional sections", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      strengths_summary: "Reliable and thoughtful.",
+      reference_note: "Referred by a previous employer.",
+      trained_on: "Barista course",
+      work_history: "   ",
+      proud_of: "Finishing my course",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+    const name = await screen.findByRole("heading", { name: "Sipho" });
+    const location = screen.getByText("Khayelitsha, Cape Town");
+    expect(name.closest("header")).toContainElement(location);
+
+    const sections = [
+      name,
+      screen.queryByRole("heading", { name: "What stood out" }),
+      screen.queryByText("Reference: Referred by a previous employer."),
+      screen.queryByText("Trained on"),
+      screen.queryByText("Work history"),
+      screen.queryByText("Proud of"),
+    ].filter((section): section is HTMLElement => section !== null);
+
+    expect(sections).toHaveLength(5);
+    for (let index = 1; index < sections.length; index += 1) {
+      expect(
+        sections[index - 1].compareDocumentPosition(sections[index]) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
   });
 
   it("omits the new fields when null or blank", async () => {
