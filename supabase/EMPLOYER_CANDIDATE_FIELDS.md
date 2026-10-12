@@ -1,7 +1,9 @@
 # Employer-facing candidate fields
 
-Migration: `migrations/20261012000000_employer_candidate_fields.sql`  
-Rollback: `rollback/20261012_employer_candidate_fields_rollback.sql`  
+Migration: `migrations/20261012000000_employer_candidate_fields.sql`
+
+Rollback: `rollback/20261012_employer_candidate_fields_rollback.sql`
+
 Verification: `psql -v ON_ERROR_STOP=1 -f supabase/tests/business_approval_gate_verification.sql`
 
 ## Live grant and policy inspection
