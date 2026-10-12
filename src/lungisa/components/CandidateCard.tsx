@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { CandidateExtras } from "./CandidateExtras";
 import { toggleCandidateShortlist } from "../lib/dashboard";
 import { Check, Heart } from "lucide-react";
 import type { Candidate as MockCandidate } from "../data";
@@ -145,6 +146,8 @@ export function CandidateCard({
           {strengthsSummary}
         </p>
       )}
+
+      <CandidateExtras candidate={candidate} className="mt-4" />
 
       {"rating" in candidate && (
         <div className="mt-4">

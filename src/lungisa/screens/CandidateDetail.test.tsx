@@ -143,4 +143,39 @@ describe("CandidateDetail", () => {
     expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
     expect(screen.queryByText(/^Reference:/)).not.toBeInTheDocument();
   });
+
+  it("shows trained on, work history and proud of when set", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      trained_on: "Barista course",
+      work_history: "2 yrs, Café X",
+      proud_of: "Finishing my course",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByText("Trained on")).toBeInTheDocument();
+    expect(screen.getByText("Barista course")).toBeInTheDocument();
+    expect(screen.getByText("Work history")).toBeInTheDocument();
+    expect(screen.getByText("Proud of")).toBeInTheDocument();
+  });
+
+  it("omits the new fields when null or blank", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      location: "Khayelitsha, Cape Town",
+      trained_on: null,
+      work_history: "  ",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(screen.queryByText("Trained on")).not.toBeInTheDocument();
+    expect(screen.queryByText("Work history")).not.toBeInTheDocument();
+    expect(screen.queryByText("Proud of")).not.toBeInTheDocument();
+  });
 });

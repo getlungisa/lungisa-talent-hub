@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CandidateExtras } from "../components/CandidateExtras";
 import { Avatar } from "../components/Avatar";
 import { createPortal } from "react-dom";
 import {
@@ -239,6 +240,7 @@ export function CandidateDetail({
                   </div>
                 </dl>
               </div>
+              <CandidateExtras candidate={candidate} />
               {referenceNote && (
                 <p className="text-sm text-foreground">
                   Reference: {referenceNote}

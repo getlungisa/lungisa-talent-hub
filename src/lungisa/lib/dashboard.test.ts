@@ -65,7 +65,7 @@ describe("fetchCandidates", () => {
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, name, created_at, location, strengths_summary",
+      "id, name, created_at, location, strengths_summary, trained_on, work_history, proud_of",
     );
     expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
@@ -119,7 +119,7 @@ describe("fetchCandidate", () => {
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note",
+      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note, trained_on, work_history, proud_of",
     );
     expect(eqMock).toHaveBeenCalledWith("id", "1");
   });
