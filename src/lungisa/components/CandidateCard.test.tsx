@@ -26,6 +26,12 @@ describe("CandidateCard shortlist interactions", () => {
     authMock.mockReturnValue({ user: { id: "user-1" } });
   });
 
+  it("renders the candidate location exactly once", () => {
+    render(<CandidateCard {...props} />);
+
+    expect(screen.getAllByText("Langa, Cape Town")).toHaveLength(1);
+  });
+
   it("updates the parent only after the shortlist request succeeds", async () => {
     const pending = deferred<boolean>();
     toggleMock.mockReturnValue(pending.promise);

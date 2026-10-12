@@ -15,7 +15,6 @@ import {
   ArrowLeft,
   Check,
   Heart,
-  MapPin,
 } from "lucide-react";
 
 export function CandidateDetail({
@@ -228,25 +227,6 @@ export function CandidateDetail({
 
           <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div className="space-y-8">
-              <div>
-                <dl className="grid gap-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
-                    <div className="min-w-0">
-                      <dd className="text-[15px] text-foreground">
-                        {candidate.location ?? "Location not provided"}
-                      </dd>
-                    </div>
-                  </div>
-                </dl>
-              </div>
-              <CandidateExtras candidate={candidate} />
-              {referenceNote && (
-                <p className="text-sm text-foreground">
-                  Reference: {referenceNote}
-                </p>
-              )}
-              
               {strengthsSummary && (
                 <div>
                   <h2 className="font-display text-xl text-foreground">
@@ -263,6 +243,15 @@ export function CandidateDetail({
                   )}
                 </div>
               )}
+              {referenceNote && (
+                <p className="text-sm text-foreground">
+                  Reference: {referenceNote}
+                </p>
+              )}
+              <CandidateExtras
+                candidate={candidate}
+                fields={["trained_on", "work_history", "proud_of"]}
+              />
             </div>
 
             {!isTrainingPartner && (
