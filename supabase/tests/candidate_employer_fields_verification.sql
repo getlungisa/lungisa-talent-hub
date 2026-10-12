@@ -22,8 +22,8 @@ DECLARE
 BEGIN
   -- Fixture candidate with the new fields. Adjust if your live table has
   -- extra NOT NULL columns.
-  INSERT INTO public.candidates (name, trained_on, work_history, proud_of)
-  VALUES ('CEF Test', 'Barista course', '2 yrs, Cafe X', 'Finished my course')
+  INSERT INTO public.candidates (name, whatsapp_number, trained_on, work_history, proud_of)
+  VALUES ('CEF Test', '0000000000', 'Barista course', '2 yrs, Cafe X', 'Finished my course')
   RETURNING id INTO cid;
   INSERT INTO public.candidate_allocations (candidate_id, status)
   VALUES (cid, 'available')
