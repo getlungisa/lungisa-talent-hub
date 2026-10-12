@@ -29,12 +29,15 @@ export type Candidate = {
   name: string;
   created_at?: string;
   location: string | null;
-  strengths_summary: string | null;
-  training_partner_id: string | null;
-  training_partner: {
+  strengths_summary?: string | null;
+  training_partner_id?: string | null;
+  training_partner?: {
     name: string;
   } | null;
-  reference_note: string | null;
+  reference_note?: string | null;
+  trained_on?: string | null;
+  work_history?: string | null;
+  proud_of?: string | null;
 };
 
 export type TrainingPartnerCandidate = {
@@ -120,7 +123,9 @@ const db = supabase as unknown as UntypedDb;
 export async function fetchCandidates(): Promise<Candidate[]> {
   const { data, error } = await db
     .from("candidates")
-    .select<Candidate>("id, name, created_at, location, strengths_summary")
+    .select<Candidate>(
+      "id, name, created_at, location, strengths_summary, trained_on, work_history, proud_of",
+    )
     .order("name", { ascending: true });
 
   if (error) {
@@ -153,7 +158,7 @@ export async function fetchCandidate(id: string): Promise<Candidate | null> {
   const { data, error } = await db
     .from("candidates")
     .select<Candidate>(
-  "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note",
+      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note, trained_on, work_history, proud_of",
 )
     .eq("id", id)
     .maybeSingle();

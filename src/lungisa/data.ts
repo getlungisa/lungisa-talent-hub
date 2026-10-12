@@ -21,6 +21,9 @@ export type Candidate = {
   background: string;
   verified: boolean;
   glance: Glance;
+  trained_on?: string | null;
+  work_history?: string | null;
+  proud_of?: string | null;
 };
 
 export const candidates: Candidate[] = [

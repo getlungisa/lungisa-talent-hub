@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "../components/Avatar";
+import { CandidateEmployerFields } from "../components/CandidateEmployerFields";
 import { createPortal } from "react-dom";
 import {
   fetchCandidate,
@@ -244,6 +245,8 @@ export function CandidateDetail({
                   Reference: {referenceNote}
                 </p>
               )}
+
+              <CandidateEmployerFields candidate={candidate} />
               
               {strengthsSummary && (
                 <div>
