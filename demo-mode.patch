@@ -1,0 +1,312 @@
+From 44afe9b2b2afe1bf267f52d2fce471d81445ca65 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 20 Oct 2026 20:50:10 +0100
+Subject: [PATCH] Add demo mode (?demo=1) to hide candidate names and locations
+ for screen shares
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_016WNwYeGKEH4hxFdJMvu2Pk
+---
+ src/index.css                              |  6 +++
+ src/lungisa/components/CandidateCard.tsx   |  2 +-
+ src/lungisa/components/CandidateExtras.tsx |  2 +-
+ src/lungisa/components/Shell.tsx           |  6 +++
+ src/lungisa/lib/dashboard.ts               | 21 ++++----
+ src/lungisa/lib/demo.test.ts               | 35 ++++++++++++
+ src/lungisa/lib/demo.ts                    | 62 ++++++++++++++++++++++
+ src/lungisa/screens/CandidateDetail.tsx    |  4 +-
+ src/main.tsx                               |  3 ++
+ 9 files changed, 128 insertions(+), 13 deletions(-)
+ create mode 100644 src/lungisa/lib/demo.test.ts
+ create mode 100644 src/lungisa/lib/demo.ts
+
+diff --git a/src/index.css b/src/index.css
+index 8afb6e0..1d21e6a 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -121,3 +121,9 @@ button {
+   min-height: 44px;
+   border-radius: 10px;
+ }
++
++/* Demo mode: blur free-text candidate details during screen shares */
++.demo-on .demo-blur {
++  filter: blur(6px);
++  user-select: none;
++}
+diff --git a/src/lungisa/components/CandidateCard.tsx b/src/lungisa/components/CandidateCard.tsx
+index 504df74..285bbe6 100644
+--- a/src/lungisa/components/CandidateCard.tsx
++++ b/src/lungisa/components/CandidateCard.tsx
+@@ -142,7 +142,7 @@ export function CandidateCard({
+       )}
+ 
+       {strengthsSummary && (
+-        <p className="mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
++        <p className="demo-blur mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
+           {strengthsSummary}
+         </p>
+       )}
+diff --git a/src/lungisa/components/CandidateExtras.tsx b/src/lungisa/components/CandidateExtras.tsx
+index b8f9fb4..e7cbc58 100644
+--- a/src/lungisa/components/CandidateExtras.tsx
++++ b/src/lungisa/components/CandidateExtras.tsx
+@@ -37,7 +37,7 @@ export function CandidateExtras({
+           <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+             {row.label}
+           </dt>
+-          <dd className="mt-0.5 break-words text-sm leading-6 text-foreground">
++          <dd className="demo-blur mt-0.5 break-words text-sm leading-6 text-foreground">
+             {row.value}
+           </dd>
+         </div>
+diff --git a/src/lungisa/components/Shell.tsx b/src/lungisa/components/Shell.tsx
+index f60dddd..b2b3581 100644
+--- a/src/lungisa/components/Shell.tsx
++++ b/src/lungisa/components/Shell.tsx
+@@ -1,4 +1,5 @@
+ import { ReactNode, useState } from "react";
++import { isDemoMode } from "../lib/demo";
+ import { useLungisa } from "../store";
+ import {
+   Activity,
+@@ -61,6 +62,11 @@ export function Shell({
+ 
+   return (
+     <div className="min-h-screen bg-background text-foreground">
++      {isDemoMode() && (
++        <div className="bg-primary px-5 py-1.5 text-center text-xs font-medium text-primary-foreground">
++          Demo mode: candidate names and locations are hidden
++        </div>
++      )}
+       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5 lg:flex-nowrap">
+           <div className="font-display text-[24px] font-semibold leading-8 tracking-[-0.01em] text-[#1b1e33]">
+diff --git a/src/lungisa/lib/dashboard.ts b/src/lungisa/lib/dashboard.ts
+index dba9564..4da3f20 100644
+--- a/src/lungisa/lib/dashboard.ts
++++ b/src/lungisa/lib/dashboard.ts
+@@ -1,5 +1,6 @@
+ import { supabase } from "@/integrations/supabase/client";
+ import type { User } from "@supabase/supabase-js";
++import { demoCandidate, demoLocation, demoName } from "./demo";
+ 
+ export type DashboardPlacement = {
+   candidateId: string;
+@@ -131,7 +132,7 @@ export async function fetchCandidates(): Promise<Candidate[]> {
+     throw error;
+   }
+ 
+-  return (data ?? []) as Candidate[];
++  return ((data ?? []) as Candidate[]).map(demoCandidate);
+ }
+ 
+ export async function fetchNewCandidatesThisWeekCount(): Promise<number> {
+@@ -166,7 +167,7 @@ export async function fetchCandidate(id: string): Promise<Candidate | null> {
+     throw error;
+   }
+ 
+-  return data;
++  return data ? demoCandidate(data) : data;
+ }
+ 
+ export async function toggleCandidateShortlist(
+@@ -254,7 +255,7 @@ export async function fetchTrainingPartnerCandidates(
+     return [];
+   }
+ 
+-  return (data ?? []).map((candidate) => {
++  return (data ?? []).map(demoCandidate).map((candidate) => {
+     const allocation = oneAllocation(candidate.candidate_allocations);
+     const status =
+       allocation?.status === "placed" || allocation?.status === "confirmed"
+@@ -312,12 +313,13 @@ export async function fetchDashboardPlacements(
+   return (data ?? []).flatMap((placement) => {
+     const candidate = oneCandidate(placement.candidates);
+     if (!candidate) return [];
++    const shown = demoCandidate(candidate);
+ 
+     return [
+       {
+         candidateId: placement.candidate_id,
+-        candidateName: candidate.name,
+-        location: candidate.location,
++        candidateName: shown.name,
++        location: shown.location,
+         startedDaysAgo: daysSince(placement.placement_date),
+         totalDays: 90,
+         startedAt: placement.placement_date,
+@@ -355,8 +357,8 @@ export async function fetchDashboardShortlisted(
+     const candidate = oneCandidate(allocation.candidates);
+     return [{
+       candidateId: allocation.candidate_id,
+-      candidateName: candidate?.name ?? null,
+-      location: candidate?.location ?? null,
++      candidateName: candidate ? demoName(candidate.id, candidate.name) : null,
++      location: demoLocation(candidate?.location ?? null),
+       isAvailable: candidate !== null,
+       createdAt: allocation.created_at,
+     }];
+@@ -416,12 +418,13 @@ export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]>
+   return (data ?? []).flatMap((activity) => {
+     const candidate = oneCandidate(activity.candidates);
+     if (!candidate) return [];
++    const shown = demoCandidate(candidate);
+ 
+     return [
+       {
+         candidateId: activity.candidate_id,
+-        candidateName: candidate.name,
+-        candidateLocation: candidate.location,
++        candidateName: shown.name,
++        candidateLocation: shown.location,
+         actionType: activity.action_type,
+         actionDate: activity.action_date,
+       },
+diff --git a/src/lungisa/lib/demo.test.ts b/src/lungisa/lib/demo.test.ts
+new file mode 100644
+index 0000000..cec79ee
+--- /dev/null
++++ b/src/lungisa/lib/demo.test.ts
+@@ -0,0 +1,35 @@
++import { beforeEach, describe, expect, it } from "vitest";
++import { demoCandidate, initDemoMode, isDemoMode } from "./demo";
++
++const c = { id: "1", name: "Real Name", location: "Khayelitsha" };
++
++describe("demo mode", () => {
++  beforeEach(() => {
++    sessionStorage.clear();
++    window.history.pushState({}, "", "/");
++  });
++
++  it("leaves data alone when off", () => {
++    initDemoMode();
++    expect(isDemoMode()).toBe(false);
++    expect(demoCandidate(c)).toEqual(c);
++  });
++
++  it("masks name and location with ?demo=1 and persists", () => {
++    window.history.pushState({}, "", "/?demo=1");
++    initDemoMode();
++    window.history.pushState({}, "", "/browse");
++    const out = demoCandidate(c);
++    expect(out.name).toMatch(/^Candidate [A-Z]/);
++    expect(out.location).toBe("Cape Town");
++    expect(demoCandidate(c).name).toBe(out.name);
++    expect(isDemoMode()).toBe(true);
++  });
++
++  it("turns off with ?demo=0", () => {
++    sessionStorage.setItem("lungisa_demo", "1");
++    window.history.pushState({}, "", "/?demo=0");
++    initDemoMode();
++    expect(isDemoMode()).toBe(false);
++  });
++});
+diff --git a/src/lungisa/lib/demo.ts b/src/lungisa/lib/demo.ts
+new file mode 100644
+index 0000000..84d35e1
+--- /dev/null
++++ b/src/lungisa/lib/demo.ts
+@@ -0,0 +1,62 @@
++// Demo mode hides candidate identity for screen shares with people who are not
++// named employers. It only changes what is displayed; no data is altered.
++// Turn on with ?demo=1 (stays on for the browser session), off with ?demo=0.
++
++const KEY = "lungisa_demo";
++
++function readStored(): boolean {
++  try {
++    return sessionStorage.getItem(KEY) === "1";
++  } catch {
++    return false;
++  }
++}
++
++export function initDemoMode(): void {
++  if (typeof window === "undefined") return;
++  try {
++    const flag = new URLSearchParams(window.location.search).get("demo");
++    if (flag === "1") sessionStorage.setItem(KEY, "1");
++    if (flag === "0") sessionStorage.removeItem(KEY);
++  } catch {
++    // storage unavailable: demo mode simply stays off
++  }
++  document.documentElement.classList.toggle("demo-on", readStored());
++}
++
++export function isDemoMode(): boolean {
++  return typeof window !== "undefined" && readStored();
++}
++
++const letters = new Map<string, string>();
++
++function labelFor(id: string): string {
++  let label = letters.get(id);
++  if (!label) {
++    const n = letters.size;
++    label = `Candidate ${String.fromCharCode(65 + (n % 26))}${n >= 26 ? Math.floor(n / 26) : ""}`;
++    letters.set(id, label);
++  }
++  return label;
++}
++
++export const DEMO_LOCATION = "Cape Town";
++
++export function demoName<T extends string | null>(id: string, name: T): T {
++  return (isDemoMode() && name !== null ? labelFor(id) : name) as T;
++}
++
++export function demoLocation<T extends string | null>(location: T): T {
++  return (isDemoMode() && location !== null ? DEMO_LOCATION : location) as T;
++}
++
++export function demoCandidate<
++  T extends { id: string; name: string; location: string | null },
++>(candidate: T): T {
++  if (!isDemoMode()) return candidate;
++  return {
++    ...candidate,
++    name: labelFor(candidate.id),
++    location: candidate.location === null ? null : DEMO_LOCATION,
++  };
++}
+diff --git a/src/lungisa/screens/CandidateDetail.tsx b/src/lungisa/screens/CandidateDetail.tsx
+index 2383bea..a762c23 100644
+--- a/src/lungisa/screens/CandidateDetail.tsx
++++ b/src/lungisa/screens/CandidateDetail.tsx
+@@ -232,7 +232,7 @@ export function CandidateDetail({
+                   <h2 className="font-display text-xl text-foreground">
+                     What stood out
+                   </h2>
+-                  <p className="mt-2 text-[15px] leading-7 text-foreground">
++                  <p className="demo-blur mt-2 text-[15px] leading-7 text-foreground">
+                     {strengthsSummary}
+                   </p>
+                   {candidate.training_partner?.name && (
+@@ -244,7 +244,7 @@ export function CandidateDetail({
+                 </div>
+               )}
+               {referenceNote && (
+-                <p className="text-sm text-foreground">
++                <p className="demo-blur text-sm text-foreground">
+                   Reference: {referenceNote}
+                 </p>
+               )}
+diff --git a/src/main.tsx b/src/main.tsx
+index 68176a7..d963348 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -1,5 +1,8 @@
+ import { createRoot } from "react-dom/client";
+ import App from "./App.tsx";
+ import "./index.css";
++import { initDemoMode } from "./lungisa/lib/demo";
++
++initDemoMode();
+ 
+ createRoot(document.getElementById("root")!).render(<App />);
+-- 
+2.43.0
+
