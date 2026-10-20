@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Shell } from "./Shell";
+import { initDemoMode } from "../lib/demo";
 
 const { signOutMock, employerNameMock } = vi.hoisted(() => ({
   signOutMock: vi.fn(async () => undefined),
@@ -23,6 +24,26 @@ vi.mock("@/contexts/AuthContext", () => ({
 describe("Shell", () => {
   beforeEach(() => {
     employerNameMock.mockReturnValue("Test Business");
+    window.sessionStorage.clear();
+    window.history.replaceState({}, "", "/");
+    initDemoMode();
+  });
+
+  it("shows the demo mode banner when demo mode is enabled", () => {
+    window.history.replaceState({}, "", "/?demo=1");
+    initDemoMode();
+
+    render(
+      <MemoryRouter>
+        <Shell active="dashboard" isTrainingPartner={false} onNavigate={vi.fn()}>
+          <div>content</div>
+        </Shell>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText("Demo mode: candidate names and locations are hidden"),
+    ).toBeInTheDocument();
   });
 
   it("shows the business account menu with sign out", async () => {
