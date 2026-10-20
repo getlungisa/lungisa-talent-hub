@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { demoCandidate } from "./demo";
 
 export type DashboardPlacement = {
   candidateId: string;
@@ -131,7 +132,7 @@ export async function fetchCandidates(): Promise<Candidate[]> {
     throw error;
   }
 
-  return (data ?? []) as Candidate[];
+  return (data ?? []).map(demoCandidate);
 }
 
 export async function fetchNewCandidatesThisWeekCount(): Promise<number> {
@@ -166,7 +167,7 @@ export async function fetchCandidate(id: string): Promise<Candidate | null> {
     throw error;
   }
 
-  return data;
+  return data ? demoCandidate(data) : null;
 }
 
 export async function toggleCandidateShortlist(
@@ -262,7 +263,7 @@ export async function fetchTrainingPartnerCandidates(
         : "available";
     const showBusinessName = status === "placed" || status === "confirmed";
 
-    return {
+    return demoCandidate({
       id: candidate.id,
       name: candidate.name,
       location: candidate.location,
@@ -270,7 +271,7 @@ export async function fetchTrainingPartnerCandidates(
       businessName: showBusinessName
         ? allocation?.businesses?.name ?? null
         : null,
-    };
+    });
   });
 }
 
@@ -314,7 +315,7 @@ export async function fetchDashboardPlacements(
     if (!candidate) return [];
 
     return [
-      {
+      demoCandidate({
         candidateId: placement.candidate_id,
         candidateName: candidate.name,
         location: candidate.location,
@@ -322,7 +323,7 @@ export async function fetchDashboardPlacements(
         totalDays: 90,
         startedAt: placement.placement_date,
         status: placement.status,
-      },
+      }),
     ];
   });
 }
@@ -353,13 +354,13 @@ export async function fetchDashboardShortlisted(
 
   return (data ?? []).flatMap((allocation) => {
     const candidate = oneCandidate(allocation.candidates);
-    return [{
+    return [demoCandidate({
       candidateId: allocation.candidate_id,
       candidateName: candidate?.name ?? null,
       location: candidate?.location ?? null,
       isAvailable: candidate !== null,
       createdAt: allocation.created_at,
-    }];
+    })];
   });
 }
 
@@ -418,13 +419,13 @@ export async function fetchRecentActivity(user: User): Promise<ActivityRecord[]>
     if (!candidate) return [];
 
     return [
-      {
+      demoCandidate({
         candidateId: activity.candidate_id,
         candidateName: candidate.name,
         candidateLocation: candidate.location,
         actionType: activity.action_type,
         actionDate: activity.action_date,
-      },
+      }),
     ];
   });
 }

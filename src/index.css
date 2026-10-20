@@ -121,3 +121,8 @@ button {
   min-height: 44px;
   border-radius: 10px;
 }
+
+.demo-on .demo-blur {
+  filter: blur(6px);
+  user-select: none;
+}

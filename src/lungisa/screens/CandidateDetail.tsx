@@ -232,7 +232,7 @@ export function CandidateDetail({
                   <h2 className="font-display text-xl text-foreground">
                     What stood out
                   </h2>
-                  <p className="mt-2 text-[15px] leading-7 text-foreground">
+                  <p className="demo-blur mt-2 text-[15px] leading-7 text-foreground">
                     {strengthsSummary}
                   </p>
                   {candidate.training_partner?.name && (
@@ -244,7 +244,7 @@ export function CandidateDetail({
                 </div>
               )}
               {referenceNote && (
-                <p className="text-sm text-foreground">
+                <p className="demo-blur text-sm text-foreground">
                   Reference: {referenceNote}
                 </p>
               )}

@@ -142,7 +142,7 @@ export function CandidateCard({
       )}
 
       {strengthsSummary && (
-        <p className="mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
+        <p className="demo-blur mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
           {strengthsSummary}
         </p>
       )}

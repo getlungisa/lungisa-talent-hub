@@ -12,6 +12,7 @@ import { AboutModal } from "./AboutModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { isPlaceholderBusinessName } from "../lib/businessName";
+import { isDemoMode } from "../lib/demo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +62,11 @@ export function Shell({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {isDemoMode() && (
+        <div className="bg-primary px-4 py-2 text-center text-sm text-primary-foreground">
+          Demo mode: candidate names and locations are hidden
+        </div>
+      )}
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5 lg:flex-nowrap">
           <div className="font-display text-[24px] font-semibold leading-8 tracking-[-0.01em] text-[#1b1e33]">

@@ -37,7 +37,7 @@ export function CandidateExtras({
           <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {row.label}
           </dt>
-          <dd className="mt-0.5 break-words text-sm leading-6 text-foreground">
+          <dd className="demo-blur mt-0.5 break-words text-sm leading-6 text-foreground">
             {row.value}
           </dd>
         </div>
