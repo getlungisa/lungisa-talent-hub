@@ -99,6 +99,23 @@ describe("CandidateDetail", () => {
     ).toBeInTheDocument();
   });
 
+  it("omits partner attribution when a reference note is set", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      strengths_summary: "Reliable and thoughtful.",
+      reference_note: "Referred by a previous employer.",
+      training_partner: { name: "Partner Org" },
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    expect(
+      screen.queryByText("Based on Partner Org's trainer assessment"),
+    ).not.toBeInTheDocument();
+  });
+
   it("omits the strengths summary section when the value is blank", async () => {
     fetchCandidateMock.mockResolvedValue({
       id: "real-1",
