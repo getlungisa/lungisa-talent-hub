@@ -235,7 +235,7 @@ export function CandidateDetail({
                   <p className="demo-blur mt-2 text-[15px] leading-7 text-foreground">
                     {strengthsSummary}
                   </p>
-                  {candidate.training_partner?.name && (
+                  {candidate.training_partner?.name && !referenceNote && (
                     <p className="mt-2 text-sm text-muted-foreground">
                       Based on {candidate.training_partner.name}'s trainer
                       assessment
