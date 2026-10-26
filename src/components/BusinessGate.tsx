@@ -65,7 +65,9 @@ export function BusinessGate({ children }: { children: ReactNode }) {
         if (!cancelled) {
           setState(business ? { kind: "business", status: business.status } : { kind: "none" });
         }
-      } catch {
+      } catch (e) {
+        const err = e as { message?: string; code?: string } | null;
+        console.error("BusinessGate load failed", { message: err?.message, code: err?.code });
         if (!cancelled) setState({ kind: "error" });
       }
     };
@@ -87,7 +89,9 @@ export function BusinessGate({ children }: { children: ReactNode }) {
   if (state.kind === "error") {
     return (
       <Notice title="Something went wrong">
-        <p className="text-sm text-muted-foreground">We couldn't load your account. Please try again.</p>
+        <p className="text-sm text-muted-foreground">
+          We couldn't load your account right now. Please try again in a moment.
+        </p>
         <Button onClick={() => setAttempt((n) => n + 1)} className="bg-primary text-primary-foreground hover:bg-primary-hover">
           Try again
         </Button>
@@ -97,9 +101,17 @@ export function BusinessGate({ children }: { children: ReactNode }) {
 
   if (state.kind === "none") {
     return (
-      <Notice title="Join Lungisa">
+      <Notice title="Your account is awaiting setup">
         <p className="text-sm text-muted-foreground">
-          We couldn't find a business for this email. Tell us about your business to get started.
+          We haven't finished setting up a business account for this email yet. If you've already joined, we'll be in
+          touch shortly. Otherwise, tell us about your business to get started.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Need help? Contact support at{" "}
+          <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>
+            {CONTACT_EMAIL}
+          </a>
+          .
         </p>
         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover">
           <Link to="/join">Join Lungisa</Link>
