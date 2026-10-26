@@ -20,10 +20,30 @@ export type OwnBusiness = {
   status: BusinessStatus;
 };
 
+type OwnBusinessRow = OwnBusiness & { user_id: string | null };
+
+// A user can match several business rows (primary and secondary owner). Prefer
+// the row they own, then the first approved row, then the first row, and warn
+// with every id so the duplicate can be investigated.
+export function pickBusinessRow<T extends { id: string; status?: string; user_id?: string | null }>(
+  rows: T[],
+  userId: string,
+): T | null {
+  if (rows.length === 0) return null;
+  if (rows.length > 1) {
+    console.warn(
+      `Multiple businesses matched user ${userId}: ${rows.map((r) => r.id).join(", ")}`,
+    );
+  }
+  return (
+    rows.find((r) => r.user_id === userId) ??
+    rows.find((r) => r.status === "approved") ??
+    rows[0]
+  );
+}
+
 // Read-only: business rows are created only through the register_business /
 // admin_create_business database functions, never from the client.
-// A user can match several rows (primary and secondary owner); prefer the row
-// they own, then the first approved row, then the first row.
 export async function fetchOwnBusiness(user: User): Promise<OwnBusiness | null> {
   const { data, error } = await supabase
     .from("businesses")
@@ -38,17 +58,8 @@ export async function fetchOwnBusiness(user: User): Promise<OwnBusiness | null> 
     });
     throw error;
   }
-  const rows = (data ?? []) as unknown as (OwnBusiness & { user_id: string | null })[];
-  if (rows.length === 0) return null;
-  if (rows.length > 1) {
-    console.warn(
-      `fetchOwnBusiness: multiple businesses matched user ${user.id}: ${rows.map((r) => r.id).join(", ")}`,
-    );
-  }
-  const chosen =
-    rows.find((r) => r.user_id === user.id) ??
-    rows.find((r) => r.status === "approved") ??
-    rows[0];
+  const chosen = pickBusinessRow((data ?? []) as unknown as OwnBusinessRow[], user.id);
+  if (!chosen) return null;
   const { user_id: _userId, ...business } = chosen;
   return business;
 }

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -6,7 +6,7 @@ const { orderMock, selectMock, fromMock, eqMock, orMock, maybeSingleMock, rpcMoc
   const orderMock = vi.fn();
   const maybeSingleMock = vi.fn();
   const eqMock = vi.fn(() => ({ maybeSingle: maybeSingleMock, order: orderMock }));
-  const orMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
+  const orMock = vi.fn();
   const selectMock = vi.fn(() => ({ order: orderMock, eq: eqMock, or: orMock, maybeSingle: maybeSingleMock }));
   const fromMock = vi.fn(() => ({ select: selectMock }));
   const rpcMock = vi.fn();
@@ -22,6 +22,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 }));
 
 import {
+  fetchBusiness,
   fetchCandidate,
   fetchCandidates,
   fetchDashboardShortlisted,
@@ -139,10 +140,7 @@ describe("toggleCandidateShortlist", () => {
   });
 
   it("resolves the business and calls the shortlist toggle RPC", async () => {
-    maybeSingleMock.mockResolvedValueOnce({
-      data: { id: "business-1" },
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [{ id: "business-1" }], error: null });
     rpcMock.mockResolvedValue({
       data: true,
       error: null,
@@ -151,7 +149,7 @@ describe("toggleCandidateShortlist", () => {
     await expect(toggleCandidateShortlist(user, "candidate-1", false)).resolves.toBe(true);
 
     expect(fromMock).toHaveBeenCalledWith("businesses");
-    expect(selectMock).toHaveBeenCalledWith("id, is_training_partner");
+    expect(selectMock).toHaveBeenCalledWith("id, status, user_id, is_training_partner");
     expect(orMock).toHaveBeenCalledWith("user_id.eq.user-1,secondary_user_id.eq.user-1");
     expect(rpcMock).toHaveBeenCalledWith("toggle_candidate_shortlist", {
       p_business_id: "business-1",
@@ -161,10 +159,7 @@ describe("toggleCandidateShortlist", () => {
   });
 
   it("normalizes conflicts when the candidate allocation is no longer available", async () => {
-    maybeSingleMock.mockResolvedValueOnce({
-      data: { id: "business-1" },
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [{ id: "business-1" }], error: null });
     rpcMock.mockResolvedValue({
       data: null,
       error: { message: "candidate_already_claimed" },
@@ -179,10 +174,7 @@ describe("toggleCandidateShortlist", () => {
     const error = { message: "boom" };
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    maybeSingleMock.mockResolvedValueOnce({
-      data: { id: "business-1" },
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [{ id: "business-1" }], error: null });
     rpcMock.mockResolvedValue({
       data: null,
       error,
@@ -197,10 +189,7 @@ describe("toggleCandidateShortlist", () => {
   it("rejects invalid successful RPC responses that omit a boolean result", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    maybeSingleMock.mockResolvedValueOnce({
-      data: { id: "business-1" },
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [{ id: "business-1" }], error: null });
     rpcMock.mockResolvedValue({
       data: null,
       error: null,
@@ -218,10 +207,7 @@ describe("toggleCandidateShortlist", () => {
   });
 
   it("rejects when the current user has no business record", async () => {
-    maybeSingleMock.mockResolvedValueOnce({
-      data: null,
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [], error: null });
 
     await expect(toggleCandidateShortlist(user, "candidate-1", false)).rejects.toMatchObject({
       message: "business_not_found",
@@ -242,9 +228,9 @@ describe("fetchDashboardShortlisted", () => {
   });
 
   it("reads each business's private shortlist and retains candidates hidden by RLS", async () => {
-    maybeSingleMock
-      .mockResolvedValueOnce({ data: { id: "business-a" }, error: null })
-      .mockResolvedValueOnce({ data: { id: "business-b" }, error: null });
+    orMock
+      .mockResolvedValueOnce({ data: [{ id: "business-a" }], error: null })
+      .mockResolvedValueOnce({ data: [{ id: "business-b" }], error: null });
     orderMock
       .mockResolvedValueOnce({
         data: [
@@ -304,10 +290,7 @@ describe("fetchDashboardShortlisted", () => {
   it("rejects shortlist read errors when requested by the first-time dashboard check", async () => {
     const error = new Error("offline");
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    maybeSingleMock.mockResolvedValueOnce({
-      data: { id: "business-a" },
-      error: null,
-    });
+    orMock.mockResolvedValueOnce({ data: [{ id: "business-a" }], error: null });
     orderMock.mockResolvedValueOnce({ data: null, error });
 
     await expect(
@@ -319,6 +302,72 @@ describe("fetchDashboardShortlisted", () => {
       error,
     );
     consoleErrorSpy.mockRestore();
+  });
+});
+
+describe("fetchBusiness", () => {
+  const user = { id: "user-1" } as never;
+  const row = (id: string, status: string, user_id: string) => ({
+    id,
+    status,
+    user_id,
+    is_training_partner: false,
+  });
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let errorSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    orMock.mockReset();
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it("returns null for zero rows", async () => {
+    orMock.mockResolvedValue({ data: [], error: null });
+    await expect(fetchBusiness(user)).resolves.toBeNull();
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("returns the single row without internal columns", async () => {
+    orMock.mockResolvedValue({ data: [row("b1", "pending", "other")], error: null });
+    await expect(fetchBusiness(user)).resolves.toEqual({ id: "b1", is_training_partner: false });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("prefers the primary-owner row and warns with all ids", async () => {
+    orMock.mockResolvedValue({
+      data: [row("b-approved", "approved", "other"), row("b-owned", "pending", "user-1")],
+      error: null,
+    });
+    await expect(fetchBusiness(user)).resolves.toMatchObject({ id: "b-owned" });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0].join(" ")).toContain("b-approved");
+    expect(warnSpy.mock.calls[0].join(" ")).toContain("b-owned");
+  });
+
+  it("falls back to the first approved row, then the first row", async () => {
+    orMock.mockResolvedValueOnce({
+      data: [row("b1", "pending", "o1"), row("b2", "approved", "o2"), row("b3", "approved", "o3")],
+      error: null,
+    });
+    await expect(fetchBusiness(user)).resolves.toMatchObject({ id: "b2" });
+    orMock.mockResolvedValueOnce({
+      data: [row("b1", "pending", "o1"), row("b2", "rejected", "o2")],
+      error: null,
+    });
+    await expect(fetchBusiness(user)).resolves.toMatchObject({ id: "b1" });
+  });
+
+  it("returns null on query errors unless throwOnError is set", async () => {
+    const error = { message: "boom", code: "42501" };
+    orMock.mockResolvedValue({ data: null, error });
+    await expect(fetchBusiness(user)).resolves.toBeNull();
+    await expect(fetchBusiness(user, true)).rejects.toBe(error);
   });
 });
 
