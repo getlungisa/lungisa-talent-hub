@@ -20,19 +20,48 @@ export type OwnBusiness = {
   status: BusinessStatus;
 };
 
+type OwnBusinessRow = OwnBusiness & { user_id: string | null };
+
+// A user can match several business rows (primary and secondary owner). Prefer
+// the row they own, then the first approved row, then the first row, and warn
+// with every id so the duplicate can be investigated.
+export function pickBusinessRow<T extends { id: string; status?: string; user_id?: string | null }>(
+  rows: T[],
+  userId: string,
+): T | null {
+  if (rows.length === 0) return null;
+  if (rows.length > 1) {
+    console.warn(
+      `Multiple businesses matched user ${userId}: ${rows.map((r) => r.id).join(", ")}`,
+    );
+  }
+  return (
+    rows.find((r) => r.user_id === userId) ??
+    rows.find((r) => r.status === "approved") ??
+    rows[0]
+  );
+}
+
 // Read-only: business rows are created only through the register_business /
 // admin_create_business database functions, never from the client.
 export async function fetchOwnBusiness(user: User): Promise<OwnBusiness | null> {
   const { data, error } = await supabase
     .from("businesses")
-    .select('id, name, status, contact_email:"contact email"')
-    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
-    .maybeSingle();
+    .select('id, name, status, user_id, contact_email:"contact email"')
+    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`);
   if (error) {
-    console.error("fetchOwnBusiness error", error);
+    console.error("fetchOwnBusiness error", {
+      message: error.message,
+      code: (error as { code?: string }).code,
+      details: (error as { details?: string }).details,
+      hint: (error as { hint?: string }).hint,
+    });
     throw error;
   }
-  return (data as unknown as OwnBusiness | null) ?? null;
+  const chosen = pickBusinessRow((data ?? []) as unknown as OwnBusinessRow[], user.id);
+  if (!chosen) return null;
+  const { user_id: _userId, ...business } = chosen;
+  return business;
 }
 
 export async function fetchBusinessName(user: User): Promise<string> {
@@ -87,12 +116,10 @@ export async function submitNeed(
 }
 
 export async function fetchOpenNeeds(user: User): Promise<Need[]> {
-  const { data: biz, error: bizErr } = await supabase
-    .from("businesses")
-    .select("id")
-    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
-    .maybeSingle();
-  if (bizErr) {
+  let biz: OwnBusiness | null;
+  try {
+    biz = await fetchOwnBusiness(user);
+  } catch (bizErr) {
     console.error("fetchOpenNeeds business error", bizErr);
     return [];
   }

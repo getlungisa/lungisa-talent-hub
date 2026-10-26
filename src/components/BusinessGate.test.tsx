@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BusinessGate } from "./BusinessGate";
@@ -78,16 +78,36 @@ describe("BusinessGate", () => {
   it("sends users without a business to /join and never creates one", async () => {
     fetchOwnBusinessMock.mockResolvedValue(null);
     renderGate();
+    expect(await screen.findByText("Your account is awaiting setup")).toBeInTheDocument();
+    expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "hi@lungisa.co" })).toHaveAttribute("href", "mailto:hi@lungisa.co");
     expect(await screen.findByRole("link", { name: "Join Lungisa" })).toHaveAttribute("href", "/join");
     expect(registerBusinessMock).not.toHaveBeenCalled();
     expect(childRender).not.toHaveBeenCalled();
   });
 
   it("fails closed when the business cannot be loaded", async () => {
-    fetchOwnBusinessMock.mockRejectedValue(new Error("boom"));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    fetchOwnBusinessMock.mockRejectedValue(Object.assign(new Error("boom"), { code: "XX000" }));
     renderGate();
     expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
     expect(childRender).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledWith(
+      "BusinessGate load failed",
+      expect.objectContaining({ message: "boom", code: "XX000" }),
+    );
+    errorSpy.mockRestore();
+  });
+
+  it("retries the load when Try again is clicked", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    fetchOwnBusinessMock
+      .mockRejectedValueOnce(new Error("boom"))
+      .mockResolvedValueOnce({ id: "b", name: "Acme", contact_email: "", status: "approved" });
+    renderGate();
+    fireEvent.click(await screen.findByRole("button", { name: "Try again" }));
+    expect(await screen.findByText("candidate list")).toBeInTheDocument();
+    expect(fetchOwnBusinessMock).toHaveBeenCalledTimes(2);
   });
 
   it("finishes a saved /join registration when the user lands on the dashboard", async () => {

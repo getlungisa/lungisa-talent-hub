@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { demoCandidate } from "./demo";
+import { pickBusinessRow } from "./needs";
 
 export type DashboardPlacement = {
   candidateId: string;
@@ -22,6 +23,8 @@ export type DashboardShortlistedCandidate = {
 
 type Business = {
   id: string;
+  status?: string;
+  user_id?: string | null;
   is_training_partner: boolean;
 };
 
@@ -104,6 +107,7 @@ type UntypedSelectQuery<T> = {
   gte: (column: string, value: string) => QueryResult<T[]>;
   order: (column: string, options: { ascending: boolean }) => QueryResult<T[]>;
   maybeSingle: () => QueryResult<T>;
+  or: (filters: string) => QueryResult<T[]>;
   then: Promise<{ data: T[] | null; error: unknown }>['then'];
 };
 
@@ -211,9 +215,8 @@ export async function fetchBusiness(
 ): Promise<Business | null> {
   const { data, error } = await db
     .from("businesses")
-    .select<Business>("id, is_training_partner")
-    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`)
-    .maybeSingle();
+    .select<Business>("id, status, user_id, is_training_partner")
+    .or(`user_id.eq.${user.id},secondary_user_id.eq.${user.id}`);
 
   if (error) {
     console.error("fetchDashboard business error", error);
@@ -221,7 +224,10 @@ export async function fetchBusiness(
     return null;
   }
 
-  return data as Business | null;
+  const chosen = pickBusinessRow(data ?? [], user.id);
+  if (!chosen) return null;
+  const { status: _status, user_id: _userId, ...business } = chosen;
+  return business;
 }
 
 function oneAllocation(
