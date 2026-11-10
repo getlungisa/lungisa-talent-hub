@@ -17,7 +17,7 @@ describe("Placements", () => {
     expect(screen.getByRole("heading", { name: "Active placements" })).toHaveClass(
       "text-[28px]",
       "sm:text-[32px]",
-      "font-semibold",
+      "font-serif",
       "tracking-[-0.01em]",
     );
   });

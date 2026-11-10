@@ -108,7 +108,7 @@ export default function AdminBusinesses() {
   return (
     <main className="min-h-screen bg-background px-4 py-6">
       <div className="mx-auto w-full max-w-2xl space-y-4">
-        <h1 className="font-display text-3xl text-foreground">Pending businesses</h1>
+        <h1 className="font-serif text-3xl text-foreground">Pending businesses</h1>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {businesses.length === 0 && !error && (
           <p className="text-sm text-muted-foreground">No businesses waiting for review.</p>
@@ -142,7 +142,7 @@ export default function AdminBusinesses() {
                 </dl>
                 <div className="flex gap-3">
                   <Button
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary-hover"
+                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
                     disabled={busyId === b.id}
                     onClick={() => void decide(b.id, "approved")}
                   >

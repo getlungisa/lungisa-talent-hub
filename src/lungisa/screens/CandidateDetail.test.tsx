@@ -65,7 +65,7 @@ describe("CandidateDetail", () => {
     expect(await screen.findByText("Candidate not found.")).toBeInTheDocument();
   });
 
-  it("renders fetched details under What stood out with partner attribution", async () => {
+  it("labels the trainer's strengths summary with partner attribution", async () => {
     fetchCandidateMock.mockResolvedValue({
       id: "real-1",
       name: "Sipho",
@@ -79,12 +79,12 @@ describe("CandidateDetail", () => {
     expect(await screen.findByRole("heading", { name: "Sipho" })).toHaveClass(
       "text-[28px]",
       "sm:text-[32px]",
-      "font-semibold",
+      "font-serif",
       "tracking-[-0.01em]",
     );
     expect(screen.getAllByText("Khayelitsha, Cape Town")).toHaveLength(1);
     expect(
-      screen.getByRole("heading", { name: "What stood out" }),
+      screen.getByText("Their trainer saw"),
     ).toBeInTheDocument();
     expect(
       screen.getByText("Based on Partner Org's trainer assessment"),
@@ -99,7 +99,7 @@ describe("CandidateDetail", () => {
     ).toBeInTheDocument();
   });
 
-  it("omits partner attribution when a reference note is set", async () => {
+  it("labels a reference note and omits the trainer attribution when a reference is set", async () => {
     fetchCandidateMock.mockResolvedValue({
       id: "real-1",
       name: "Sipho",
@@ -114,6 +114,8 @@ describe("CandidateDetail", () => {
     expect(
       screen.queryByText("Based on Partner Org's trainer assessment"),
     ).not.toBeInTheDocument();
+    expect(screen.getByText("Their reference said")).toBeInTheDocument();
+    expect(screen.queryByText("Their trainer saw")).not.toBeInTheDocument();
   });
 
   it("omits the strengths summary section when the value is blank", async () => {
@@ -143,8 +145,9 @@ describe("CandidateDetail", () => {
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
     expect(
-      await screen.findByText("Reference: Referred by a previous employer."),
+      await screen.findByText("Their reference said"),
     ).toBeInTheDocument();
+    expect(screen.getByText("Referred by a previous employer.")).toBeInTheDocument();
   });
 
   it("omits the reference note when the value is blank", async () => {
@@ -158,7 +161,7 @@ describe("CandidateDetail", () => {
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
     expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
-    expect(screen.queryByText(/^Reference:/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Their reference said")).not.toBeInTheDocument();
   });
 
   it("shows trained on, work history and proud of when set", async () => {
@@ -177,6 +180,62 @@ describe("CandidateDetail", () => {
     expect(screen.getByText("Barista course")).toBeInTheDocument();
     expect(screen.getByText("Work history")).toBeInTheDocument();
     expect(screen.getByText("Proud of")).toBeInTheDocument();
+    expect(screen.getByText("They told us")).toBeInTheDocument();
+  });
+
+  it.each([
+    {
+      label: "work history is present",
+      candidateData: { work_history: "2 yrs, Café X" },
+      showsLabel: true,
+    },
+    {
+      label: "proud of is present",
+      candidateData: { proud_of: "Finishing my course" },
+      showsLabel: true,
+    },
+    {
+      label: "only trained on is present",
+      candidateData: { trained_on: "Barista course" },
+      showsLabel: false,
+    },
+    {
+      label: "all three fields are empty",
+      candidateData: { trained_on: " ", work_history: null, proud_of: "" },
+      showsLabel: false,
+    },
+  ])("shows the 'They told us' label when $label", async ({
+    candidateData,
+    showsLabel,
+  }) => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      ...candidateData,
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(await screen.findByRole("heading", { name: "Sipho" })).toBeInTheDocument();
+    if (showsLabel) {
+      expect(screen.getByText("They told us")).toBeInTheDocument();
+    } else {
+      expect(screen.queryByText("They told us")).not.toBeInTheDocument();
+    }
+  });
+
+  it("keeps What stood out when no training partner is available", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      strengths_summary: "Reliable and thoughtful.",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "What stood out" }),
+    ).toBeInTheDocument();
   });
 
   it("renders profile sections in the requested order, omitting blank optional sections", async () => {
@@ -199,7 +258,7 @@ describe("CandidateDetail", () => {
     const sections = [
       name,
       screen.queryByRole("heading", { name: "What stood out" }),
-      screen.queryByText("Reference: Referred by a previous employer."),
+      screen.queryByText("Referred by a previous employer."),
       screen.queryByText("Trained on"),
       screen.queryByText("Work history"),
       screen.queryByText("Proud of"),

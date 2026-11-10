@@ -32,9 +32,9 @@ describe("RecommendedRow shortlist interactions", () => {
       "text-2xl",
       "font-semibold",
     );
-    expect(await screen.findByText(/1 new candidate verified this week/)).toBeInTheDocument();
+    expect(await screen.findByText(/1 new candidate added this week/)).toBeInTheDocument();
     rerender(<RecommendedRow {...props} newThisWeek={3} />);
-    expect(screen.getByText(/3 new candidates verified this week/)).toBeInTheDocument();
+    expect(screen.getByText(/3 new candidates added this week/)).toBeInTheDocument();
     rerender(<RecommendedRow {...props} newThisWeek={0} />);
     expect(screen.queryByText(/verified this week/)).not.toBeInTheDocument();
   });

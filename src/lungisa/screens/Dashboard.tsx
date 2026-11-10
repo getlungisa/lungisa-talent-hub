@@ -199,7 +199,7 @@ export function Dashboard({
             {greeting()}
           </p>
           {displayBusinessName && (
-            <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
+            <h1 className="mt-2 font-serif text-[28px] tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
               {displayBusinessName}
             </h1>
           )}
@@ -219,7 +219,7 @@ export function Dashboard({
             {greeting()}
           </p>
           {displayBusinessName && (
-            <h1 className="mt-2 font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
+            <h1 className="mt-2 font-serif text-[28px] tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
               {displayBusinessName}
             </h1>
           )}
@@ -306,7 +306,7 @@ export function Dashboard({
           className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">
+            <h1 className="font-serif text-[28px] tracking-[-0.01em] text-foreground sm:text-[32px]">
               {greeting()}
               {displayBusinessName ? `, ${displayBusinessName}` : ""}
             </h1>
@@ -323,14 +323,14 @@ export function Dashboard({
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               onClick={() => setNeedSheetOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover"
+              className="inline-flex items-center justify-center gap-1.5 bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover hover:text-secondary"
             >
               I need someone
             </button>
 
             <button
               onClick={onBrowse}
-              className="inline-flex items-center justify-center gap-1.5 border border-input bg-transparent px-4 py-2.5 text-sm font-medium text-primary transition hover:bg-primary-tint"
+              className="inline-flex items-center justify-center gap-1.5 border border-input bg-transparent px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-primary-tint"
             >
               Browse candidates
             </button>
@@ -357,7 +357,7 @@ export function Dashboard({
                     <h3 className="break-words font-display text-lg text-foreground">
                       {need.role}
                     </h3>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-tint px-2.5 py-0.5 text-xs font-medium text-primary">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-tint px-2.5 py-0.5 text-xs font-medium text-foreground">
                       {formatStatus(need.status)}
                     </span>
                   </div>
@@ -405,8 +405,9 @@ export function Dashboard({
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <p>
-              Browse. Every candidate is vouched for by the people who trained
-              them. Read what stood out, then save anyone you'd like to meet.
+              Browse. These are people who have trained with one of our
+              partners. Read what their trainer saw, then save anyone you'd like
+              to meet.
             </p>
             <p>
               Meet. Ask for an interview and we'll arrange a time that works for
@@ -495,7 +496,7 @@ export function Dashboard({
                           );
                         }
                       }}
-                      className="text-sm font-medium text-primary hover:underline"
+                      className="text-sm font-medium text-foreground hover:underline"
                     >
                       Remove
                     </button>

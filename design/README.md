@@ -22,7 +22,8 @@ Everything here is placeholder content: names, dates, counts, quotes, amounts an
 
 ## Notes
 
-- Fonts: Schibsted Grotesk for everything; Newsreader italic only for a trainer's own words, always attributed.
-- Numbers: lining figures only. Don't use tabular figures; in this font they widen commas and full stops.
-- Colour: #1b1e33 for text and headings, #5a5d70 for secondary text, indigo #2b3a8c only for buttons, links, the active tab, progress and focus. Pink #cf5c7e is for the day-90 milestone mark and avatars, never small text.
+- Palette: Ebony #000000 (0 0% 0%) for text, headings and dark surfaces; Ember #D85C26 (18 70% 50%) for button fills, accents and progress; Ochre #9D7A53 (32 31% 47%) for secondary markers and avatars; Taupe #BBADA4 (23 14% 69%) for quiet lines and upcoming states; Stone #E1D9CA (39 28% 84%) for borders and soft surfaces; White #FFFFFF.
+- Contrast: body and small text is ebony on white or stone; secondary text is #4D4D4D (0 0% 30%). Ember and ochre are never text on white, stone or taupe. Buttons use ember with ebony text; ember/ochre fills use ebony text. Ember can be a large heading on ebony only. Links are ebony and underlined. Focus is a 3px ebony outline with 3px offset (stone on ebony); active navigation uses ebony text and a 3px ember underline.
+- Fonts: Rethink Sans for all UI text. Newsreader regular, non-italic for page-level h1 headings; Newsreader italic for a trainer's own words, always attributed.
+- Numbers: lining figures only.
 - Fee terms are fixed pilot pricing: "R1,000 on hire. R3,000 at day 90, only if they're still with you."

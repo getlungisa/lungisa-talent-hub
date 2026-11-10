@@ -7,7 +7,7 @@ import {
   type Candidate,
 } from "../lib/dashboard";
 import { Avatar } from "./Avatar";
-import { VerifiedBadge } from "./VerifiedBadge";
+import { PartnerBadge } from "./PartnerBadge";
 import { Heart } from "lucide-react";
 
 const shortlistConflictTitle = "Candidate no longer available";
@@ -145,7 +145,7 @@ export function RecommendedRow({
         {newThisWeek > 0 && (
           <p className="mt-0.5 text-sm text-foreground">
             {newThisWeek} new {newThisWeek === 1 ? "candidate" : "candidates"}{" "}
-            verified this week
+            added this week
           </p>
         )}
       </div>
@@ -187,7 +187,7 @@ export function RecommendedRow({
 
                   {candidate.training_partner?.name?.trim() && (
                     <div className="mt-3">
-                      <VerifiedBadge
+                      <PartnerBadge
                         partner={candidate.training_partner.name.trim()}
                       />
                     </div>
@@ -195,7 +195,7 @@ export function RecommendedRow({
 
                   <div className="mt-auto pt-4">
                     <div className="flex items-center justify-between border-t border-border pt-3">
-                      <span className="text-xs font-medium text-primary group-hover:underline">
+                      <span className="text-xs font-medium text-foreground group-hover:underline">
                         View profile
                       </span>
                     </div>
@@ -212,7 +212,7 @@ export function RecommendedRow({
                             : "Save to shortlist"
                         }
                         className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] transition hover:opacity-70 ${
-                          isSaved ? "text-primary" : "text-muted-foreground"
+                          isSaved ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
                         <Heart
@@ -234,7 +234,7 @@ export function RecommendedRow({
       <div className="mt-2 flex justify-end">
         <button
           onClick={onSeeAll}
-          className="text-xs text-muted-foreground transition hover:text-primary"
+          className="text-xs text-muted-foreground transition hover:text-foreground"
         >
           See all candidates
         </button>

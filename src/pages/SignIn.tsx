@@ -53,7 +53,7 @@ export default function SignIn() {
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <h1 className="font-display text-3xl text-foreground">Sign in to Lungisa</h1>
+            <h1 className="font-serif text-3xl text-foreground">Sign in to Lungisa</h1>
             <p className="text-muted-foreground text-sm">
               Enter your email and we'll send you a magic link to sign in.
             </p>
@@ -72,7 +72,7 @@ export default function SignIn() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
           >
             {loading ? "Sending..." : "Send magic link"}
           </Button>

@@ -49,7 +49,7 @@ describe("Activity", () => {
     expect(screen.getByRole("heading", { name: "Activity" })).toHaveClass(
       "text-[28px]",
       "sm:text-[32px]",
-      "font-semibold",
+      "font-serif",
       "tracking-[-0.01em]",
     );
     expect(

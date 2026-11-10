@@ -151,16 +151,14 @@ describe("Shell", () => {
     expect(screen.getByRole("banner").firstElementChild).toHaveClass(
       "lg:flex-nowrap",
     );
-    expect(screen.getByText("Lungisa")).toHaveClass(
-      "text-[24px]",
-      "font-semibold",
-      "tracking-[-0.01em]",
-      "text-[#1b1e33]",
+    expect(screen.getByRole("img", { name: "Lungisa" })).toHaveClass(
+      "h-[22px]",
+      "text-foreground",
     );
     expect(screen.getByRole("button", { name: "Test Business" })).toHaveClass(
       "min-h-[44px]",
       "border-0",
-      "text-[#5a5d70]",
+      "text-muted-foreground",
     );
   });
 

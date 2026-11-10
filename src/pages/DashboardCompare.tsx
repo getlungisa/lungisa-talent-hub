@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { AboutModal } from "@/lungisa/components/AboutModal";
 import { Avatar } from "@/lungisa/components/Avatar";
 import { RatingDots } from "@/lungisa/components/RatingDots";
-import { VerifiedBadge } from "@/lungisa/components/VerifiedBadge";
 import { PlacementRow } from "@/lungisa/components/PlacementRow";
 import { candidates, samplePlacements } from "@/lungisa/data";
+import { Logo } from "@/components/Logo";
 
 type Version = "latest" | "previous";
 
@@ -36,7 +36,6 @@ function ProfilePreview({ candidate }: { candidate: (typeof profiles)[number] })
           <p className="text-xs text-muted-foreground">{candidate.role}</p>
         </div>
       </div>
-      <div className="mt-3"><VerifiedBadge /></div>
       <div className="mt-3 flex min-h-6 flex-wrap gap-1">
         {candidate.attributes.slice(0, 2).map((attribute) => (
           <span key={attribute.label} className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground">
@@ -45,14 +44,14 @@ function ProfilePreview({ candidate }: { candidate: (typeof profiles)[number] })
         ))}
       </div>
       <div className="mt-3"><RatingDots value={candidate.rating} label={false} /></div>
-      <div className="mt-auto border-t border-border pt-3 text-xs font-medium text-primary">
+      <div className="mt-auto border-t border-border pt-3 text-xs font-medium text-foreground">
         <span>View profile</span>
       </div>
       <Button
         variant="ghost"
         onClick={() => setSaved((value) => !value)}
         aria-label={`${saved ? "Remove" : "Save"} ${candidate.firstName} ${saved ? "from" : "to"} shortlist`}
-        className={`mt-2 self-center px-2 text-[11px] hover:bg-transparent hover:opacity-70 ${saved ? "text-primary hover:text-primary" : "text-muted-foreground hover:text-muted-foreground"}`}
+        className={`mt-2 self-center px-2 text-[11px] hover:bg-transparent hover:opacity-70 ${saved ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-muted-foreground"}`}
       >
         <Heart className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} />
         {saved ? "Saved to shortlist" : "Save to shortlist"}
@@ -85,13 +84,13 @@ function PreviewDashboard({ version }: { version: Version }) {
           <div>
             <h2 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">Good morning</h2>
             <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <Sparkles className="h-3.5 w-3.5 text-foreground" />
               <span><strong className="font-medium text-foreground">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button className="bg-primary px-4 text-primary-foreground hover:bg-primary-hover">I need someone</Button>
-            <Button variant="outline" className="border-input text-primary hover:bg-primary-tint">Browse candidates</Button>
+            <Button className="bg-primary px-4 text-primary-foreground hover:bg-primary-hover hover:text-secondary">I need someone</Button>
+            <Button variant="outline" className="border-input text-foreground hover:bg-primary-tint">Browse candidates</Button>
           </div>
         </section>
       ) : (
@@ -100,11 +99,11 @@ function PreviewDashboard({ version }: { version: Version }) {
           <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Dashboard preview</h2>
           <p className="mt-6 max-w-md font-display text-xl text-foreground sm:text-2xl">Tell us who you need. We'll bring them to you.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
-            <Button className="bg-primary px-9 py-5 text-lg text-primary-foreground hover:bg-primary-hover">I need someone</Button>
-            <Button variant="outline" className="border-input px-9 py-5 text-lg text-primary hover:bg-primary-tint">Browse candidates</Button>
+            <Button className="bg-primary px-9 py-5 text-lg text-primary-foreground hover:bg-primary-hover hover:text-secondary">I need someone</Button>
+            <Button variant="outline" className="border-input px-9 py-5 text-lg text-foreground hover:bg-primary-tint">Browse candidates</Button>
           </div>
           <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <Sparkles className="h-3.5 w-3.5 text-foreground" />
             <span><strong className="font-medium text-foreground">{profiles.length} sample {profiles.length === 1 ? "candidate" : "candidates"}</strong> shown</span>
           </p>
         </section>
@@ -152,8 +151,8 @@ export default function DashboardCompare() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center px-5 pb-2 pt-4">
-          <div className="font-display text-lg font-semibold text-foreground">
-            Lungisa
+          <div className="shrink-0 p-[22px]">
+            <Logo className="h-[22px] w-auto text-foreground" />
           </div>
           <span className="ml-auto hidden text-sm text-muted-foreground sm:block">
             Sample comparison
@@ -175,14 +174,14 @@ export default function DashboardCompare() {
                   aria-current={item.active ? "page" : undefined}
                   className={`relative h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal hover:bg-transparent sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm ${
                     item.active
-                      ? "text-primary hover:text-primary"
-                      : "text-muted-foreground hover:text-primary"
+                      ? "text-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                   {item.active && (
-                    <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
+                    <span className="absolute inset-x-2 -bottom-px h-[3px] bg-primary" />
                   )}
                 </Button>
               );
@@ -192,7 +191,7 @@ export default function DashboardCompare() {
             type="button"
             variant="ghost"
             onClick={() => setAboutOpen(true)}
-            className="ml-0 h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal text-muted-foreground hover:bg-transparent hover:text-primary sm:ml-auto sm:block sm:px-3 sm:py-2.5 sm:text-sm"
+            className="ml-0 h-auto min-w-0 flex-col gap-1 rounded-none px-1.5 py-2 text-[10px] font-normal text-muted-foreground hover:bg-transparent hover:text-foreground sm:ml-auto sm:block sm:px-3 sm:py-2.5 sm:text-sm"
           >
             <Info className="h-4 w-4 sm:hidden" />
             About
@@ -202,7 +201,7 @@ export default function DashboardCompare() {
       <main className="mx-auto max-w-6xl px-5 pb-20 pt-8">
         <div className="border-b border-border pb-5">
           <div>
-            <h1 className="font-display text-2xl text-foreground">Compare dashboard layouts</h1>
+            <h1 className="font-serif text-2xl text-foreground">Compare dashboard layouts</h1>
             <p className="mt-1 text-sm text-muted-foreground">The same sample profiles appear in both versions.</p>
           </div>
           <div className="mt-6 flex w-full border-b border-border" role="tablist" aria-label="Dashboard versions">
@@ -213,7 +212,7 @@ export default function DashboardCompare() {
                 variant="ghost"
                 aria-selected={version === item}
                 onClick={() => setVersion(item)}
-                className={`h-11 min-w-0 flex-1 border-b-2 px-2 text-sm sm:flex-none sm:px-8 ${version === item ? "border-primary font-semibold text-primary hover:bg-background hover:text-primary" : "border-transparent text-muted-foreground hover:bg-muted hover:text-primary"}`}
+                className={`h-11 min-w-0 flex-1 border-b-[3px] px-2 text-sm sm:flex-none sm:px-8 ${version === item ? "border-primary font-semibold text-foreground hover:bg-background hover:text-foreground" : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"}`}
               >
                 {item === "latest" ? "Latest dashboard" : "Previous dashboard"}
               </Button>

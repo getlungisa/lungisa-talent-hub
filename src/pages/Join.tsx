@@ -139,7 +139,7 @@ export default function Join() {
     return (
       <main className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 space-y-4">
-          <h1 className="font-display text-3xl text-foreground">Check your email</h1>
+          <h1 className="font-serif text-3xl text-foreground">Check your email</h1>
           <p className="text-sm text-foreground">
             We've sent a link to confirm your email. Open it on this device to finish joining.
           </p>
@@ -159,7 +159,7 @@ export default function Join() {
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
           <div className="space-y-2">
-            <h1 className="font-display text-3xl text-foreground">Join Lungisa</h1>
+            <h1 className="font-serif text-3xl text-foreground">Join Lungisa</h1>
             <p className="text-muted-foreground text-sm">
               Tell us about your business. We review new businesses within a day. We'll be in touch on the email or WhatsApp number you gave us.
             </p>
@@ -294,7 +294,7 @@ export default function Join() {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
           >
             {submitting ? "Sending..." : "Join Lungisa"}
           </Button>

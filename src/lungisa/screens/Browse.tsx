@@ -118,12 +118,12 @@ const [interviewRequestedIds, setInterviewRequestedIds] = useState<Set<string>>(
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
-          Verified candidates
+        <h1 className="font-serif text-[28px] tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">
+          Candidates
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          Each person here has completed a structured assessment and a
-          face-to-face interview with us.
+          These are people who have trained with one of our partners. Read what
+          their trainer saw, then save anyone you'd like to meet.
         </p>
       </div>
 
