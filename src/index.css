@@ -122,8 +122,9 @@ button {
   border-radius: 2px;
 }
 
-a {
-  color: hsl(var(--foreground)) !important;
+p a,
+li a {
+  color: hsl(var(--foreground));
   text-decoration: underline;
 }
 
