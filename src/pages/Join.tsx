@@ -53,15 +53,38 @@ export default function Join() {
   const [errors, setErrors] = useState<JoinFormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [codeAvailable, setCodeAvailable] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [codeSubmitting, setCodeSubmitting] = useState(false);
+  const [codeError, setCodeError] = useState(false);
+  const [codeVerified, setCodeVerified] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resent, setResent] = useState(false);
+  const [resendError, setResendError] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Back from the magic link: prefill from the saved sign-up if there is one,
+  useEffect(() => {
+    if (resendCooldown === 0) return;
+    const timer = window.setTimeout(
+      () => setResendCooldown((remaining) => Math.max(remaining - 1, 0)),
+      1000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [resendCooldown]);
+
+  // After email confirmation: prefill from the saved sign-up if there is one,
   // otherwise leave a blank form. The user reviews and submits it themselves.
   useEffect(() => {
     if (!session) return;
     const draft = loadRegistrationDraft(session.user?.email);
     if (draft) setValues({ ...emptyJoinForm, ...draft, honeypot: "" });
-  }, [session]);
+    if (codeVerified) {
+      setSent(false);
+      setCodeVerified(false);
+    }
+  }, [session, codeVerified]);
 
   const update = <K extends keyof JoinFormValues>(key: K, value: JoinFormValues[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -78,6 +101,7 @@ export default function Join() {
 
     // Bots fill the hidden field. Behave as if it worked, but do nothing.
     if (isHoneypotTripped(values)) {
+      setCodeAvailable(false);
       setSent(true);
       return;
     }
@@ -92,8 +116,9 @@ export default function Join() {
       }
 
       saveRegistrationDraft(values);
+      const email = values.email.trim();
       const { error } = await supabase.auth.signInWithOtp({
-        email: values.email.trim(),
+        email,
         options: {
           shouldCreateUser: true,
           emailRedirectTo: `${window.location.origin}/join`,
@@ -104,6 +129,8 @@ export default function Join() {
         clearRegistrationDraft();
         setFormError("We couldn't send your email link. Please check your email address and try again.");
       } else {
+        setSentEmail(email);
+        setCodeAvailable(true);
         setSent(true);
       }
     } catch (err) {
@@ -116,6 +143,55 @@ export default function Join() {
       setFormError("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCodeSubmitting(true);
+    setCodeError(false);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: sentEmail,
+        token: code,
+        type: "email",
+      });
+      if (error) {
+        setCodeError(true);
+      } else {
+        setCodeVerified(true);
+      }
+    } catch {
+      setCodeError(true);
+    } finally {
+      setCodeSubmitting(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setResending(true);
+    setResendError(false);
+    setResent(false);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: sentEmail,
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: `${window.location.origin}/join`,
+        },
+      });
+      if (error) {
+        setResendError(true);
+        return;
+      }
+      setCode("");
+      setCodeError(false);
+      setResendCooldown(30);
+      setResent(true);
+    } catch {
+      setResendError(true);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -141,8 +217,69 @@ export default function Join() {
         <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 space-y-4">
           <h1 className="font-serif text-3xl text-foreground">Check your email</h1>
           <p className="text-sm text-foreground">
-            We've sent a link to confirm your email. Open it on this device to finish joining.
+            We've sent a link and a 6-digit code to confirm your email. Open the link on this device, or enter the code below, to finish joining.
           </p>
+          {codeAvailable && (
+            <form onSubmit={handleVerifyCode} className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="join-code">6-digit code</Label>
+                <Input
+                  id="join-code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  value={code}
+                  onChange={(event) => {
+                    setCode(event.target.value.replace(/\s/g, "").slice(0, 6));
+                    setCodeError(false);
+                  }}
+                  onPaste={(event) => {
+                    event.preventDefault();
+                    setCode(event.clipboardData.getData("text").replace(/\s/g, "").slice(0, 6));
+                    setCodeError(false);
+                  }}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={code.length !== 6 || codeSubmitting}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
+              >
+                {codeSubmitting ? "Continuing..." : "Continue"}
+              </Button>
+              {codeError && (
+                <p className="text-sm text-destructive" role="alert">
+                  That code didn't work. Check it and try again, or request a new one.
+                </p>
+              )}
+            </form>
+          )}
+          {codeAvailable && (
+            <div className="space-y-2">
+              <Button
+                type="button"
+                variant="link"
+                disabled={resending || resendCooldown > 0}
+                onClick={() => void handleResendCode()}
+              >
+                {resending
+                  ? "Sending..."
+                  : resendCooldown > 0
+                    ? `Send a new code (${resendCooldown}s)`
+                    : "Send a new code"}
+              </Button>
+              {resent && (
+                <p className="text-sm text-foreground">A new code is on its way.</p>
+              )}
+              {resendError && (
+                <p className="text-sm text-destructive" role="alert">
+                  We couldn't send a new code. Please try again.
+                </p>
+              )}
+            </div>
+          )}
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link className="underline" to="/sign-in">
