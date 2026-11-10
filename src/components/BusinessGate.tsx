@@ -21,7 +21,7 @@ function Notice({ title, children }: { title: string; children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 space-y-4">
-        <h1 className="font-display text-3xl text-foreground">{title}</h1>
+        <h1 className="font-serif text-3xl text-foreground">{title}</h1>
         {children}
       </div>
     </main>
@@ -92,7 +92,7 @@ export function BusinessGate({ children }: { children: ReactNode }) {
         <p className="text-sm text-muted-foreground">
           We couldn't load your account right now. Please try again in a moment.
         </p>
-        <Button onClick={() => setAttempt((n) => n + 1)} className="bg-primary text-primary-foreground hover:bg-primary-hover">
+        <Button onClick={() => setAttempt((n) => n + 1)} className="bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary">
           Try again
         </Button>
       </Notice>
@@ -113,7 +113,7 @@ export function BusinessGate({ children }: { children: ReactNode }) {
           </a>
           .
         </p>
-        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary">
           <Link to="/join">Join Lungisa</Link>
         </Button>
       </Notice>

@@ -68,10 +68,10 @@ describe("Browse", () => {
       </AuthProvider>,
     );
 
-    expect(screen.getByRole("heading", { name: "Verified candidates" })).toHaveClass(
+    expect(screen.getByRole("heading", { name: "Candidates" })).toHaveClass(
       "text-[28px]",
       "sm:text-[32px]",
-      "font-semibold",
+      "font-serif",
       "tracking-[-0.01em]",
     );
     await waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalled());

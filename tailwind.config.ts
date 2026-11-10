@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -67,8 +68,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Schibsted Grotesk"', 'system-ui', 'sans-serif'],
-        sans: ['"Schibsted Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Rethink Sans"', "system-ui", "sans-serif"],
+        sans: ['"Rethink Sans"', "system-ui", "sans-serif"],
+        serif: ['"Newsreader"', "Georgia", "serif"],
       },
       borderRadius: {
         "2xl": "var(--radius)",
@@ -100,5 +102,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

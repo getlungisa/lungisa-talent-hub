@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Avatar } from "./Avatar";
 import { RatingDots } from "./RatingDots";
-import { VerifiedBadge } from "./VerifiedBadge";
+import { PartnerBadge } from "./PartnerBadge";
 import { CandidateExtras } from "./CandidateExtras";
 import { toggleCandidateShortlist } from "../lib/dashboard";
 import { Check, Heart } from "lucide-react";
@@ -53,7 +53,6 @@ export function CandidateCard({
     "training_partner" in candidate
       ? (candidate.training_partner?.name?.trim() ?? "")
       : "";
-  const verified = "verified" in candidate ? candidate.verified : false;
 
   const handleShortlistClick = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -114,16 +113,10 @@ export function CandidateCard({
           </h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
 
-          {partnerName ? (
+          {partnerName && (
             <div className="mt-1.5">
-              <VerifiedBadge partner={partnerName} />
+              <PartnerBadge partner={partnerName} />
             </div>
-          ) : (
-            verified && (
-              <div className="mt-1.5">
-                <VerifiedBadge />
-              </div>
-            )
           )}
         </div>
       </div>
@@ -166,8 +159,8 @@ export function CandidateCard({
           disabled={isRequested}
           className={`mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
             isRequested
-              ? "bg-primary-tint text-primary"
-              : "border border-input bg-transparent text-primary hover:bg-primary-tint"
+              ? "bg-primary-tint text-foreground"
+              : "border border-input bg-transparent text-foreground hover:bg-primary-tint"
           }`}
         >
           {isRequested ? (
@@ -192,7 +185,7 @@ export function CandidateCard({
             disabled={isUpdatingShortlist}
             aria-label={isSaved ? "Remove from shortlist" : "Save to shortlist"}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition hover:opacity-70 ${
-              isSaved ? "text-primary" : "text-muted-foreground"
+              isSaved ? "text-foreground" : "text-muted-foreground"
             }`}
           >
             <Heart

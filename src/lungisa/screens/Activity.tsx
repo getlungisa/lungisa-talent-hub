@@ -67,7 +67,7 @@ export function Activity() {
   return (
     <div className="space-y-10">
       <div className="min-w-0">
-        <h1 className="font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">Activity</h1>
+        <h1 className="font-serif text-[28px] tracking-[-0.01em] text-foreground text-balance sm:text-[32px]">Activity</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
           A quiet record of what you have done on Lungisa.
         </p>
@@ -113,7 +113,7 @@ export function Activity() {
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-tint px-3 py-1 text-xs font-medium text-primary">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-tint px-3 py-1 text-xs font-medium text-foreground">
                   <Check className="h-3 w-3" strokeWidth={3} />
                   Requested
                 </span>

@@ -91,7 +91,7 @@ export function NeedSheet({
           {done ? (
             <div className="flex flex-1 flex-col">
               <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-full bg-primary-tint">
-                <Check className="h-6 w-6 text-primary" strokeWidth={2.5} />
+                <Check className="h-6 w-6 text-foreground" strokeWidth={2.5} />
               </div>
               <h2 className="font-display text-3xl text-foreground sm:text-4xl">
                 We're on it.
@@ -102,7 +102,7 @@ export function NeedSheet({
               <div className="mt-auto pt-10">
                 <button
                   onClick={handleClose}
-                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover hover:text-secondary sm:w-auto"
                 >
                   Done
                 </button>
@@ -180,7 +180,7 @@ export function NeedSheet({
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 bg-primary px-9 py-4 text-base font-medium text-primary-foreground transition hover:bg-primary-hover hover:text-secondary disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground sm:w-auto"
                 >
                   {submitting ? "Sending..." : "Tell us who you need"}
                 </button>

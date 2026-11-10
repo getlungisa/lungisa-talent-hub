@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CandidateExtras } from "../components/CandidateExtras";
+import { SourceLabel } from "../components/SourceLabel";
 import { Avatar } from "../components/Avatar";
 import { createPortal } from "react-dom";
 import {
@@ -164,7 +165,7 @@ export function CandidateDetail({
       <div className="space-y-6 pb-28">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
         </button>
@@ -180,7 +181,7 @@ export function CandidateDetail({
       <div className="space-y-6 pb-28">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
         </button>
@@ -198,7 +199,7 @@ export function CandidateDetail({
     <div className="space-y-6 pb-28">
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-primary"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to candidates
       </button>
@@ -213,7 +214,7 @@ export function CandidateDetail({
             <div className="flex items-center gap-3">
               <Avatar name={candidate.name} size={48} />
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                <h1 className="break-words font-display text-[28px] font-semibold tracking-[-0.01em] text-foreground sm:text-[32px]">
+                <h1 className="break-words font-serif text-[28px] tracking-[-0.01em] text-foreground sm:text-[32px]">
                   {candidate.name}
                 </h1>
               </div>
@@ -229,9 +230,13 @@ export function CandidateDetail({
             <div className="space-y-8">
               {strengthsSummary && (
                 <div>
-                  <h2 className="font-display text-xl text-foreground">
-                    What stood out
-                  </h2>
+                  {candidate.training_partner?.name && !referenceNote ? (
+                    <SourceLabel>Their trainer saw</SourceLabel>
+                  ) : (
+                    <h2 className="font-display text-xl text-foreground">
+                      What stood out
+                    </h2>
+                  )}
                   <p className="demo-blur mt-2 text-[15px] leading-7 text-foreground">
                     {strengthsSummary}
                   </p>
@@ -244,13 +249,18 @@ export function CandidateDetail({
                 </div>
               )}
               {referenceNote && (
-                <p className="demo-blur text-sm text-foreground">
-                  Reference: {referenceNote}
-                </p>
+                <div className="space-y-2">
+                  <SourceLabel>Their reference said</SourceLabel>
+                  <p className="demo-blur text-sm text-foreground">
+                    {referenceNote}
+                  </p>
+                </div>
               )}
+              <CandidateExtras candidate={candidate} fields={["trained_on"]} />
               <CandidateExtras
                 candidate={candidate}
-                fields={["trained_on", "work_history", "proud_of"]}
+                fields={["work_history", "proud_of"]}
+                sourceLabel="They told us"
               />
             </div>
 
@@ -267,8 +277,8 @@ export function CandidateDetail({
                       disabled={isInterviewRequested || !onInterviewRequested}
                       className={`inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition ${
                         isInterviewRequested
-                          ? "bg-primary-tint text-primary"
-                          : "bg-primary text-primary-foreground hover:bg-primary-hover"
+                          ? "bg-primary-tint text-foreground"
+                          : "bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
                       }`}
                     >
                       {isInterviewRequested ? (
@@ -284,7 +294,7 @@ export function CandidateDetail({
                       onClick={handleSaveClick}
                       disabled={isUpdatingSave}
                       className={`inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 text-sm transition hover:opacity-70 ${
-                        isSaved ? "text-primary" : "text-foreground"
+                        isSaved ? "text-foreground" : "text-foreground"
                       }`}
                     >
                       <Heart
@@ -365,7 +375,7 @@ export function CandidateInterviewBar({
           }}
           disabled={isRequested}
           className={`inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition ${
-            isRequested ? "bg-primary-tint text-primary" : "bg-primary text-primary-foreground hover:bg-primary-hover"
+            isRequested ? "bg-primary-tint text-foreground" : "bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
           }`}
         >
           {isRequested ? (

@@ -35,7 +35,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
         <button
           onClick={onClose}
           aria-label="Close About Lungisa"
-          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-primary"
+          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
         </button>
@@ -50,15 +50,15 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
           <div className="mt-6 space-y-6 text-sm leading-relaxed text-muted-foreground">
             <p>
-              We introduce you to capable young people from Cape Town's
-              townships, vouched for by the trainers who know them. Then we
-              stay close to you both for the first 90 days.
+              We introduce you to capable people who have trained with our
+              partners in Cape Town, and their trainers tell you what they saw.
+              Then we keep in touch with you both for the first 90 days.
             </p>
 
             <ol className="space-y-4">
               <li>
                 <h3 className="font-display text-xl text-foreground">
-                  1. Vouched for by their trainer
+                  1. Their trainer tells you what they saw
                 </h3>
                 <p className="mt-1">
                   Every candidate has finished a programme with one of our
@@ -78,7 +78,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
               </li>
               <li>
                 <h3 className="font-display text-xl text-foreground">
-                  3. We stay close for 90 days
+                  3. We keep in touch for 90 days
                 </h3>
                 <p className="mt-1">
                   We check in with you and your new starter twice a week for the
@@ -107,7 +107,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
                   <a
                   href="mailto:hi@lungisa.co"
-                  className="text-primary underline-offset-2 hover:underline"
+                  className="text-foreground underline-offset-2 hover:underline"
                 >
                   hi@lungisa.co
                 </a>{" "}
@@ -129,7 +129,7 @@ export function AboutModal({ onClose }: { onClose: () => void }) {
 
                   <a
                   href="mailto:hi@lungisa.co"
-                  className="text-primary underline-offset-2 hover:underline"
+                  className="text-foreground underline-offset-2 hover:underline"
                 >
                   hi@lungisa.co
                 </a>{" "}

@@ -107,7 +107,7 @@ describe("Dashboard", () => {
     ).toHaveClass(
       "text-[28px]",
       "sm:text-[32px]",
-      "font-semibold",
+      "font-serif",
       "tracking-[-0.01em]",
     );
     expect(screen.getByRole("heading", { name: "Shortlist" })).toHaveClass(
@@ -301,7 +301,7 @@ describe("Dashboard", () => {
 
     const howItWorks = await screen.findByRole("region", { name: "How it works" });
     expect(howItWorks).toHaveTextContent(
-      "Browse. Every candidate is vouched for by the people who trained them. Read what stood out, then save anyone you'd like to meet.",
+      "Browse. These are people who have trained with one of our partners. Read what their trainer saw, then save anyone you'd like to meet.",
     );
     expect(howItWorks).toHaveTextContent(
       "Meet. Ask for an interview and we'll arrange a time that works for you both, usually within 24 hours.",

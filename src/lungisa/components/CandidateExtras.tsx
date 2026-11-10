@@ -1,3 +1,5 @@
+import { SourceLabel } from "./SourceLabel";
+
 type Extras = {
   trained_on?: string | null;
   work_history?: string | null;
@@ -13,10 +15,12 @@ export function CandidateExtras({
   candidate,
   className = "",
   fields,
+  sourceLabel,
 }: {
   candidate: object;
   className?: string;
   fields?: ExtraField[];
+  sourceLabel?: string;
 }) {
   const c = candidate as Extras;
   const allRows: { field: ExtraField; label: string; value: string }[] = [
@@ -31,17 +35,20 @@ export function CandidateExtras({
   if (rows.length === 0) return null;
 
   return (
-    <dl className={`space-y-3 ${className}`}>
-      {rows.map((row) => (
-        <div key={row.label} className="min-w-0">
-          <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {row.label}
-          </dt>
-          <dd className="demo-blur mt-0.5 break-words text-sm leading-6 text-foreground">
-            {row.value}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <div className={`space-y-3 ${className}`}>
+      {sourceLabel && <SourceLabel>{sourceLabel}</SourceLabel>}
+      <dl className="space-y-3">
+        {rows.map((row) => (
+          <div key={row.label} className="min-w-0">
+            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {row.label}
+            </dt>
+            <dd className="demo-blur mt-0.5 break-words text-sm leading-6 text-foreground">
+              {row.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }

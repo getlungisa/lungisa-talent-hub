@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { isPlaceholderBusinessName } from "../lib/businessName";
 import { isDemoMode } from "../lib/demo";
+import { Logo } from "@/components/Logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,8 +70,8 @@ export function Shell({
       )}
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-5 lg:flex-nowrap">
-          <div className="font-display text-[24px] font-semibold leading-8 tracking-[-0.01em] text-[#1b1e33]">
-            Lungisa
+          <div className="shrink-0 p-[22px]">
+            <Logo className="h-[22px] w-auto text-foreground" />
           </div>
 
           <nav className="flex flex-1 flex-wrap items-center gap-1">
@@ -88,15 +89,15 @@ export function Shell({
                     onClick={() => onNavigate(item.id)}
                     className={`relative flex items-center gap-2 whitespace-nowrap px-3 py-2.5 text-sm transition ${
                       isActive
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-primary"
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
                     <span>{item.label}</span>
 
                     {isActive && (
-                      <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
+                      <span className="absolute inset-x-2 -bottom-px h-[3px] bg-primary" />
                     )}
                   </button>
                 );
@@ -105,7 +106,7 @@ export function Shell({
 
             <button
               onClick={() => setAboutOpen(true)}
-              className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-primary"
+              className="ml-auto whitespace-nowrap px-3 py-2.5 text-sm text-muted-foreground transition hover:text-foreground"
             >
               About
             </button>
@@ -113,11 +114,11 @@ export function Shell({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="inline-flex min-h-[44px] items-center gap-2 border-0 bg-transparent px-3 text-sm font-medium text-[#5a5d70] transition hover:bg-primary-tint">
+              <button className="inline-flex min-h-[44px] items-center gap-2 border-0 bg-transparent px-3 text-sm font-medium text-muted-foreground transition hover:bg-primary-tint">
                 {isPlaceholderBusinessName(employerName)
                   ? "Account"
                   : employerName}
-                <ChevronDown className="h-4 w-4 text-[#5a5d70]" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

@@ -3,10 +3,10 @@ const SEAM_CHECK_IN_DAYS = [
   0, 1, 3, 6, 10, 13, 20, 27, 34, 41, 48, 55, 62, 69, 76, 83,
 ] as const;
 
-const PASSED = "#2b3a8c";
-const UPCOMING = "#8c8e9c";
-const THREAD = "#e6e3dc";
-const DAY_90 = "#cf5c7e";
+const PASSED = "#D85C26";
+const UPCOMING = "#BBADA4";
+const THREAD = "#E1D9CA";
+const DAY_90 = "#D85C26";
 
 function parseStart(startedAt: string | null | undefined): Date | null {
   if (!startedAt) return null;
