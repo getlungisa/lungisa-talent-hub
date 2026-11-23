@@ -44,7 +44,9 @@ export function CandidateVideo({ candidate }: { candidate: { video_path?: string
       ) : state.error ? (
         <p className="text-sm text-muted-foreground">Video isn't available right now</p>
       ) : (
-        <video className="w-full rounded-2xl" controls playsInline preload="metadata" src={state.url ?? undefined} />
+        <div className="max-w-sm overflow-hidden rounded-2xl bg-black">
+          <video className="h-auto max-h-[60vh] w-full object-contain" controls playsInline preload="metadata" src={state.url ?? undefined} />
+        </div>
       )}
     </div>
   );
