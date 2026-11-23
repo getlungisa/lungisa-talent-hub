@@ -9,6 +9,11 @@ const { fetchCandidateMock, fetchInterviewRequestedCandidateIdsMock, insertBusin
   useAuthMock: vi.fn(),
 }));
 
+vi.mock("../components/CandidateVideo", () => ({
+  CandidateVideo: ({ candidate }: { candidate: { video_path?: string | null } }) =>
+    candidate.video_path ? <div data-testid="candidate-video">{candidate.video_path}</div> : null,
+}));
+
 vi.mock("../lib/dashboard", () => ({
   fetchCandidate: fetchCandidateMock,
   fetchDashboardShortlisted: vi.fn().mockResolvedValue([]),
@@ -45,6 +50,20 @@ describe("CandidateDetail", () => {
     render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
 
     expect(screen.getByText("Loading candidate...")).toBeInTheDocument();
+  });
+
+  it("shows a candidate's video near the top of the profile", async () => {
+    fetchCandidateMock.mockResolvedValue({
+      id: "real-1",
+      name: "Sipho",
+      video_path: "sipho/intro.mp4",
+      strengths_summary: "Reliable and thoughtful.",
+    });
+
+    render(<CandidateDetail id="real-1" onBack={vi.fn()} />);
+    const video = await screen.findByTestId("candidate-video");
+    expect(video).toHaveTextContent("sipho/intro.mp4");
+    expect(video.compareDocumentPosition(screen.getByText("Reliable and thoughtful.")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("shows an error state when the candidate fails to load", async () => {

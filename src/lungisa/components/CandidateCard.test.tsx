@@ -9,8 +9,12 @@ vi.mock("@/contexts/AuthContext", () => ({ useAuth: authMock }));
 vi.mock("sonner", () => ({ toast: { error: toastMock } }));
 vi.mock("../lib/dashboard", () => ({ toggleCandidateShortlist: toggleMock }));
 vi.mock("./Avatar", () => ({ Avatar: ({ name }: { name: string }) => <div>{name}</div> }));
+vi.mock("./CandidateVideo", () => ({ CandidateVideo: () => <video data-testid="candidate-video" /> }));
 
-const candidate = { id: "candidate-1", name: "Ayanda", location: "Langa, Cape Town" };
+const candidate = {
+  id: "candidate-1", name: "Ayanda", location: "Langa, Cape Town",
+  strengths_summary: null, training_partner_id: null, training_partner: null, reference_note: null,
+};
 const props = { candidate, onOpen: vi.fn(), isShortlisted: false, isRequested: false,
   onShortlistChanged: onChanged, onInterviewRequested: vi.fn(async () => true) };
 
@@ -30,6 +34,12 @@ describe("CandidateCard shortlist interactions", () => {
     render(<CandidateCard {...props} />);
 
     expect(screen.getAllByText("Langa, Cape Town")).toHaveLength(1);
+  });
+
+  it("does not render a video even when the candidate has a video path", () => {
+    render(<CandidateCard {...props} candidate={{ ...candidate, video_path: "intro.mp4" }} />);
+    expect(screen.queryByTestId("candidate-video")).not.toBeInTheDocument();
+    expect(document.querySelector("video")).not.toBeInTheDocument();
   });
 
   it("updates the parent only after the shortlist request succeeds", async () => {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CandidateExtras } from "../components/CandidateExtras";
+import { CandidateVideo } from "../components/CandidateVideo";
 import { SourceLabel } from "../components/SourceLabel";
 import { Avatar } from "../components/Avatar";
 import { createPortal } from "react-dom";
@@ -228,6 +229,7 @@ export function CandidateDetail({
 
           <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div className="space-y-8">
+              <CandidateVideo candidate={candidate} />
               {strengthsSummary && (
                 <div>
                   {candidate.training_partner?.name && !referenceNote ? (
