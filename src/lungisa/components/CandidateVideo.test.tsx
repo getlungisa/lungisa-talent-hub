@@ -37,7 +37,9 @@ describe("CandidateVideo", () => {
     expect(video).toHaveAttribute("playsinline");
     expect(video).toHaveAttribute("preload", "metadata");
     expect(video).not.toHaveAttribute("autoplay");
-    expect(video?.parentElement).toHaveClass("demo-blur");
+    expect(video).toHaveClass("h-auto", "max-h-[60vh]", "w-full", "object-contain");
+    expect(video?.parentElement).toHaveClass("max-w-sm", "overflow-hidden", "rounded-2xl", "bg-black");
+    expect(video?.closest(".demo-blur")).toBeInTheDocument();
   });
 
   it.each(["returned error", "rejection"])("shows an error on %s", async (failure) => {
