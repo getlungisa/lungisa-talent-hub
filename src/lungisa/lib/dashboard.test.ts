@@ -120,7 +120,7 @@ describe("fetchCandidate", () => {
 
     expect(fromMock).toHaveBeenCalledWith("candidates");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note, trained_on, work_history, proud_of",
+      "id, name, location, strengths_summary, training_partner_id, training_partner:businesses!candidates_training_partner_id_fkey(name), reference_note, trained_on, work_history, proud_of, video_path",
     );
     expect(eqMock).toHaveBeenCalledWith("id", "1");
   });
