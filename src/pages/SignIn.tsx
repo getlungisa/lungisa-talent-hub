@@ -6,10 +6,49 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const PENDING_CODE_KEY = "lungisa-sign-in-pending-code";
+const PENDING_CODE_MAX_AGE_MS = 10 * 60 * 1000;
+
+function readPendingEmail(): string {
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(PENDING_CODE_KEY) ?? "null");
+    if (
+      typeof saved?.email === "string" &&
+      saved.email &&
+      typeof saved.at === "number" &&
+      Date.now() - saved.at >= 0 &&
+      Date.now() - saved.at < PENDING_CODE_MAX_AGE_MS
+    ) {
+      return saved.email;
+    }
+    window.sessionStorage.removeItem(PENDING_CODE_KEY);
+  } catch {
+    // Unavailable or corrupt storage just means the email form is shown.
+  }
+  return "";
+}
+
+function savePendingEmail(email: string) {
+  try {
+    window.sessionStorage.setItem(PENDING_CODE_KEY, JSON.stringify({ email, at: Date.now() }));
+  } catch {
+    // Persistence is best effort.
+  }
+}
+
+function clearPendingEmail() {
+  try {
+    window.sessionStorage.removeItem(PENDING_CODE_KEY);
+  } catch {
+    // Persistence is best effort.
+  }
+}
+
 export default function SignIn() {
   const { session, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
-  const [sentEmail, setSentEmail] = useState("");
+  const [initialPendingEmail] = useState(readPendingEmail);
+  const [sentEmail, setSentEmail] = useState(initialPendingEmail);
   const [loading, setLoading] = useState(false);
   const [codeSubmitting, setCodeSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
@@ -17,7 +56,7 @@ export default function SignIn() {
   const [codeError, setCodeError] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resent, setResent] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState(Boolean(initialPendingEmail));
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,6 +93,7 @@ export default function SignIn() {
     if (error && error.code !== "otp_disabled" && !/signups not allowed/i.test(error.message)) {
       setError(error.message);
     } else {
+      savePendingEmail(email);
       setSentEmail(email);
       setSent(true);
     }
@@ -70,11 +110,22 @@ export default function SignIn() {
         type: "email",
       });
       if (error) setCodeError(true);
+      else clearPendingEmail();
     } catch {
       setCodeError(true);
     } finally {
       setCodeSubmitting(false);
     }
+  };
+
+  const handleUseDifferentEmail = () => {
+    clearPendingEmail();
+    setSent(false);
+    setSentEmail("");
+    setCode("");
+    setCodeError(false);
+    setResent(false);
+    setError(null);
   };
 
   const handleResendCode = async () => {
@@ -86,6 +137,7 @@ export default function SignIn() {
         setError("We couldn't send a new code. Please try again.");
         return;
       }
+      savePendingEmail(sentEmail);
       setCode("");
       setCodeError(false);
       setResendCooldown(30);
@@ -112,11 +164,12 @@ export default function SignIn() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-8">
+        {!sent && (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <h1 className="font-serif text-3xl text-foreground">Sign in to Lungisa</h1>
             <p className="text-muted-foreground text-sm">
-              Enter your email and we'll send you a sign-in link and a 6-digit code.
+              Enter your email and we'll send you a 6-digit code.
             </p>
           </div>
           <div className="space-y-2">
@@ -124,6 +177,7 @@ export default function SignIn() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -135,7 +189,7 @@ export default function SignIn() {
             disabled={loading}
             className="w-full bg-primary text-primary-foreground hover:bg-primary-hover hover:text-secondary"
           >
-            {loading ? "Sending..." : "Send sign-in link"}
+            {loading ? "Sending..." : "Send code"}
           </Button>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <p className="text-sm text-muted-foreground">
@@ -145,10 +199,11 @@ export default function SignIn() {
             </Link>
           </p>
         </form>
+        )}
         {sent && (
-          <div className="mt-6 space-y-4">
+          <div className="space-y-4">
             <p className="text-sm text-foreground">
-              Check your email. We've sent you a link and a 6-digit code.
+              Check your email. We've sent you a 6-digit code.
             </p>
             <form onSubmit={handleVerifyCode} className="space-y-3">
               <div className="space-y-2">
@@ -201,6 +256,10 @@ export default function SignIn() {
               {resent && (
                 <p className="text-sm text-foreground">A new code is on its way.</p>
               )}
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="button" variant="link" onClick={handleUseDifferentEmail}>
+                Use a different email
+              </Button>
             </div>
           </div>
         )}

@@ -20,13 +20,82 @@ function submit() {
     </MemoryRouter>,
   );
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: "someone@example.com" } });
-  fireEvent.click(screen.getByRole("button", { name: "Send sign-in link" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send code" }));
 }
 
 describe("SignIn", () => {
   beforeEach(() => {
     signInWithOtpMock.mockReset();
     verifyOtpMock.mockReset();
+    window.sessionStorage.clear();
+  });
+
+  const renderSignIn = () =>
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+
+  it("uses code-only copy and mobile-friendly inputs", () => {
+    renderSignIn();
+    expect(screen.getByText("Enter your email and we'll send you a 6-digit code.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Send code" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText("Email")).toHaveAttribute("autocomplete", "email");
+    expect(document.body).not.toHaveTextContent(/sign-in link/i);
+  });
+
+  it("saves the pending email and restores the code step after a reload", async () => {
+    signInWithOtpMock.mockResolvedValue({ error: null });
+    const { unmount } = render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "someone@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send code" }));
+    const code = await screen.findByLabelText("6-digit code");
+    expect(code).toHaveAttribute("inputmode", "numeric");
+    expect(code).toHaveAttribute("autocomplete", "one-time-code");
+    expect(code).toHaveAttribute("maxlength", "6");
+    expect(screen.queryByLabelText("Email")).toBeNull();
+    unmount();
+
+    renderSignIn();
+    expect(screen.getByLabelText("6-digit code")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Email")).toBeNull();
+    expect(signInWithOtpMock).toHaveBeenCalledTimes(1);
+    verifyOtpMock.mockResolvedValue({ error: null });
+    fireEvent.change(screen.getByLabelText("6-digit code"), { target: { value: "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() =>
+      expect(verifyOtpMock).toHaveBeenCalledWith({ email: "someone@example.com", token: "123456", type: "email" }),
+    );
+    await waitFor(() => expect(window.sessionStorage.length).toBe(0));
+  });
+
+  it("ignores a saved entry older than 10 minutes", () => {
+    window.sessionStorage.setItem(
+      "lungisa-sign-in-pending-code",
+      JSON.stringify({ email: "old@example.com", at: Date.now() - 10 * 60 * 1000 - 1 }),
+    );
+    renderSignIn();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.queryByLabelText("6-digit code")).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
+  });
+
+  it("returns to the email form and clears the saved entry for a different email", () => {
+    window.sessionStorage.setItem(
+      "lungisa-sign-in-pending-code",
+      JSON.stringify({ email: "someone@example.com", at: Date.now() }),
+    );
+    renderSignIn();
+    fireEvent.click(screen.getByRole("button", { name: "Use a different email" }));
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.queryByLabelText("6-digit code")).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
   });
 
   it("never creates users for unknown emails", async () => {
@@ -41,11 +110,11 @@ describe("SignIn", () => {
       error: { code: "otp_disabled", message: "Signups not allowed for otp" },
     });
     submit();
-    expect(await screen.findByText(/we've sent you a link and a 6-digit code/i)).toBeInTheDocument();
+    expect(await screen.findByText(/we've sent you a 6-digit code/i)).toBeInTheDocument();
     expect(screen.queryByText(/Signups not allowed/i)).toBeNull();
   });
 
-  it("shows a code form after sending the sign-in link and enables it only for six digits", async () => {
+  it("shows a code form after sending the code and enables it only for six digits", async () => {
     signInWithOtpMock.mockResolvedValue({ error: null });
     submit();
 

@@ -86,7 +86,7 @@ describe("Join page", () => {
     expect(signInWithOtpMock).not.toHaveBeenCalled();
   });
 
-  it("sends a magic link that may create the user and shows the check-your-email state", async () => {
+  it("sends a code that may create the user and shows the check-your-email state", async () => {
     renderJoin();
     fillValid();
     fireEvent.click(screen.getByLabelText(/R1,000 on hire/));
@@ -98,7 +98,7 @@ describe("Join page", () => {
     expect(signInWithOtpMock.mock.calls[0][0].options.shouldCreateUser).toBe(true);
     expect(await screen.findByText("Check your email")).toBeInTheDocument();
     expect(
-      screen.getByText("We've sent a link and a 6-digit code to confirm your email. Open the link on this device, or enter the code below, to finish joining."),
+      screen.getByText("We've sent a 6-digit code to confirm your email. Enter it below to finish joining."),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("6-digit code")).toBeInTheDocument();
     expect(registerBusinessMock).not.toHaveBeenCalled();
