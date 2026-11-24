@@ -127,7 +127,7 @@ export default function Join() {
       if (error) {
         console.error("signInWithOtp error", error);
         clearRegistrationDraft();
-        setFormError("We couldn't send your email link. Please check your email address and try again.");
+        setFormError("We couldn't send your code. Please check your email address and try again.");
       } else {
         setSentEmail(email);
         setCodeAvailable(true);
@@ -217,7 +217,7 @@ export default function Join() {
         <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 space-y-4">
           <h1 className="font-serif text-3xl text-foreground">Check your email</h1>
           <p className="text-sm text-foreground">
-            We've sent a link and a 6-digit code to confirm your email. Open the link on this device, or enter the code below, to finish joining.
+            We've sent a 6-digit code to confirm your email. Enter it below to finish joining.
           </p>
           {codeAvailable && (
             <form onSubmit={handleVerifyCode} className="space-y-3">
